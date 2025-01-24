@@ -1,7 +1,38 @@
 import tensorstore as ts
 import numpy as np
 
-def writeZarr (file_path, data_shape, chunk_shape, data, TstoreDtype, Zarrdtype):
+def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType):
+    """
+    Creates a new Zarr dataset and writes data to it.
+
+    Parameters:
+    - file_path (str): The path where the Zarr file will be stored.
+    - data_shape (tuple): The shape of the data to be stored.
+    - chunk_shape (tuple): The shape of the chunks in the Zarr file.
+    - data (numpy.ndarray): The data to write to the Zarr file.
+    - tstoreDataType (str): The data type of the data in the Tensorstore.
+    - zarrDataType (str): The data type of the data in the Zarr file.
+    """
+    schema = {
+        'driver': 'zarr',
+        'kvstore': {
+            'driver': 'file',
+            'path': file_path
+        },
+        'dtype': tstoreDataType,
+        'metadata': {
+            'shape': data_shape,
+            'chunks': chunk_shape,
+            'dtype':  zarrDataType,
+            'fill_value': 0.0,
+        },
+        'create': True,
+        'delete_existing': True,
+    }
+    zarr_file = ts.open(schema).result()
+    return schema
+            
+def writeZarr (file_path, data):
     """
     Writes data to a Zarr file.
 
@@ -11,22 +42,14 @@ def writeZarr (file_path, data_shape, chunk_shape, data, TstoreDtype, Zarrdtype)
     - chunk_shape (tuple): The shape of the chunks in the Zarr file.
     - data (numpy.ndarray): The data to write to the Zarr file.
     """
-    zarr_file = ts.open({
-        'driver': 'zarr',
-        'kvstore': {
-            'driver': 'file',
-            'path': file_path
-        },
-        'dtype': TstoreDtype,
-        'metadata': {
-            'shape': data_shape,
-            'chunks': chunk_shape,
-            'dtype':  Zarrdtype,
-            'fill_value': 0.0,
-        },
-        'create': True,
-        'delete_existing': True,
-    }).result()
+    schema = {
+    'driver': 'zarr',
+    'kvstore': {
+        'driver': 'file',
+        'path': file_path,
+    }
+    }
+    zarr_file = ts.open(schema).result()
     
     # Write data to the Zarr file
     zarr_file[...] = data
