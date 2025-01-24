@@ -5,6 +5,8 @@ classdef Zarr < handle
         ChunkSize
         DsetSize
         MatlabDtype
+        Compression
+        TstoreSchema
     end
 
     properties (Access = protected)
@@ -70,20 +72,37 @@ classdef Zarr < handle
             
         end
 
-        function write(obj, file_path, dtype, data_shape, chunk_shape, data)
-
+        function create(obj, dtype, data_shape, chunk_shape, compression)
             obj.DsetSize = data_shape;
             obj.ChunkSize = chunk_shape;
             obj.MatlabDtype = dtype;
             obj.Tstoredtype = obj.TstoredtypeMap(dtype);
             obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
+            obj.Compression = compression;
 
             disp("While writing....");
             disp(obj.MatlabDtype);
             disp(obj.Tstoredtype);
             disp(obj.Zarrdtype);
 
-            py.ZarrPy.writeZarr(file_path, obj.DsetSize, obj.ChunkSize, data, obj.Tstoredtype, obj.Zarrdtype);
+            obj.TstoreSchema = py.ZarrPy.createZarr(obj.Path, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, obj.Zarrdtype);
+
+        end
+
+        function write(obj, data)
+
+            % obj.DsetSize = data_shape;
+            % obj.ChunkSize = chunk_shape;
+            % obj.MatlabDtype = dtype;
+            % obj.Tstoredtype = obj.TstoredtypeMap(dtype);
+            % obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
+            % 
+            % disp("While writing....");
+            % disp(obj.MatlabDtype);
+            % disp(obj.Tstoredtype);
+            % disp(obj.Zarrdtype);
+
+            py.ZarrPy.writeZarr(obj.Path, data);
 
         end
 

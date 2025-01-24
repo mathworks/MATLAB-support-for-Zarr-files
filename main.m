@@ -1,4 +1,16 @@
-% Write the Zarr file
+%% Create the Zarr file
+file_path = 'temp4';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+data = single(5*ones(10, 10));
+
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single');
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path)
+
+
+%% Write the Zarr file
 file_path = 'temp3';
 data_shape = [10, 10];
 chunk_shape = [5, 5];

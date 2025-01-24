@@ -1,9 +1,9 @@
-function writezarr(file_path, chunk_shape, data)
+function writezarr(file_path, data)
 
 Zarrobj = Zarr(file_path);
-data_shape = size(data);
-dtype = class(data);
-Zarrobj.write(file_path, dtype, data_shape, chunk_shape, data)
+% data_shape = size(data);
+% dtype = class(data);
+Zarrobj.write(data)
 
 % [TstoreDtype, Zarrdtype] = getLibraryDatatypes(dtype);
 
