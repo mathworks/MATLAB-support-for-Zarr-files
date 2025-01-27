@@ -1,13 +1,16 @@
 %% Create the Zarr file
-file_path = 'temp4';
+file_path = 'test_files/nulldset5';
 data_shape = [10, 10];
 chunk_shape = [5, 5];
 data = single(5*ones(10, 10));
-
-zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single');
+comp.id = 'null';
+comp.level = 5;
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', comp);
 writezarr(file_path, data);
 dataR = readzarr(file_path);
 info = zarrinfo(file_path)
+info.compressor
 
 
 %% Write the Zarr file

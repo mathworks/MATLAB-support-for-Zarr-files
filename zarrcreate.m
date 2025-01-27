@@ -11,7 +11,8 @@ addParameter(p, 'Datatype', 'double', ...
 addParameter(p, 'FillValue', 'null', ...
     @(x) validateattributes(x,{'numeric', 'char', 'string'},{'scalar', 'scalartext'},'','FILLVALUE'));
 
-addParameter(p, 'Compression', 'null');
+comp = [];
+addParameter(p, 'Compression', comp);
 
 p.parse(varargin{:});
 Zarrobj = Zarr(file_path);

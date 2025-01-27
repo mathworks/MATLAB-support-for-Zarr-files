@@ -78,29 +78,19 @@ classdef Zarr < handle
             obj.MatlabDtype = dtype;
             obj.Tstoredtype = obj.TstoredtypeMap(dtype);
             obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
-            obj.Compression = compression;
-
+            obj.Compression = obj.parseCompression(compression);
+           
             disp("While writing....");
             disp(obj.MatlabDtype);
             disp(obj.Tstoredtype);
             disp(obj.Zarrdtype);
 
-            obj.TstoreSchema = py.ZarrPy.createZarr(obj.Path, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, obj.Zarrdtype);
+            obj.TstoreSchema = py.ZarrPy.createZarr(obj.Path, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
+                obj.Zarrdtype, obj.Compression);
 
         end
 
         function write(obj, data)
-
-            % obj.DsetSize = data_shape;
-            % obj.ChunkSize = chunk_shape;
-            % obj.MatlabDtype = dtype;
-            % obj.Tstoredtype = obj.TstoredtypeMap(dtype);
-            % obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
-            % 
-            % disp("While writing....");
-            % disp(obj.MatlabDtype);
-            % disp(obj.Tstoredtype);
-            % disp(obj.Zarrdtype);
 
             py.ZarrPy.writeZarr(obj.Path, data);
 
@@ -124,6 +114,37 @@ classdef Zarr < handle
             end
         end
 
+    end
+
+    methods (Access = protected)
+        function compression = parseCompression (~,compression)
+            if ~isfield(compression, 'id')
+                error("Compression id is required");
+            end
+            switch(compression.id)
+                case {"zlib", "gzip", "bz2", "zstd"}
+                    if ~isfield(compression, 'level')
+                        compression.level = 1;
+                    end
+                case "blosc"
+                    if ~isfield(compression, 'cname')
+                        compression.cname = 'lz4';
+                    end
+                    if ~isfield(compression, 'clevel')
+                        compression.clevel = 5;
+                    end
+                    if ~isfield(compression, 'shuffle')
+                        compression.shuffle = -1;
+                    end
+                case "null" % No compression
+                    compression = py.None;
+                otherwise
+                    error('Unsupported compression id: %s', compression.id);
+            end
+            
+
+
+        end
     end
 
 end

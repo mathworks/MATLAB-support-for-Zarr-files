@@ -1,7 +1,7 @@
 import tensorstore as ts
 import numpy as np
 
-def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType):
+def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor):
     """
     Creates a new Zarr dataset and writes data to it.
 
@@ -13,6 +13,9 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType)
     - tstoreDataType (str): The data type of the data in the Tensorstore.
     - zarrDataType (str): The data type of the data in the Zarr file.
     """
+    print(type(compressor))
+    print(compressor)
+   
     schema = {
         'driver': 'zarr',
         'kvstore': {
@@ -25,6 +28,7 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType)
             'chunks': chunk_shape,
             'dtype':  zarrDataType,
             'fill_value': 0.0,
+            'compressor': compressor,
         },
         'create': True,
         'delete_existing': True,
