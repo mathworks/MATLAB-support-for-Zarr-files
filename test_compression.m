@@ -1,0 +1,100 @@
+%% Test 1
+compression = {'zlib', 'gzip', 'bz2'};
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+data = single(5*ones(10, 10));
+
+for index = 1:numel(compression)
+    comp = compression{index};
+    file_path = ['test_files/comp_test/' comp 'dset_test.zarr'];
+    compstruct.id = comp;
+    compstruct.level = 8;
+
+    zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+        'Compression', compstruct);
+    writezarr(file_path, data);
+    dataR = readzarr(file_path);
+    info = zarrinfo(file_path);
+    fprintf("Testing: %s\n", comp);
+    fprintf("Expected: %s  %d \n", compstruct.id, compstruct.level);
+    fprintf("Actual: %s %d \n ", info.compressor.id, info.compressor.level);
+    fprintf("---------\n");
+end
+
+% rmdir('test_files/comp_test/', 's')
+
+%% Test 2 - testing default
+file_path = 'test_files/comp_test/defaultcomp.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single');
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path);
+info.compressor
+
+
+%% Test 3 - testing 'null' compression
+file_path = 'test_files/comp_test/nullcompdset.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+compstruct.id = 'null';
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', compstruct);
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path);
+info.compressor
+
+%% Test 4 - testing 'blosc' compression 1
+file_path = 'test_files/comp_test/blosc1dset.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+compstruct.id = 'blosc';
+% compstruct.level = 4;
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', compstruct);
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path);
+info.compressor
+
+%% Test 5 - testing 'blosc' compression 2
+file_path = 'test_files/comp_test/blosc2dset.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+compstruct.id = 'blosc';
+compstruct.clevel = 4;
+compstruct.shuffle = 2;
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', compstruct);
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path);
+info.compressor
+
+%% Test 6 - testing 'blosc' compression 3
+file_path = 'test_files/comp_test/blosc3dset.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+
+compstruct.id = 'blosc';
+compstruct.blocksize = 78;
+compstruct.clevel = 4;
+compstruct.shuffle = 2;
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', compstruct);
+writezarr(file_path, data);
+dataR = readzarr(file_path);
+info = zarrinfo(file_path);
+info.compressor
