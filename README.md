@@ -24,7 +24,7 @@ Requires MATLAB release R2022b or newer
 3p:
 - Python 
 - [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
-- [numpy] - v2.2.2 or newer
+- [numpy](https://github.com/numpy/numpy) - v2.2.2 or newer
 
 ## Installation
 Before proceeding, please ensure that you have a supported version of Python installed on your machine.
@@ -32,10 +32,10 @@ Please refer to the following links to configure your system to use Python with 
 - [Configure Your System to Use Python](https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html)
 - [Access Python Modules from MATLAB - Getting Started](https://www.mathworks.com/help/matlab/matlab_external/create-object-from-python-class.html)
 
-Make sure that the Python path is included in your system path environment variable. To verify that you have a supported version of Python, type:
+Make sure that the Python path is included in your system path environment variable. To verify that you have a supported version of Python, type (in MATLAB Command Window):
 
 ```
-pyenv
+>> pyenv
 
 ans = 
 
@@ -102,7 +102,7 @@ zarrwrite(filepath, data);
 ```
 
 
-## Read the metadata from a Zarr array
+### Read the metadata from a Zarr array
 ```
 filepath = '\group1\dset1';
 info = zarrinfo(filepath);
