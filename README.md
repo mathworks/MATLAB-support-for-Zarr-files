@@ -1,93 +1,128 @@
-# Support Zarr In MATLAB 456
+# Support Zarr In MATLAB
 
+[Zarr&reg;.](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, N-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large datasets efficiently.
+This contribution provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
+For complete documentation, refer to the documentation.txt file, or refer to the help section of each function.
 
-## Getting started
+## Status
+- Supports reading and writing of Zarr arrays from local storage.
+- Supports reading of Zarr metadata from local storage.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+## Setup
+To use this contribution, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html)
+For example, 
 ```
-cd existing_repo
-git remote add origin https://insidelabs-git.mathworks.com/abaruah/support-Zarr-in-MATLAB.git
-git branch -M main
-git push -uf origin main
+>> addpath('C:\username\support-Zarr-in-MATLAB\')
 ```
 
-## Integrate with your tools
+### MathWorks Products (https://www.mathworks.com)
 
-- [ ] [Set up project integrations](https://insidelabs-git.mathworks.com/abaruah/support-Zarr-in-MATLAB/-/settings/integrations)
+Requires MATLAB release R2022b or newer
 
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### 3rd Party Products:
+3p:
+- Python 
+- [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
+- [numpy] - v2.2.2 or newer
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Before proceeding, please ensure that you have a supported version of Python installed on your machine.
+Please refer to the following links to configure your system to use Python with MATLAB:
+- [Configure Your System to Use Python](https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html)
+- [Access Python Modules from MATLAB - Getting Started](https://www.mathworks.com/help/matlab/matlab_external/create-object-from-python-class.html)
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Make sure that the Python path is included in your system path environment variable. To verify that you have a supported version of Python, type:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```
+pyenv
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+ans = 
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+  PythonEnvironment with properties:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+          Version: "3.11"
+       Executable: "C:\Users\aname\AppData\Local\Programs\Python\Python311\pythonw.exe"
+          Library: "C:\Users\aname\AppData\Local\Programs\Python\Python311\python311.dll"
+             Home: "C:\Users\aname\AppData\Local\Programs\Python\Python311"
+           Status: NotLoaded
+    ExecutionMode: OutOfProcess
+```
+If the value of the Version property is empty, then you do not have a supported version available.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy).
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Getting Started 
+1. Clone the github repo to your local drive.
+2. Start MATLAB
+3. Add the parent cloned directory to your MATLAB path
+```
+>> addpath ('C:\username\support-Zarr-in-MATLAB\')
+```
+
+## Examples
+
+### Reading a Zarr array
+```
+filepath = '\group1\dset1';
+data = zarrread(filepath)
+```
+
+### Creating a Zarr array and write to it with default Name-Value pairs
+```
+filepath = 'myZarrfiles\singleDset';
+data_shape = [10, 10];           % shape of the Zarr array to be written
+data = single(5*ones(10, 10));   % Data to be written
+
+zarrcreate (filepath, data_shape); % Create the Zarr array with default attributes
+zarrwrite(filepath, data);         % Write 'data' to the zarr array at 'file_path'
+```
+
+### Creating a Zarr array and write data to it using zlib compression with non default chunking.
+```
+filepath = 'myZarrfiles\singleZlibDset';
+
+% Size of the data
+data_shape = [10, 10];
+% Chunk size
+chunk_shape = [5, 5];
+% Sample data to be written
+data = single(5*ones(10, 10));
+
+% Set the compression ID and compression level
+compress.id = 'zlib';
+compress.level = 8;
+
+% Create the Zarr array
+zarrcreate(filepath, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+	'Compression', compress);
+	
+% Write to the Zarr array
+zarrwrite(filepath, data);
+```
+
+
+## Read the metadata from a Zarr array
+```
+filepath = '\group1\dset1';
+info = zarrinfo(filepath);
+```
+
+## Help
+To view documentation of individual function, type "help \<function_name>\". For example,
+```
+>> help zarrcreate
+```
+or refer to the documentation.txt file
+For more examples, see the examples directory in the repository.
+
 
 ## License
-For open source projects, say how it is licensed.
+<!--- Make sure you have a License.txt within your Repo --->
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+The license is available in the License.txt file in this GitHub repository.
+
+## Community Support
+[MATLAB Central](https://www.mathworks.com/matlabcentral)
+
+Copyright 2025 The MathWorks, Inc.
