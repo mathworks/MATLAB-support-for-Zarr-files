@@ -85,7 +85,7 @@ classdef Zarr < handle
             
         end
 
-        function create(obj, dtype, data_shape, chunk_shape, compression)
+        function create(obj, dtype, data_shape, chunk_shape, fillvalue, compression)
             % Function to create the Zarr array
 
             obj.DsetSize = data_shape;
@@ -94,6 +94,14 @@ classdef Zarr < handle
             obj.Tstoredtype = obj.TstoredtypeMap(dtype);
             obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
             obj.Compression = obj.parseCompression(compression);
+
+            % Fill Value
+            if (isempty(fillvalue))
+                obj.FillValue = py.None;
+            else
+                obj.FillValue = feval(obj.MatlabDtype, fillvalue);
+            end
+            
            
             disp("While writing....");
             disp(obj.MatlabDtype);
@@ -101,7 +109,7 @@ classdef Zarr < handle
             disp(obj.Zarrdtype);
 
             obj.TstoreSchema = py.ZarrPy.createZarr(obj.Path, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
-                obj.Zarrdtype, obj.Compression);
+                obj.Zarrdtype, obj.Compression, obj.FillValue);
 
         end
 

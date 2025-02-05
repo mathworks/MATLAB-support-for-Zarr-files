@@ -73,7 +73,6 @@ dataR = zarrread(file_path);
 isequal(data, dataR)
 
 %% Test for logical datatype
-% TODO: Fix boolean writing
 file_path = 'test_files\temp_bool';
 data_shape = [10, 10];
 chunk_shape = [5, 5];

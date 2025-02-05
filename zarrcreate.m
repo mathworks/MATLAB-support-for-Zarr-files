@@ -13,7 +13,7 @@ function zarrcreate(file_path, data_shape, varargin)
 %       'ChunkSize'              - Defines chunking layout. Default is not chunked.
 %       'FillValue'              - Defines the fill value for numeric datasets.
 %                                  The default is no fill value, specified
-%                                  as 'null'.
+%                                  as [].
 %       'Compression'            - Primary compression codec used to
 %                                  compress the Zarr array. The compression
 %                                  needs to provided as a struct, with 'id'
@@ -76,8 +76,8 @@ addParameter(p, 'ChunkSize', data_shape, ...
 addParameter(p, 'Datatype', 'double', ...
     @(x) validateattributes(x,{'char', 'string'},{'nonempty', 'scalartext'},'','DATATYPE'));
 
-addParameter(p, 'FillValue', 'null', ...
-    @(x) validateattributes(x,{'numeric', 'char', 'string'},{'scalar', 'scalartext'},'','FILLVALUE'));
+addParameter(p, 'FillValue', [], ...
+    @(x) validateattributes(x,{'numeric'},{'scalar'},'','FILLVALUE'));
 
 comp.id = 'null';
 addParameter(p, 'Compression', comp);
@@ -88,8 +88,9 @@ Zarrobj = Zarr(file_path);
 dtype = p.Results.Datatype;
 chunk_shape = p.Results.ChunkSize;
 compression = p.Results.Compression;
+fillvalue = p.Results.FillValue;
 
-Zarrobj.create(dtype, data_shape, chunk_shape, compression)
+Zarrobj.create(dtype, data_shape, chunk_shape, fillvalue, compression)
 
 
 end

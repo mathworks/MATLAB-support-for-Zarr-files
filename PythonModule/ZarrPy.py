@@ -7,7 +7,7 @@ Copyright 2025 The MathWorks, Inc.
 import tensorstore as ts
 import numpy as np
 
-def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor):
+def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor, fillvalue):
     """
     Creates a new Zarr dataset and writes data to it.
 
@@ -33,7 +33,7 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType,
             'shape': data_shape,
             'chunks': chunk_shape,
             'dtype':  zarrDataType,
-            'fill_value': 0.0,
+            'fill_value': fillvalue,
             'compressor': compressor,
         },
         'create': True,
