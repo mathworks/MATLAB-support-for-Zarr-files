@@ -1,1 +1,8 @@
+# Folder for generating test Zarr files
 test_files/ 
+
+# Windows default autosave extension
+*.asv
+
+# OSX / *nix default autosave extension
+*.m~

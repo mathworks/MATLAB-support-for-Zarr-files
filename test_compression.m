@@ -12,8 +12,8 @@ for index = 1:numel(compression)
 
     zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
         'Compression', compstruct);
-    writezarr(file_path, data);
-    dataR = readzarr(file_path);
+    zarrwrite(file_path, data);
+    dataR = zarrread(file_path);
     info = zarrinfo(file_path);
     fprintf("Testing: %s\n", comp);
     fprintf("Expected: %s  %d \n", compstruct.id, compstruct.level);
@@ -30,8 +30,8 @@ chunk_shape = [5, 5];
 
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single');
-writezarr(file_path, data);
-dataR = readzarr(file_path);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor
 
@@ -45,8 +45,8 @@ compstruct.id = 'null';
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
     'Compression', compstruct);
-writezarr(file_path, data);
-dataR = readzarr(file_path);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor
 
@@ -60,8 +60,8 @@ compstruct.id = 'blosc';
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
     'Compression', compstruct);
-writezarr(file_path, data);
-dataR = readzarr(file_path);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor
 
@@ -76,8 +76,8 @@ compstruct.shuffle = 2;
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
     'Compression', compstruct);
-writezarr(file_path, data);
-dataR = readzarr(file_path);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor
 
@@ -94,7 +94,7 @@ compstruct.shuffle = 2;
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
     'Compression', compstruct);
-writezarr(file_path, data);
-dataR = readzarr(file_path);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor

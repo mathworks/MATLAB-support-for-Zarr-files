@@ -1,9 +1,13 @@
 classdef Zarr < handle
+% MATLAB Gateway to Python tensorstore library functions
+
+%   Copyright 2025 The MathWorks, Inc.
 
     properties (GetAccess = public,SetAccess=protected)
         Path
         ChunkSize
         DsetSize
+        FillValue
         MatlabDtype
         Compression
         TstoreSchema
@@ -30,14 +34,20 @@ classdef Zarr < handle
     methods 
         
         function TstoredtypeMap = get.TstoredtypeMap(obj)
+            % Function to create hash map from MATLAB datatypes to
+            % Tensorstore datatypes.
             TstoredtypeMap = dictionary(obj.MATLABdatatypes, obj.Tstoredatatypes);
         end
 
         function ZarrdtypeMap = get.ZarrdtypeMap(obj)
+            % Function to create hash map from MATLAB datatypes to
+            % Zarr datatypes.
             ZarrdtypeMap = dictionary(obj.MATLABdatatypes, obj.Zarrdatatypes);
         end
             
         function obj = Zarr(path)
+            % Load the Python library and create the Zarr object
+
             % Python module setup and bootstrapping to MATLAB
             modpath = [pwd '\PythonModule'];
             if count(py.sys.path,modpath) == 0
@@ -50,7 +60,10 @@ classdef Zarr < handle
 
             obj.Path = path;
         end
+
         function out = read(obj)
+            % Function to read the Zarr array
+
             data = py.ZarrPy.readZarr(obj.Path);
             % Identify the Python datatype
             obj.Tstoredtype = string(data.dtype.name);
@@ -73,6 +86,8 @@ classdef Zarr < handle
         end
 
         function create(obj, dtype, data_shape, chunk_shape, compression)
+            % Function to create the Zarr array
+
             obj.DsetSize = data_shape;
             obj.ChunkSize = chunk_shape;
             obj.MatlabDtype = dtype;
@@ -91,12 +106,15 @@ classdef Zarr < handle
         end
 
         function write(obj, data)
+            % Function to write to the Zarr array
 
             py.ZarrPy.writeZarr(obj.Path, data);
 
         end
 
         function out = readinfo(obj)
+            % Function to read the Zarr metadata
+
             file_path = obj.Path;
             if isfile(fullfile(file_path, '.zarray'))
                 infodata = fileread(fullfile(file_path, '.zarray'));
@@ -118,6 +136,8 @@ classdef Zarr < handle
 
     methods (Access = protected)
         function compression = parseCompression (~,compression)
+            % Helper function to validate and parse the compression struct.
+
             if ~isfield(compression, 'id')
                 error("Compression id is required");
             end

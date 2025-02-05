@@ -1,3 +1,9 @@
+"""
+Python wrapper module to delegate function calls to the Python tensorstore library.
+The module has functions for creating Zarr files, writing to Zarr files and reading Zarr files
+
+Copyright 2025 The MathWorks, Inc.
+"""
 import tensorstore as ts
 import numpy as np
 
@@ -9,9 +15,9 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType,
     - file_path (str): The path where the Zarr file will be stored.
     - data_shape (tuple): The shape of the data to be stored.
     - chunk_shape (tuple): The shape of the chunks in the Zarr file.
-    - data (numpy.ndarray): The data to write to the Zarr file.
     - tstoreDataType (str): The data type of the data in the Tensorstore.
     - zarrDataType (str): The data type of the data in the Zarr file.
+    - compressor (dictionary): The compression to be used for the Zarr array.
     """
     print(type(compressor))
     print(compressor)
@@ -42,8 +48,6 @@ def writeZarr (file_path, data):
 
     Parameters:
     - file_path (str): The path where the Zarr file will be stored.
-    - data_shape (tuple): The shape of the data to be stored.
-    - chunk_shape (tuple): The shape of the chunks in the Zarr file.
     - data (numpy.ndarray): The data to write to the Zarr file.
     """
     schema = {
