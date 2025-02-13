@@ -6,8 +6,8 @@ This contribution provides an interface to read and write Zarr arrays and metada
 For complete documentation, refer to the documentation.txt file, or refer to the help section of each function.
 
 ## Status
-- Supports reading and writing of Zarr arrays from local storage.
-- Supports reading of Zarr metadata from local storage.
+- Supports reading and writing of Zarr arrays from local storage and Amazon S3.
+- Supports reading of Zarr metadata from local storage and Amazon S3.
 
 ## Setup
 To use this contribution, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html)
