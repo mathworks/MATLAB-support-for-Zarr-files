@@ -11,6 +11,7 @@ classdef Zarr < handle
         MatlabDtype
         Compression
         TstoreSchema
+        KVstoreschema
     end
 
     properties (Access = protected)
@@ -47,7 +48,13 @@ classdef Zarr < handle
             
         function obj = Zarr(path)
             % Load the Python library and create the Zarr object
-
+            
+            % Python environment out of process
+            % pe = pyenv;
+            % if pe.Status == 'NotLoaded'
+            %     pyenv(ExecutionMode="OutOfProcess");
+            % end
+            
             % Python module setup and bootstrapping to MATLAB
             modpath = [pwd '\PythonModule'];
             if count(py.sys.path,modpath) == 0
@@ -59,12 +66,28 @@ classdef Zarr < handle
             py.importlib.reload(mod);
 
             obj.Path = path;
+            isRemote = matlab.io.internal.vfs.validators.hasIriPrefix(obj.Path);
+            if isRemote % Remote file (only S3 support at the moment)
+                [bucketName, objectPath] = obj.extractS3BucketNameAndPath(obj.Path);
+                RemoteStoreSchema = dictionary(["driver", "bucket", "path"], ["s3", bucketName, objectPath]);
+                obj.KVstoreschema = py.dict(RemoteStoreSchema);
+                
+            else        % Local file
+                FileStoreSchema = dictionary(["driver", "path"], ["file", obj.Path]);
+                obj.KVstoreschema = py.dict(FileStoreSchema);
+            end
+            
         end
+
+        % function delete(obj)
+        %     disp("In Destructor");
+        %     % pyenv(ExecutionMode="InProcess");
+        % end
 
         function out = read(obj)
             % Function to read the Zarr array
 
-            data = py.ZarrPy.readZarr(obj.Path);
+            data = py.ZarrPy.readZarr(obj.KVstoreschema);
             % Identify the Python datatype
             obj.Tstoredtype = string(data.dtype.name);
 
@@ -108,7 +131,7 @@ classdef Zarr < handle
             disp(obj.Tstoredtype);
             disp(obj.Zarrdtype);
 
-            obj.TstoreSchema = py.ZarrPy.createZarr(obj.Path, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
+            obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
                 obj.Zarrdtype, obj.Compression, obj.FillValue);
 
         end
@@ -116,7 +139,7 @@ classdef Zarr < handle
         function write(obj, data)
             % Function to write to the Zarr array
 
-            py.ZarrPy.writeZarr(obj.Path, data);
+            py.ZarrPy.writeZarr(obj.KVstoreschema, data);
 
         end
 
@@ -169,9 +192,35 @@ classdef Zarr < handle
                 otherwise
                     error('Unsupported compression id: %s', compression.id);
             end
-            
+        end
 
+        function [bucketName, objectPath] = extractS3BucketNameAndPath(~,url)
+            % Helper function to extract S3 bucket name and path to file
+            % Define the regular expression patterns for matching S3 URLs and URIs
+            pattern1 = '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$';  % Format 1
+            pattern2 = '^https://s3\.amazonaws\.com/([^/]+)/(.+)$';   % Format 2
+            pattern3 = '^s3://([^/]+)/(.+)$';                         % Format 3
 
+            % Try matching the first pattern
+            tokens = regexp(url, pattern1, 'tokens');
+
+            % If the first pattern does not match, try the second pattern
+            if isempty(tokens)
+                tokens = regexp(url, pattern2, 'tokens');
+            end
+
+            % If the second pattern does not match, try the third pattern
+            if isempty(tokens)
+                tokens = regexp(url, pattern3, 'tokens');
+            end
+
+            % Extract the bucket name and object path from the tokens
+            if ~isempty(tokens)
+                bucketName = tokens{1}{1};
+                objectPath = tokens{1}{2};
+            else
+                error('Invalid S3 URL or URI format');
+            end
         end
     end
 

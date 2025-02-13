@@ -7,12 +7,12 @@ Copyright 2025 The MathWorks, Inc.
 import tensorstore as ts
 import numpy as np
 
-def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor, fillvalue):
+def createZarr(kvstore_schema, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor, fillvalue):
     """
     Creates a new Zarr dataset and writes data to it.
 
     Parameters:
-    - file_path (str): The path where the Zarr file will be stored.
+    - kvstore_schema (dictionary): Schema for the file store (local or remote)
     - data_shape (tuple): The shape of the data to be stored.
     - chunk_shape (tuple): The shape of the chunks in the Zarr file.
     - tstoreDataType (str): The data type of the data in the Tensorstore.
@@ -22,12 +22,20 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType,
     print(type(compressor))
     print(compressor)
    
-    schema = {
-        'driver': 'zarr',
-        'kvstore': {
+    kvstore_schemaS3 = {
+        'driver': 's3',
+        'bucket': 'mtbgeneralpurpose',  # Example bucket name
+        'path': 'abaruah/test_files/temp3',
+    }
+    """
+    kvstore_schemaFile = {
             'driver': 'file',
             'path': file_path
-        },
+    }
+    """
+    schema = {
+        'driver': 'zarr',
+        'kvstore': kvstore_schema,
         'dtype': tstoreDataType,
         'metadata': {
             'shape': data_shape,
@@ -42,20 +50,17 @@ def createZarr(file_path, data_shape, chunk_shape, tstoreDataType, zarrDataType,
     zarr_file = ts.open(schema).result()
     return schema
             
-def writeZarr (file_path, data):
+def writeZarr (kvstore_schema, data):
     """
     Writes data to a Zarr file.
 
     Parameters:
-    - file_path (str): The path where the Zarr file will be stored.
+    - kvstore_schema (dictionary): Schema for the file store (local or remote)
     - data (numpy.ndarray): The data to write to the Zarr file.
     """
     schema = {
     'driver': 'zarr',
-    'kvstore': {
-        'driver': 'file',
-        'path': file_path,
-    }
+    'kvstore': kvstore_schema
     }
     zarr_file = ts.open(schema).result()
     
@@ -63,12 +68,12 @@ def writeZarr (file_path, data):
     zarr_file[...] = data
 
 
-def readZarr (file_path):
+def readZarr (kvstore_schema):
     """
     Reads a subset of data from a Zarr file.
 
     Parameters:
-    - file_path (str): The path to the Zarr file.
+    - kvstore_schema (dictionary): Schema for the file store (local or remote)
     - subset_slice (tuple): A tuple of slice objects specifying the subset to read.
     
     Returns:
@@ -76,10 +81,7 @@ def readZarr (file_path):
     """
     zarr_file = ts.open({
         'driver': 'zarr',
-        'kvstore': {
-            'driver': 'file',
-            'path': file_path
-        },
+        'kvstore': kvstore_schema,
     }).result()
     
     # Read a subset of the data
