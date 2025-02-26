@@ -169,6 +169,29 @@ classdef Zarr < handle
             end
         end
 
+        function writeatt(obj, attname, attvalue)
+            info = obj.readinfo;
+            info.(attname) = attvalue;
+
+            % Encode the updated structure back to JSON
+            updatedJsonStr = jsonencode(info);
+
+            switch (info.node_type)
+                case "array"
+                    jsonfilename = fullfile(obj.Path, '.zarray');
+                case "group"
+                    jsonfilename = fullfile(obj.Path, '.zgroup');
+            end
+            % Write the updated JSON data back to the file
+            fid = fopen(jsonfilename, 'w');
+            if fid == -1
+                error('Could not open file for writing.');
+            end
+            fwrite(fid, updatedJsonStr, 'char');
+            fclose(fid);
+
+        end
+
     end
 
     methods (Access = protected)
