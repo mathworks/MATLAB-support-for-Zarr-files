@@ -1,4 +1,4 @@
-function zarrcreate(file_path, data_shape, varargin)
+function zarrcreate(file_path, data_shape, options)
 %ZARRCREATE Create Zarr dataset
 %   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) creates a Zarr
 %   array at the path specified by FILEPATH and of the dimensions specified
@@ -63,32 +63,21 @@ function zarrcreate(file_path, data_shape, varargin)
 
 %   Copyright 2025 The MathWorks, Inc.
 
+arguments
+    file_path {mustBeTextScalar, mustBeNonempty}
+    data_shape (1,:) double {mustBeNonnegative}
+    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = data_shape
+    options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
+    options.FillValue {mustBeNumeric} = []
+    options.Compression = []
+end
 
-p = inputParser;
-p.addRequired('file_path', ...
-    @(x) validateattributes(x,{'char', 'string'},{'nonempty', 'scalartext'},'','FILEPATH'));
-p.addRequired('data_shape', ...
-    @(x) validateattributes(x,{'double'},{'row','nonnegative'},'','SIZE'));
-
-addParameter(p, 'ChunkSize', data_shape, ...
-    @(x) validateattributes(x,{'double'},{'row','finite','nonnegative'},'','CHUNKSIZE'));
-
-addParameter(p, 'Datatype', 'double', ...
-    @(x) validateattributes(x,{'char', 'string'},{'nonempty', 'scalartext'},'','DATATYPE'));
-
-addParameter(p, 'FillValue', [], ...
-    @(x) validateattributes(x,{'numeric'},{'scalar'},'','FILLVALUE'));
-
-comp.id = 'null';
-addParameter(p, 'Compression', comp);
-
-p.parse(file_path, data_shape, varargin{:});
 Zarrobj = Zarr(file_path);
 
-dtype = p.Results.Datatype;
-chunk_shape = p.Results.ChunkSize;
-compression = p.Results.Compression;
-fillvalue = p.Results.FillValue;
+dtype = options.Datatype;
+chunk_shape = options.ChunkSize;
+compression = options.Compression;
+fillvalue = options.FillValue;
 
 Zarrobj.create(dtype, data_shape, chunk_shape, fillvalue, compression)
 

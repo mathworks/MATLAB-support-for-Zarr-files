@@ -116,7 +116,13 @@ classdef Zarr < handle
             obj.MatlabDtype = dtype;
             obj.Tstoredtype = obj.TstoredtypeMap(dtype);
             obj.Zarrdtype = obj.ZarrdtypeMap(dtype);
-            obj.Compression = obj.parseCompression(compression);
+
+            % If compression is empty, it means no compression
+            if isempty(compression)
+                obj.Compression = py.None;
+            else
+                obj.Compression = obj.parseCompression(compression);
+            end
 
             % Fill Value
             if (isempty(fillvalue))
@@ -187,8 +193,6 @@ classdef Zarr < handle
                     if ~isfield(compression, 'shuffle')
                         compression.shuffle = -1;
                     end
-                case "null" % No compression
-                    compression = py.None;
                 otherwise
                     error('Unsupported compression id: %s', compression.id);
             end

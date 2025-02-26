@@ -54,12 +54,12 @@ info.compressor
 file_path = 'test_files/comp_test/blosc1dset.zarr';
 data_shape = [10, 10];
 chunk_shape = [5, 5];
-compstruct.id = 'blosc';
+compstruct2.id = 'blosc';
 % compstruct.level = 4;
 
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
-    'Compression', compstruct);
+    'Compression', compstruct2);
 zarrwrite(file_path, data);
 dataR = zarrread(file_path);
 info = zarrinfo(file_path);
