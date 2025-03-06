@@ -114,7 +114,7 @@ To view documentation of individual function, type "help \<function_name>\". For
 ```
 >> help zarrcreate
 ```
-or refer to the documentation.txt file
+or refer to the documentation.md and examples.md files.
 For more examples, see the examples directory in the repository.
 
 
