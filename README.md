@@ -3,9 +3,10 @@
 [Zarr&reg;.](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, N-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large datasets efficiently.
 This contribution provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
-For complete documentation, refer to the documentation.txt file, or refer to the help section of each function.
+For complete documentation, refer to the documentation.md file, or refer to the help section of each function.
 
 ## Status
+- Only supports Zarr v2.
 - Supports reading and writing of Zarr arrays from local storage and Amazon S3.
 - Supports reading of Zarr metadata from local storage and Amazon S3.
 
@@ -72,7 +73,7 @@ data = zarrread(filepath)
 ```
 filepath = 'myZarrfiles\singleDset';
 data_shape = [10, 10];           % shape of the Zarr array to be written
-data = single(5*ones(10, 10));   % Data to be written
+data = 5*ones(10, 10);   % Data to be written
 
 zarrcreate (filepath, data_shape); % Create the Zarr array with default attributes
 zarrwrite(filepath, data);         % Write 'data' to the zarr array at 'file_path'

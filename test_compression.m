@@ -98,3 +98,21 @@ zarrwrite(file_path, data);
 dataR = zarrread(file_path);
 info = zarrinfo(file_path);
 info.compressor
+
+%%
+file_path = 'test_files/bloscDsetFV';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+
+compstruct.id = 'blosc';
+compstruct.cname = 'snappy';
+compstruct.clevel = 7;
+compstruct.shuffle = 0;
+compstruct.blocksize = 5;
+
+data = magic(10);
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape,...
+    'Compression', compstruct, 'FillValue', 42);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
+info = zarrinfo(file_path);

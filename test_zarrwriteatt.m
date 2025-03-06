@@ -21,6 +21,19 @@ zarrwriteatt(file_path, 'Att4', [10, 20, 30, 40]);
 
 info = zarrinfo(file_path)
 
+%%
+filepath = 'test_files/test_writeatt'; 
+Attname = 'pi';
+AttValue = 3.14;
+zarrwriteatt(filepath, Attname, AttValue);
+
+SpeedOfSound.value = 343;
+SpeedOfSound.unit = 'm/s';
+zarrwriteatt(filepath, 'SpeedOfSound', SpeedOfSound);
+
+info = zarrinfo(filepath);
+info.pi
+
 %% Test for remote (S3) files
 file_path = 's3://mtbgeneralpurpose/abaruah/Zarrtest_files/temp6';
 data_shape = [10, 10];
@@ -40,3 +53,4 @@ zarrwriteatt(file_path, 'Att3', temp);
 zarrwriteatt(file_path, 'Att4', [10, 20, 30, 40]);
 
 info = zarrinfo(file_path)
+
