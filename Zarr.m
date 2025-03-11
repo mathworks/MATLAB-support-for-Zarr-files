@@ -132,10 +132,10 @@ classdef Zarr < handle
             end
             
            
-            disp("While writing....");
-            disp(obj.MatlabDtype);
-            disp(obj.Tstoredtype);
-            disp(obj.Zarrdtype);
+            % disp("While writing....");
+            % disp(obj.MatlabDtype);
+            % disp(obj.Tstoredtype);
+            % disp(obj.Zarrdtype);
 
             obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
                 obj.Zarrdtype, obj.Compression, obj.FillValue);
