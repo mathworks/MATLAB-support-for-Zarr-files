@@ -1,88 +1,81 @@
 # Documentation
-This document highlights the syntaxes of the MATLAB functions for reading and writing Zarr files, and for reading and writing metadata from/to Zarr arrays and datasets.
+This document highlights the syntaxes of the MATLAB functions for reading and writing Zarr files, and for reading and writing metadata to and from Zarr arrays.
 
-Please find examples of the usage of these functions in the file examples.md.
+Please find examples of the usage of these functions in `examples.md`.
 
-Please refer to README.md for installation instructions and third party dependencies.
-* The use of this feature requires MATLAB release R2022b or newer.
-* Currently, only Zarr v2 is supported. Zarr v3 is not supported at the moment.
+Please refer to `README.md` for installation instructions and third party dependencies.
+* The use of this contribution requires MATLAB release R2022b or newer.
+* Currently, only Zarr v2 is supported.
 
-## `zarrcreate(FILEPATH, DATASHAPE, Param1, Value1, ...)`
-Create a Zarr array at the path specified by FILEPATH and of the dimensions specified
-by DATASHAPE. If FILEPATH is a full path name, all intermediate groups are created if 
-they don't already exist.
+## `zarrcreate(filepath,DATASHAPE,Name=Value)`
+Create a Zarr array at the path specified by `filepath` and of the dimensions specified
+by DATASHAPE. If `filepath` is a full path name, the function creates all intermediate groups that
+do not already exist.
    
-###	Parameter - Value Pairs
-       'Datatype'               - May be one of 'double', 'single', 'uint64',
-                                  'int64', 'uint32', 'int32', 'uint16', 'int16',  
-                                  'uint8', 'int8', or 'string'. Defaults to 'double'.
-       'ChunkSize'              - Defines chunking layout. Default is not chunked.
-       'FillValue'              - Defines the fill value for numeric datasets.
-                                  The default is no fill value, specified
-                                  as [].
-       'Compression'            - Primary compression codec used to
-                                  compress the Zarr array. The compression
-                                  needs to provided as a struct, with 'id'
-                                  being a required field. The required and
-                                  optional fields for compression struct
-                                  are as follows:
-                                  Required Fields:
-                                    'id'    - The accepted values are 'zlib', 'gzip', 
-                                              'blosc', 'bz2', or 'zstd'. 
-                                               for no compression.
-                                  Optional Fields:
-                                    'level' - The compression level to
-                                              use. Valid for all but
-                                              'blosc' compression.
-                                              compression. The default
-                                              value is 1. The accepted
-                                              integer values for different
-                                              compressions are:
-                                              zlib - [0, 9]
-                                              gzip - [0, 9]
-                                              bz2  - [1, 9]
-                                              zstd - [-131072, 22]
-                                    'cname' - Valid only for 'blosc'
-                                              compression. Specifies the compression
-                                              method used by 'blosc'. Accepted
-                                              values are: 
-                                             {'blosclz' | 'lz4' | 'lz4hc' | 'snappy' | 'zlib' | 'zstd' = 'lz4
-                                    'clevel' - Valid only for 'blosc'
-                                               compression. Specifies the blosc
-                                               compression level to use. Accepted
-                                               values are integers in the range 
-                                               [0, 9]. The default is 5.
-                                    'shuffle' - Valid only for 'blosc'
-                                                Options for rearranging of
-                                                the input data. The
-                                                accepted integer values are:
-                                                -1 - Automatic shuffle. Bit-wise shuffle if the element size is 1 byte, otherwise byte-wise shuffle.
-                                                 0 - No shuffle
-                                                 1 - Byte-wise shuffle
-                                                 2 - Bit-wise shuffle
-                                    'blocksize' - Valid only for 'blosc'
-                                                  Specifies the blosc
-                                                  blocksize. Accepted
-                                                  values are integer in
-                                                  the range [0 inf]. The
-                                                  default value is 0.
-												  
+###	Name - Value Pairs
+    Datatype                - One of "double", "single", "uint64",  
+                              "int64", "uint32", "int32", "uint16", "int16",  
+                              "uint8", "int8", or "string". Defaults to "double".  
+
+    ChunkSize               - Defines chunking layout specified as an array of integers. 
+                              Default is [], which specifies no chunking.  
+
+    FillValue               - Defines the Fill value for numeric datasets.  
+                              Default is [], which specifies no fill value.
+
+    Compression             - Primary compression codec used to
+                              compress the Zarr array, specified as a struct containing an "id" field. 
+                              The fields for the struct are as follows:
+                              "id"    - One of "zlib", "gzip", 
+                                        "blosc", "bz2", or "zstd". Use []
+                                        for no compression.
+                              Optional Fields:
+                                "level" - Compression level, specified as an integer. 
+                                          Valid for all but 'blosc' compression.
+                                          The default value is 1. The accepted
+                                          integer values for different
+                                          compressions are:
+                                          zlib - [0, 9]
+                                          gzip - [0, 9]
+                                          bz2  - [1, 9]
+                                          zstd - [-131072, 22]
+                                "cname" - Valid only for "blosc"
+                                          compression. Name of compression scheme for blosc 
+                                          compression, specified as one of these values:  
+                                          "blosclz", "lz4", "lz4hc", "snappy", "zlib", "zstd" = "lz4"
+                                "clevel" - Valid only for "blosc"
+                                            compression. Compression level for blosc compression, 
+                                            specified as an integer in the range [0, 9]. 
+                                            The default value is 5.
+                                "shuffle" - Valid only for "blosc" compression.
+                                            Method for rearranging input data for blosc compression, 
+                                            specified as one of these values:
+                                               -1 - Automatic shuffle. The function performs a bit-wise shuffle 
+                                                    if the element size is one byte and otherwise performs a byte-wise shuffle.
+                                                0 - No shuffle.
+                                                1 - Byte-wise shuffle.
+                                                2 - Bit-wise shuffle.
+                                            The default value is 0.
+                                "blocksize" - Valid only for "blosc" compression.
+                                              Block size for blosc compression, specified 
+                                              as a nonnegative integer or inf. The default value is 0.
+                      
 			
-## `zarrwrite(FILEPATH, DATA)`
-Write the MATLAB variable data (specified by DATA) at the path specified by FILEPATH.
+## `zarrwrite(filepath,DATA)`
+Write the MATLAB variable data (specified by DATA) to the path specified by `filepath`.
 The size of DATA must match the size of the Zarr array specified during creation.
 
-## `DATA = zarrread(FILEPATH)`
-Retrieves all the data from the Zarr array located at FILEPATH.
+## `DATA = zarrread(filepath)`
+Retrieve all the data from the Zarr array located at `filepath`.
 The datatype of DATA is the MATLAB equivalent of the Zarr datatype of the array
-located at FILEPATH.
+located at `filepath`.
 
-## `INFO = zarrinfo(FILEPATH)`
-Reads the metadata associated with a Zarr array or group located at FILEPATH, and returns the information in a structure INFO, whose fields are the names of the metdata keys. 
-If FILEPATH is a Zarr array (has a valid `.zarray` file), the value of the field `node_type` is "array". If FILEPATH is a Zarr group (has a valid `.zgroup`), the value of the field `node_type` is "group".
-Specifying the FILEPATH as a group (intermediate directory) with no `.zgroup` file will throw an error.
+## `INFO = zarrinfo(filepath)`
+Read the metadata associated with a Zarr array or group located at `filepath` and return the information in a structure INFO, whose fields are the names of the metdata keys. 
+If `filepath` is a Zarr array (has a valid `.zarray` file), the value of `node_type` is "array"; if `filepath` is a Zarr group (has a valid `.zgroup` file), the value of the field `node_type` is "group".
+If you specify the `filepath` as a group (intermediate directory) with no `.zgroup` file, then the function will issue an error.
 
-## `zarrwriteatt(FILE_PATH,ATTNAME,ATTVALUE)`
-writes the attribute named ATTNAME with the value ATTVALUE to the Zarr array or group located at FILE_PATH. 
-The attribute is recorded only if a .zarray or .zgroup file already exists at the location specified by FILE_PATH.
-Otherwise, an error is thrown.
+## `zarrwriteatt(filepath,ATTNAME,ATTVALUE)`
+Write the attribute named ATTNAME with the value ATTVALUE to the Zarr array or group located at `filepath`. 
+The attribute is written only if a .zarray or .zgroup file exists at the location specified by `filepath`.
+Otherwise, the function issues an error.
