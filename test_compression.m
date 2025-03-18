@@ -36,11 +36,25 @@ info = zarrinfo(file_path);
 info.compressor
 
 
-%% Test 3 - testing 'null' compression
+%% Test 3 - testing 'null' compression - NEGATIVE
 file_path = 'test_files/comp_test/nullcompdset.zarr';
 data_shape = [10, 10];
 chunk_shape = [5, 5];
 compstruct.id = 'null';
+
+data = single(5*ones(10, 10));
+zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
+    'Compression', compstruct);
+zarrwrite(file_path, data);
+dataR = zarrread(file_path);
+info = zarrinfo(file_path);
+info.compressor
+
+%% Testing compression none ([])
+file_path = 'test_files/comp_test/nocompdset.zarr';
+data_shape = [10, 10];
+chunk_shape = [5, 5];
+compstruct = [];
 
 data = single(5*ones(10, 10));
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...

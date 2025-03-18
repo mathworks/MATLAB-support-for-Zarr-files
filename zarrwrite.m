@@ -1,4 +1,4 @@
-function zarrwrite(file_path, data)
+function zarrwrite(filepath, data)
 %ZARRWRITE Write to a zarr array
 %   ZARRWRITE(FILEPATH, DATA) writes the MATLAB variable data at the path
 %   specified by FILEPATH
@@ -6,14 +6,17 @@ function zarrwrite(file_path, data)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    file_path {mustBeTextScalar, mustBeNonzeroLengthText}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
     data
 end
 
+% If the location does not exist, throw an error.
+if ~isfolder(filepath)
+    error("Invalid location.")
+end
 
-Zarrobj = Zarr(file_path);
-% data_shape = size(data);
-% dtype = class(data);
+
+Zarrobj = Zarr(filepath);
 Zarrobj.write(data)
 
 end

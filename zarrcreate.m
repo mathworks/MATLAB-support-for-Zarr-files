@@ -1,4 +1,4 @@
-function zarrcreate(file_path, data_shape, options)
+function zarrcreate(filepath, data_shape, options)
 %ZARRCREATE Create Zarr dataset
 %   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) creates a Zarr
 %   array at the path specified by FILEPATH and of the dimensions specified
@@ -64,15 +64,15 @@ function zarrcreate(file_path, data_shape, options)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    file_path {mustBeTextScalar, mustBeNonempty}
-    data_shape (1,:) double {mustBeNonnegative}
+    filepath {mustBeTextScalar, mustBeNonempty}
+    data_shape (1,:) double {mustBeFinite, mustBeNonnegative}
     options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = data_shape
     options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
     options.FillValue {mustBeNumeric} = []
-    options.Compression = []
+    options.Compression {mustBeStructOrEmpty} = []
 end
 
-Zarrobj = Zarr(file_path);
+Zarrobj = Zarr(filepath);
 
 dtype = options.Datatype;
 chunk_shape = options.ChunkSize;
@@ -81,5 +81,11 @@ fillvalue = options.FillValue;
 
 Zarrobj.create(dtype, data_shape, chunk_shape, fillvalue, compression)
 
+end
 
+% Input validation for compresion
+function mustBeStructOrEmpty(compression)
+if ~(isstruct(compression) || isempty(compression))
+    error("Compression must be a struct or empty.");
+end
 end

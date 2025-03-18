@@ -1,4 +1,4 @@
-function info = zarrinfo(file_path)
+function info = zarrinfo(filepath)
 %ZARRINFO Retrieve info about the Zarr array
 %   INFO = ZARRINFO(FILEPATH) reads the metadata associated with a Zarr array or
 %   group located at FILEPATH, and returns the information in a structure
@@ -9,9 +9,14 @@ function info = zarrinfo(file_path)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    file_path {mustBeTextScalar, mustBeNonzeroLengthText}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
 end
 
-Zarrobj = Zarr(file_path);
+% If the location does not exist, throw an error.
+if ~isfolder(filepath)
+    error("Invalid location.")
+end
+
+Zarrobj = Zarr(filepath);
 info = Zarrobj.readinfo;
 end

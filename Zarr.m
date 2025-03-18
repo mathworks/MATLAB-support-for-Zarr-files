@@ -61,7 +61,7 @@ classdef Zarr < handle
                 insert(py.sys.path,int32(0),modpath);
             end
             
-            % clear classes
+            % Load the Python module
             mod = py.importlib.import_module('ZarrPy');
             py.importlib.reload(mod);
 
@@ -79,11 +79,7 @@ classdef Zarr < handle
             
         end
 
-        % function delete(obj)
-        %     disp("In Destructor");
-        %     % pyenv(ExecutionMode="InProcess");
-        % end
-
+        
         function out = read(obj)
             % Function to read the Zarr array
 
@@ -100,11 +96,6 @@ classdef Zarr < handle
 
             % Convert the numpy array to MATLAB array
             out = feval(obj.MatlabDtype, data);
-
-            disp("While reading....");
-            disp(obj.MatlabDtype);
-            disp(obj.Tstoredtype);
-            disp(obj.Zarrdtype);
             
         end
 
@@ -131,20 +122,19 @@ classdef Zarr < handle
                 obj.FillValue = feval(obj.MatlabDtype, fillvalue);
             end
             
-           
-            % disp("While writing....");
-            % disp(obj.MatlabDtype);
-            % disp(obj.Tstoredtype);
-            % disp(obj.Zarrdtype);
-
             obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
-                obj.Zarrdtype, obj.Compression, obj.FillValue);
+                 obj.Zarrdtype, obj.Compression, obj.FillValue);
 
         end
 
         function write(obj, data)
             % Function to write to the Zarr array
 
+            info = obj.readinfo;
+            datasize = size(data);
+            if ~isequal(info.shape(:), datasize(:))
+                error("Size of the data to be written does not match.");
+            end
             py.ZarrPy.writeZarr(obj.KVstoreschema, data);
 
         end
@@ -173,15 +163,18 @@ classdef Zarr < handle
             info = obj.readinfo;
             info.(attname) = attvalue;
 
-            % Encode the updated structure back to JSON
-            updatedJsonStr = jsonencode(info);
-
             switch (info.node_type)
                 case "array"
                     jsonfilename = fullfile(obj.Path, '.zarray');
                 case "group"
                     jsonfilename = fullfile(obj.Path, '.zgroup');
             end
+
+            info = rmfield(info, 'node_type');
+
+            % Encode the updated structure back to JSON
+            updatedJsonStr = jsonencode(info);
+
             % Write the updated JSON data back to the file
             fid = fopen(jsonfilename, 'w');
             if fid == -1
