@@ -1,61 +1,61 @@
 # Examples
 
-### Reading a Zarr array
+### Read a Zarr array
 ```
 filepath = '\group1\dset1';
 data = zarrread(filepath)
 ```
 
-### Creating a Zarr array and write to it with default Name-Value pairs
+### Create and write to a Zarr array
 ```
-filepath = 'myZarrfiles\singleDset';
-data_shape = [10, 10];           % shape of the Zarr array to be written
-data = 5*ones(10, 10);   % Data to be written
+filepath   = 'myZarrfiles\singleDset';
+data_shape = [10,10];              % shape of the Zarr array to be written
+data       = 5*ones(10,10);        % Data to be written
 
-zarrcreate (filepath, data_shape); % Create the Zarr array with default attributes
-zarrwrite(filepath, data);         % Write 'data' to the zarr array at 'file_path' as a double array (default)
+zarrcreate (filepath, data_shape)  % Create the Zarr array with default attributes
+zarrwrite(filepath, data)          % Write 'data' to the zarr array at 'file_path' as a double array (default)
 ```
 
-### Creating a Zarr array and write data to it using zlib compression with non default chunking.
+### Create a Zarr array and write data to it using zlib compression with non-default chunking.
 ```
 filepath = 'myZarrfiles\singleZlibDset';
 
 % Size of the data
-data_shape = [10, 10];
+data_shape = [10,10];
 % Chunk size
-chunk_shape = [5, 5];
+chunk_shape = [5,5];
 % Sample data to be written
-data = single(5*ones(10, 10));
+data = single(5*ones(10,10));
 
 % Set the compression ID and compression level
-compress.id = 'zlib';
+compress.id = "zlib";
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
-	'Compression', compress);
+zarrcreate(filepath, data_shape, "ChunkSize", chunk_shape, "DataType", "single", ...
+	"Compression", compress)
 	
 % Write to the Zarr array
-zarrwrite(filepath, data);
+zarrwrite(filepath, data)
 ```
 
 
-### Creating a Zarr array and write data to it using blosc compression with non default fill value.
+### Create a Zarr array and write data to it using blosc compression with non-default fill value
 ```
-file_path = 'bloscDsetFV';
-data_shape = [10, 10];
-chunk_shape = [5, 5];
+file_path = "bloscDsetFV";
+data_shape = [10,10];
+chunk_shape = [5,5];
 
-compstruct.id = 'blosc';
+compstruct.id = "blosc";
 compstruct.cname = 'snappy';
 compstruct.clevel = 7;
 compstruct.shuffle = 0;
 compstruct.blocksize = 5;
 
 data = magic(10);
-zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape,...
-    'Compression', compstruct, 'FillValue', 42);
-zarrwrite(file_path, data);
+zarrcreate(file_path, data_shape, "ChunkSize", chunk_shape,...
+    "Compression", compstruct, "FillValue", 42)
+zarrwrite(file_path, data)
 info = zarrinfo(file_path);
 
 >> info.fill_value
@@ -88,15 +88,15 @@ info = zarrinfo(filepath);
 ### Write a key-value pair as metadata to a Zarr array
 ```
 % If the location pointed by 'filepath' does not have a '.zarray'
-% or '.zgroup' file, an error will be thrown.
+% or '.zgroup' file, the function issues an error.
 filepath = '\group1\dset1'; 
 Attname = 'pi';
 AttValue = 3.14;
-zarrwriteatt(filepath, Attname, Attvalue);
+zarrwriteatt(filepath, Attname, Attvalue)
 
 SpeedOfSound.value = 343;
 SpeedOfSound.unit = 'm/s';
-zarrwriteatt(filepath, 'SpeedOfSound', SpeedOfSound);
+zarrwriteatt(filepath, 'SpeedOfSound', SpeedOfSound)
 
 info = zarrread(filepath);
 
