@@ -18,20 +18,7 @@ def createZarr(kvstore_schema, data_shape, chunk_shape, tstoreDataType, zarrData
     - tstoreDataType (str): The data type of the data in the Tensorstore.
     - zarrDataType (str): The data type of the data in the Zarr file.
     - compressor (dictionary): The compression to be used for the Zarr array.
-    """
-    print(type(compressor))
-    print(compressor)
-   
-    kvstore_schemaS3 = {
-        'driver': 's3',
-        'bucket': 'mtbgeneralpurpose',  # Example bucket name
-        'path': 'abaruah/test_files/temp3',
-    }
-    """
-    kvstore_schemaFile = {
-            'driver': 'file',
-            'path': file_path
-    }
+    - fillvalue (numeric scalar): The fill value to be used for the Zarr array.
     """
     schema = {
         'driver': 'zarr',

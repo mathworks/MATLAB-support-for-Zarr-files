@@ -1,10 +1,19 @@
-function data = zarrread(file_path)
+function data = zarrread(filepath)
 %ZARRREAD Read data from Zarr array
 %   DATA = ZARRREAD(FILEPATH) retrieves all the data from the Zarr array
 %   located at FILEPATH.
 
 %   Copyright 2025 The MathWorks, Inc.
 
-Zarrobj = Zarr(file_path);
+arguments
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
+end
+
+% If the location does not exist, throw an error.
+if ~isfolder(filepath)
+    error("Invalid location.")
+end
+
+Zarrobj = Zarr(filepath);
 data = Zarrobj.read;
 end
