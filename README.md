@@ -1,20 +1,20 @@
 # MATLAB Support for Zarr files
 
-[Zarr&reg;.](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, N-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large datasets efficiently.
+[Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large datasets efficiently.
 This contribution provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
-For complete documentation, refer to the documentation.md file, or refer to the help section of each function.
+For complete documentation, refer to the `documentation.md` file, or refer to the help section of each function.
 
 ## Status
 - Only supports Zarr v2.
 - Supports reading and writing of Zarr arrays from local storage and Amazon S3.
-- Supports reading of Zarr metadata from local storage and Amazon S3.
+- Supports reading and writing of Zarr metadata from local storage and Amazon S3.
 
 ## Setup
-To use this contribution, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html)
+To use this contribution, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html).
 For example, 
 ```
->> addpath('C:\username\support-Zarr-in-MATLAB\')
+>> addpath("C:\username\support-Zarr-in-MATLAB\")
 ```
 
 ### MathWorks Products (https://www.mathworks.com)
@@ -22,7 +22,6 @@ For example,
 Requires MATLAB release R2022b or newer
 
 ### 3rd Party Products:
-3p:
 - Python 
 - [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
 - [numpy](https://github.com/numpy/numpy) - v2.2.2 or newer
@@ -49,39 +48,39 @@ ans =
            Status: NotLoaded
     ExecutionMode: OutOfProcess
 ```
-If the value of the Version property is empty, then you do not have a supported version available.
+If the value of the `Version` property is empty, then you do not have a supported version available.
 
 Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy).
 
 ## Getting Started 
 1. Clone the github repo to your local drive.
-2. Start MATLAB
-3. Add the parent cloned directory to your MATLAB path
+2. Start MATLAB.
+3. Add the parent cloned directory to your MATLAB path:
 ```
->> addpath ('C:\username\support-Zarr-in-MATLAB\')
+>> addpath ("C:\<username>\support-Zarr-in-MATLAB\")
 ```
 
 ## Examples
 
-### Reading a Zarr array
+### Read a Zarr array
 ```
-filepath = '\group1\dset1';
-data = zarrread(filepath)
-```
-
-### Creating a Zarr array and write to it with default Name-Value pairs
-```
-filepath = 'myZarrfiles\singleDset';
-data_shape = [10, 10];           % shape of the Zarr array to be written
-data = 5*ones(10, 10);   % Data to be written
-
-zarrcreate (filepath, data_shape); % Create the Zarr array with default attributes
-zarrwrite(filepath, data);         % Write 'data' to the zarr array at 'file_path'
+filepath = "\group1\dset1";
+data     = zarrread(filepath);
 ```
 
-### Creating a Zarr array and write data to it using zlib compression with non default chunking.
+### Create and write to a Zarr array
 ```
-filepath = 'myZarrfiles\singleZlibDset';
+filepath   = "myZarrfiles\singleDset";
+data_shape = [10,10];              % shape of the Zarr array to be written
+data       = 5*ones(10,10);        % Data to be written
+
+zarrcreate (filepath, data_shape)  % Create the Zarr array with default attributes
+zarrwrite(filepath, data)          % Write data to the Zarr array
+```
+
+### Create a Zarr array and write data to it using zlib compression with non-default chunking
+```
+filepath = "myZarrfiles\singleZlibDset";
 
 % Size of the data
 data_shape = [10, 10];
@@ -95,33 +94,33 @@ compress.id = 'zlib';
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
-	'Compression', compress);
+zarrcreate(filepath, data_shape, "ChunkSize", chunk_shape, "DataType", "single", ...
+	"Compression", compress)
 	
 % Write to the Zarr array
-zarrwrite(filepath, data);
+zarrwrite(filepath, data)
 ```
 
 
 ### Read the metadata from a Zarr array
 ```
-filepath = '\group1\dset1';
+filepath = "\group1\dset1";
 info = zarrinfo(filepath);
 ```
 
 ## Help
-To view documentation of individual function, type "help \<function_name>\". For example,
+To view documentation of a function, type `help \<function_name>\`. For example,
 ```
 >> help zarrcreate
 ```
-or refer to the documentation.md and examples.md files.
-For more examples, see the examples directory in the repository.
+or refer to the `documentation.md` and `examples.md` files.
+For more examples, see the `examples` directory in the repository.
 
 
 ## License
 <!--- Make sure you have a License.txt within your Repo --->
 
-The license is available in the License.txt file in this GitHub repository.
+The license is available in the `License.txt` file in this GitHub repository.
 
 ## Community Support
 [MATLAB Central](https://www.mathworks.com/matlabcentral)
