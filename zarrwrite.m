@@ -10,8 +10,8 @@ arguments
     data
 end
 
-% If the location does not exist, throw an error.
-if ~isfolder(filepath)
+% If the Zarr array has not been created yet, throw an error.
+if ~isfile(fullfile(filepath, '.zarray'))
     error("Invalid location.")
 end
 

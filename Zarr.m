@@ -27,8 +27,8 @@ classdef Zarr < handle
     end
 
     properties (Dependent, Access = protected)
-        TstoredtypeMap
-        ZarrdtypeMap 
+        TstoredtypeMap        % hash map from MATLAB datatypes to Tensorstore datatypes
+        ZarrdtypeMap          % hash map from MATLAB datatypes to Zarr datatypes.
     end
 
 
@@ -48,12 +48,6 @@ classdef Zarr < handle
             
         function obj = Zarr(path)
             % Load the Python library and create the Zarr object
-            
-            % Python environment out of process
-            % pe = pyenv;
-            % if pe.Status == 'NotLoaded'
-            %     pyenv(ExecutionMode="OutOfProcess");
-            % end
             
             % Python module setup and bootstrapping to MATLAB
             modpath = [pwd '\PythonModule'];
@@ -89,8 +83,8 @@ classdef Zarr < handle
 
             % Extract the corresponding MATLAB datatype key from the
             % dictionary
-            P = entries(obj.TstoredtypeMap);
-            obj.MatlabDtype = P.Key(P.Value == obj.Tstoredtype);
+            TstoredtypeTable = entries(obj.TstoredtypeMap);
+            obj.MatlabDtype = TstoredtypeTable.Key(TstoredtypeTable.Value == obj.Tstoredtype);
 
             obj.Zarrdtype = obj.ZarrdtypeMap(obj.MatlabDtype);
 
@@ -122,6 +116,8 @@ classdef Zarr < handle
                 obj.FillValue = feval(obj.MatlabDtype, fillvalue);
             end
             
+            % The Python function returns the Tensorstore schema, but we
+            % do not use it for anything at the moment.
             obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
                  obj.Zarrdtype, obj.Compression, obj.FillValue);
 
@@ -130,6 +126,7 @@ classdef Zarr < handle
         function write(obj, data)
             % Function to write to the Zarr array
 
+            % Read the Array info
             info = obj.readinfo;
             datasize = size(data);
             if ~isequal(info.shape(:), datasize(:))
@@ -143,23 +140,29 @@ classdef Zarr < handle
             % Function to read the Zarr metadata
 
             file_path = obj.Path;
+
+            % If the location is a Zarr array
             if isfile(fullfile(file_path, '.zarray'))
                 infodata = fileread(fullfile(file_path, '.zarray'));
                 out = jsondecode(infodata);
                 out.node_type = 'array';
+            % If the location is a Zarr group    
             elseif isfile(fullfile(file_path, '.zgroup'))
                 infodata = fileread(fullfile(file_path, '.zgroup'));
                 out = jsondecode(infodata);
                 out.node_type = 'group';
+            % Supporting zarr.json for zarr v3 (low hanging fruit for future)
             elseif isfile(fullfile(file_path, 'zarr.json'))
                 infodata = fileread(fullfile(file_path, 'zarr.json'));
                 out = jsondecode(infodata);
+            % Else, error if it is not an array or group
             else
                 error("Not a valid Zarr array or group");
             end
         end
 
         function writeatt(obj, attname, attvalue)
+            % Function to write attributes to Zarr array or group
             info = obj.readinfo;
             info.(attname) = attvalue;
 
@@ -170,6 +173,9 @@ classdef Zarr < handle
                     jsonfilename = fullfile(obj.Path, '.zgroup');
             end
 
+            % 'node_type' was synthetically added by obj.readinfo. So,
+            % remove it from the info struct before writing it back to the
+            % JSON file.
             info = rmfield(info, 'node_type');
 
             % Encode the updated structure back to JSON
@@ -191,15 +197,18 @@ classdef Zarr < handle
         function compression = parseCompression (~,compression)
             % Helper function to validate and parse the compression struct.
 
+            % The compression struct should have an 'id' field.
             if ~isfield(compression, 'id')
                 error("Compression id is required");
             end
             switch(compression.id)
                 case {"zlib", "gzip", "bz2", "zstd"}
+                    % Only 'level' optional field for these compressions
                     if ~isfield(compression, 'level')
                         compression.level = 1;
                     end
                 case "blosc"
+                    % Fields for blosc compression
                     if ~isfield(compression, 'cname')
                         compression.cname = 'lz4';
                     end
@@ -216,7 +225,10 @@ classdef Zarr < handle
 
         function [bucketName, objectPath] = extractS3BucketNameAndPath(~,url)
             % Helper function to extract S3 bucket name and path to file
+            % bucketName and objectPath are needed to fill the KVstore hash
+            % map for tensorstore.
             % Define the regular expression patterns for matching S3 URLs and URIs
+            % S3 URLs can have 3 syntaxes.
             pattern1 = '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$';  % Format 1
             pattern2 = '^https://s3\.amazonaws\.com/([^/]+)/(.+)$';   % Format 2
             pattern3 = '^s3://([^/]+)/(.+)$';                         % Format 3
