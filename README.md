@@ -64,7 +64,7 @@ Once Python is installed, install the Python packages [tensorstore](https://gith
 
 ### Read a Zarr array
 ```
-filepath = "\group1\dset1";
+filepath = "group1\dset1";
 data     = zarrread(filepath);
 ```
 
@@ -94,8 +94,8 @@ compress.id = 'zlib';
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_shape, "ChunkSize", chunk_shape, "DataType", "single", ...
-	"Compression", compress)
+zarrcreate(filepath, data_shape, ChunkSize=chunk_shape, DataType="single", ...
+	Compression=compress)
 	
 % Write to the Zarr array
 zarrwrite(filepath, data)
