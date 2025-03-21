@@ -2,7 +2,7 @@
 
 ### Read a Zarr array
 ```
-filepath = '\group1\dset1';
+filepath = 'group1\dset1';
 data = zarrread(filepath)
 ```
 
@@ -32,8 +32,8 @@ compress.id = "zlib";
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_shape, "ChunkSize", chunk_shape, "DataType", "single", ...
-	"Compression", compress)
+zarrcreate(filepath, data_shape, ChunkSize=chunk_shape, DataType="single", ...
+	Compression=compress)
 	
 % Write to the Zarr array
 zarrwrite(filepath, data)
@@ -53,8 +53,8 @@ compstruct.shuffle = 0;
 compstruct.blocksize = 5;
 
 data = magic(10);
-zarrcreate(file_path, data_shape, "ChunkSize", chunk_shape,...
-    "Compression", compstruct, "FillValue", 42)
+zarrcreate(file_path, data_shape, ChunkSize=chunk_shape,...
+    Compression=compstruct, FillValue=42)
 zarrwrite(file_path, data)
 info = zarrinfo(file_path);
 
@@ -80,7 +80,7 @@ ans =
 
 ### Read the metadata from a Zarr array
 ```
-filepath = '\group1\dset1';
+filepath = 'group1\dset1';
 info = zarrinfo(filepath);
 ```
 
@@ -89,7 +89,7 @@ info = zarrinfo(filepath);
 ```
 % If the location pointed by 'filepath' does not have a '.zarray'
 % or '.zgroup' file, the function issues an error.
-filepath = '\group1\dset1'; 
+filepath = 'group1\dset1'; 
 Attname = 'pi';
 AttValue = 3.14;
 zarrwriteatt(filepath, Attname, Attvalue)

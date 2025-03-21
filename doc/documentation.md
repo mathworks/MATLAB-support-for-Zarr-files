@@ -27,8 +27,8 @@ do not already exist.
                               compress the Zarr array, specified as a struct containing an "id" field. 
                               The fields for the struct are as follows:
                               "id"    - One of "zlib", "gzip", 
-                                        "blosc", "bz2", or "zstd". Use []
-                                        for no compression.
+                                        "blosc", "bz2", "zstd" or []. 
+                                        Use [] for no compression.
                               Optional Fields:
                                 "level" - Compression level, specified as an integer. 
                                           Valid for all but 'blosc' compression.
@@ -42,11 +42,12 @@ do not already exist.
                                 "cname" - Valid only for "blosc"
                                           compression. Name of compression scheme for blosc 
                                           compression, specified as one of these values:  
-                                          "blosclz", "lz4", "lz4hc", "snappy", "zlib", "zstd" = "lz4"
+                                          "blosclz", "lz4", "lz4hc", "snappy", "zlib", "zstd".
+                                          "zstd" uses the same scheme as "lz4".
                                 "clevel" - Valid only for "blosc"
-                                            compression. Compression level for blosc compression, 
-                                            specified as an integer in the range [0, 9]. 
-                                            The default value is 5.
+                                           compression. Compression level for blosc compression, 
+                                           specified as an integer in the range [0, 9]. 
+                                           The default value is 5.
                                 "shuffle" - Valid only for "blosc" compression.
                                             Method for rearranging input data for blosc compression, 
                                             specified as one of these values:
