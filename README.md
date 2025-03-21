@@ -14,7 +14,7 @@ For complete documentation, refer to the `documentation.md` file, or refer to th
 To use this contribution, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html).
 For example, 
 ```
->> addpath("C:\username\support-Zarr-in-MATLAB\")
+>> addpath("C:\<username>\support-Zarr-in-MATLAB\")
 ```
 
 ### MathWorks Products (https://www.mathworks.com)
@@ -22,9 +22,12 @@ For example,
 Requires MATLAB release R2022b or newer
 
 ### 3rd Party Products:
-- Python 
+- Python - v3.10 or newer
 - [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
-- [numpy](https://github.com/numpy/numpy) - v2.2.2 or newer
+- [numpy](https://github.com/numpy/numpy) - v1.26.4 or newer
+
+See the link [here](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
+
 
 ## Installation
 Before proceeding, please ensure that you have a supported version of Python installed on your machine.
@@ -42,9 +45,9 @@ ans =
   PythonEnvironment with properties:
 
           Version: "3.11"
-       Executable: "C:\Users\aname\AppData\Local\Programs\Python\Python311\pythonw.exe"
-          Library: "C:\Users\aname\AppData\Local\Programs\Python\Python311\python311.dll"
-             Home: "C:\Users\aname\AppData\Local\Programs\Python\Python311"
+       Executable: "C:\Users\<username>\AppData\Local\Programs\Python\Python311\pythonw.exe"
+          Library: "C:\Users\<username>\AppData\Local\Programs\Python\Python311\python311.dll"
+             Home: "C:\Users\<username>\AppData\Local\Programs\Python\Python311"
            Status: NotLoaded
     ExecutionMode: OutOfProcess
 ```
@@ -104,7 +107,7 @@ zarrwrite(filepath, data)
 
 ### Read the metadata from a Zarr array
 ```
-filepath = "\group1\dset1";
+filepath = "group1\dset1";
 info = zarrinfo(filepath);
 ```
 
