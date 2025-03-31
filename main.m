@@ -86,3 +86,8 @@ dataR = zarrread(file_path);
 
 isequal(data, dataR)
 
+%%
+filepath   = "Y:\abaruah\Features\SupportZarrInGithub\Github\MATLAB-support-for-Zarr-files\test_files\singleDset5";
+data_shape = [10,10];              % shape of the Zarr array to be written
+data       = 5*ones(10,10); 
+zarrcreate(filepath, data_shape)
