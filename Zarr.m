@@ -55,9 +55,14 @@ classdef Zarr < handle
                 insert(py.sys.path,int32(0),modpath);
             end
             
-            % Load the Python module
-            mod = py.importlib.import_module('ZarrPy');
-            py.importlib.reload(mod);
+            % Check if the ZarrPy module is loaded already. If not, load
+            % it.
+            sys = py.importlib.import_module('sys');
+            LoadedModules = dictionary(sys.modules);
+            if ~LoadedModules.isKey("ZarrPy")
+                mod = py.importlib.import_module('ZarrPy');
+                py.importlib.reload(mod);
+            end
 
             obj.Path = path;
             isRemote = matlab.io.internal.vfs.validators.hasIriPrefix(obj.Path);
@@ -118,8 +123,11 @@ classdef Zarr < handle
             
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
-            obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, obj.DsetSize, obj.ChunkSize, obj.Tstoredtype, ...
+            obj.TstoreSchema = py.ZarrPy.createZarr(obj.KVstoreschema, py.numpy.array(obj.DsetSize),...
+                py.numpy.array(obj.ChunkSize), obj.Tstoredtype, ...
                  obj.Zarrdtype, obj.Compression, obj.FillValue);
+            %py.ZarrPy.temp(py.numpy.array([1, 1]), py.numpy.array([2, 2]))
+
 
         end
 

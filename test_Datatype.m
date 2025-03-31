@@ -6,7 +6,7 @@ data = single(5*ones(10, 10));
 comp.id = 'null';
 comp.level = 5;
 zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single',...
-    'Compression', comp);
+    'Compression', []);
 zarrwrite(file_path, data);
 dataR = zarrread(file_path);
 info = zarrinfo(file_path)
