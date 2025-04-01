@@ -8,7 +8,9 @@ zarrcreate(file_path, data_shape, 'ChunkSize', chunk_shape, 'DataType', 'single'
     'Compression', comp);
 zarrwrite(file_path, data);
 dataR = zarrread(file_path);
+tic
 info = zarrinfo(file_path)
+toc
 info.compressor
 
 
