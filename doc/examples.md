@@ -1,13 +1,13 @@
 # Examples
 
 ### Read a Zarr array
-```
+``` MATLAB
 filepath = 'group1\dset1';
 data = zarrread(filepath)
 ```
 
 ### Create and write to a Zarr array
-```
+``` MATLAB
 filepath   = 'myZarrfiles\singleDset';
 data_shape = [10,10];              % shape of the Zarr array to be written
 data       = 5*ones(10,10);        % Data to be written
@@ -17,7 +17,7 @@ zarrwrite(filepath, data)          % Write 'data' to the zarr array at 'file_pat
 ```
 
 ### Create a Zarr array and write data to it using zlib compression with non-default chunking.
-```
+``` MATLAB
 filepath = 'myZarrfiles\singleZlibDset';
 
 % Size of the data
@@ -41,7 +41,7 @@ zarrwrite(filepath, data)
 
 
 ### Create a Zarr array and write data to it using blosc compression with non-default fill value
-```
+``` MATLAB
 file_path = "bloscDsetFV";
 data_shape = [10,10];
 chunk_shape = [5,5];
@@ -79,14 +79,14 @@ ans =
 
 
 ### Read the metadata from a Zarr array
-```
+``` MATLAB
 filepath = 'group1\dset1';
 info = zarrinfo(filepath);
 ```
 
 
 ### Write a key-value pair as metadata to a Zarr array
-```
+``` MATLAB
 % If the location pointed by 'filepath' does not have a '.zarray'
 % or '.zgroup' file, the function issues an error.
 filepath = 'group1\dset1'; 
