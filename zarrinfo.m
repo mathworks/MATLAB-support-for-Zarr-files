@@ -1,4 +1,4 @@
-function info = zarrinfo(filepath)
+function infoStruct = zarrinfo(filepath)
 %ZARRINFO Retrieve info about the Zarr array
 %   INFO = ZARRINFO(FILEPATH) reads the metadata associated with a Zarr array or
 %   group located at FILEPATH, and returns the information in a structure
@@ -17,6 +17,22 @@ if ~isfolder(filepath)
     error("Invalid location.")
 end
 
-Zarrobj = Zarr(filepath);
-info = Zarrobj.readinfo;
+% If the location is a Zarr array
+if isfile(fullfile(filepath, '.zarray'))
+    infoStr = fileread(fullfile(filepath, '.zarray'));
+    infoStruct = jsondecode(infoStr);
+    infoStruct.node_type = 'array';
+% If the location is a Zarr group    
+elseif isfile(fullfile(filepath, '.zgroup'))
+    infoStr = fileread(fullfile(filepath, '.zgroup'));
+    infoStruct = jsondecode(infoStr);
+    infoStruct.node_type = 'group';
+% Supporting zarr.json for zarr v3 (low hanging fruit for future)
+elseif isfile(fullfile(filepath, 'zarr.json'))
+    infoStr = fileread(fullfile(filepath, 'zarr.json'));
+    infoStruct = jsondecode(infoStr);
+% Else, error if it is not an array or group
+else
+    error("Not a valid Zarr array or group");
+end
 end
