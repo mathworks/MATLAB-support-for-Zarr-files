@@ -18,7 +18,30 @@ if ~isfolder(filepath)
     error("Invalid location.")
 end
 
-Zarrobj = Zarr(filepath);
-Zarrobj.writeatt(attname, attvalue);
+info = zarrinfo(filepath);
+info.(attname) = attvalue;
+
+switch (info.node_type)
+    case "array"
+        jsonfilename = fullfile(filepath, '.zarray');
+    case "group"
+        jsonfilename = fullfile(filepath, '.zgroup');
+end
+
+% 'node_type' was synthetically added by zarrinfo. So,
+% remove it from the info struct before writing it back to the
+% JSON file.
+info = rmfield(info, 'node_type');
+
+% Encode the updated structure back to JSON
+updatedJsonStr = jsonencode(info);
+
+% Write the updated JSON data back to the file
+fid = fopen(jsonfilename, 'w');
+if fid == -1
+    error(['Could not open file ''' filepath ''' for writing.']);
+end
+fwrite(fid, updatedJsonStr, 'char');
+fclose(fid);
 
 end

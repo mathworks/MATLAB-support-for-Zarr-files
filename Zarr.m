@@ -38,7 +38,9 @@ classdef Zarr < handle
             % Load the Python library
             
             % Python module setup and bootstrapping to MATLAB
-            modpath = fullfile(pwd, 'PythonModule');
+            fullPath = mfilename('fullpath');
+            zarrDirectory = fileparts(fullPath);
+            modpath = fullfile(zarrDirectory, 'PythonModule');
             % Add the current folder to the Python search path
             if count(py.sys.path,modpath) == 0
                 insert(py.sys.path,int32(0),modpath);
@@ -142,67 +144,13 @@ classdef Zarr < handle
             % Function to write to the Zarr array
 
             % Read the Array info
-            info = obj.readinfo;
+            info = zarrinfo(obj.Path);
             datasize = size(data);
             if ~isequal(info.shape, datasize(:))
                 error("Size of the data to be written does not match.");
             end
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
         end
-
-        function infoStruct = readinfo(obj)
-            % Function to read the Zarr metadata
-
-            filepath = obj.Path;
-
-            % If the location is a Zarr array
-            if isfile(fullfile(filepath, '.zarray'))
-                infoStr = fileread(fullfile(filepath, '.zarray'));
-                infoStruct = jsondecode(infoStr);
-                infoStruct.node_type = 'array';
-            % If the location is a Zarr group    
-            elseif isfile(fullfile(filepath, '.zgroup'))
-                infoStr = fileread(fullfile(filepath, '.zgroup'));
-                infoStruct = jsondecode(infoStr);
-                infoStruct.node_type = 'group';
-            % Supporting zarr.json for zarr v3 (low hanging fruit for future)
-            elseif isfile(fullfile(filepath, 'zarr.json'))
-                infoStr = fileread(fullfile(filepath, 'zarr.json'));
-                infoStruct = jsondecode(infoStr);
-            % Else, error if it is not an array or group
-            else
-                error("Not a valid Zarr array or group");
-            end
-        end
-
-        function writeatt(obj, attname, attvalue)
-            % Function to write attributes to Zarr array or group
-            info = obj.readinfo;
-            info.(attname) = attvalue;
-
-            switch (info.node_type)
-                case "array"
-                    jsonfilename = fullfile(obj.Path, '.zarray');
-                case "group"
-                    jsonfilename = fullfile(obj.Path, '.zgroup');
-            end
-
-            % 'node_type' was synthetically added by obj.readinfo. So,
-            % remove it from the info struct before writing it back to the
-            % JSON file.
-            info = rmfield(info, 'node_type');
-
-            % Encode the updated structure back to JSON
-            updatedJsonStr = jsonencode(info);
-
-            % Write the updated JSON data back to the file
-            fid = fopen(jsonfilename, 'w');
-            if fid == -1
-                error(['Could not open file ''' obj.Path ''' for writing.']);
-            end
-            fwrite(fid, updatedJsonStr, 'char');
-            fclose(fid);
-         end
 
     end
 
