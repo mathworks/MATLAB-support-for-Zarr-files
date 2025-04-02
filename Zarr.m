@@ -104,7 +104,7 @@ classdef Zarr < handle
             obj.ZarrDatatype = obj.ZarrdtypeMap(obj.MatlabDatatype);
 
             % Convert the numpy array to MATLAB array
-            data = feval(obj.MatlabDatatype, ndArrayData);
+            data = cast(ndArrayData, obj.MatlabDatatype);
         end
 
         function create(obj, dtype, data_shape, chunk_shape, fillvalue, compression)
@@ -127,7 +127,7 @@ classdef Zarr < handle
             if isempty(fillvalue)
                 obj.FillValue = py.None;
             else
-                obj.FillValue = feval(obj.MatlabDatatype, fillvalue);
+                obj.FillValue = cast(fillvalue, obj.MatlabDatatype);
             end
             
             % The Python function returns the Tensorstore schema, but we
@@ -144,31 +144,31 @@ classdef Zarr < handle
             % Read the Array info
             info = obj.readinfo;
             datasize = size(data);
-            if ~isequal(info.shape(:), datasize(:))
+            if ~isequal(info.shape, datasize(:))
                 error("Size of the data to be written does not match.");
             end
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
         end
 
-        function out = readinfo(obj)
+        function infoStruct = readinfo(obj)
             % Function to read the Zarr metadata
 
-            file_path = obj.Path;
+            filepath = obj.Path;
 
             % If the location is a Zarr array
-            if isfile(fullfile(file_path, '.zarray'))
-                infodata = fileread(fullfile(file_path, '.zarray'));
-                out = jsondecode(infodata);
-                out.node_type = 'array';
+            if isfile(fullfile(filepath, '.zarray'))
+                infoStr = fileread(fullfile(filepath, '.zarray'));
+                infoStruct = jsondecode(infoStr);
+                infoStruct.node_type = 'array';
             % If the location is a Zarr group    
-            elseif isfile(fullfile(file_path, '.zgroup'))
-                infodata = fileread(fullfile(file_path, '.zgroup'));
-                out = jsondecode(infodata);
-                out.node_type = 'group';
+            elseif isfile(fullfile(filepath, '.zgroup'))
+                infoStr = fileread(fullfile(filepath, '.zgroup'));
+                infoStruct = jsondecode(infoStr);
+                infoStruct.node_type = 'group';
             % Supporting zarr.json for zarr v3 (low hanging fruit for future)
-            elseif isfile(fullfile(file_path, 'zarr.json'))
-                infodata = fileread(fullfile(file_path, 'zarr.json'));
-                out = jsondecode(infodata);
+            elseif isfile(fullfile(filepath, 'zarr.json'))
+                infoStr = fileread(fullfile(filepath, 'zarr.json'));
+                infoStruct = jsondecode(infoStr);
             % Else, error if it is not an array or group
             else
                 error("Not a valid Zarr array or group");
@@ -198,7 +198,7 @@ classdef Zarr < handle
             % Write the updated JSON data back to the file
             fid = fopen(jsonfilename, 'w');
             if fid == -1
-                error('Could not open file for writing.');
+                error(['Could not open file ''' obj.Path ''' for writing.']);
             end
             fwrite(fid, updatedJsonStr, 'char');
             fclose(fid);
