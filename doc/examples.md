@@ -2,23 +2,23 @@
 
 ### Read a Zarr array
 ``` MATLAB
-filepath = 'group1\dset1';
+filepath = "group1\dset1";
 data = zarrread(filepath)
 ```
 
 ### Create and write to a Zarr array
 ``` MATLAB
-filepath   = 'myZarrfiles\singleDset';
+filepath   = "myZarrfiles\singleDset";
 data_shape = [10,10];              % shape of the Zarr array to be written
 data       = 5*ones(10,10);        % Data to be written
 
 zarrcreate (filepath, data_shape)  % Create the Zarr array with default attributes
-zarrwrite(filepath, data)          % Write 'data' to the zarr array at 'file_path' as a double array (default)
+zarrwrite(filepath, data)          % Write "data" to the zarr array at "filepath" as a double array (default)
 ```
 
 ### Create a Zarr array and write data to it using zlib compression with non-default chunking.
 ``` MATLAB
-filepath = 'myZarrfiles\singleZlibDset';
+filepath = "myZarrfiles\singleZlibDset";
 
 % Size of the data
 data_shape = [10,10];
@@ -42,21 +42,21 @@ zarrwrite(filepath, data)
 
 ### Create a Zarr array and write data to it using blosc compression with non-default fill value
 ``` MATLAB
-file_path = "bloscDsetFV";
+filepath = "bloscDsetFV";
 data_shape = [10,10];
 chunk_shape = [5,5];
 
 compstruct.id = "blosc";
-compstruct.cname = 'snappy';
+compstruct.cname = "snappy";
 compstruct.clevel = 7;
 compstruct.shuffle = 0;
 compstruct.blocksize = 5;
 
 data = magic(10);
-zarrcreate(file_path, data_shape, ChunkSize=chunk_shape,...
+zarrcreate(filepath, data_shape, ChunkSize=chunk_shape,...
     Compression=compstruct, FillValue=42)
-zarrwrite(file_path, data)
-info = zarrinfo(file_path);
+zarrwrite(filepath, data)
+info = zarrinfo(filepath);
 
 >> info.fill_value
 
@@ -80,23 +80,23 @@ ans =
 
 ### Read the metadata from a Zarr array
 ``` MATLAB
-filepath = 'group1\dset1';
+filepath = "group1\dset1";
 info = zarrinfo(filepath);
 ```
 
 
 ### Write a key-value pair as metadata to a Zarr array
 ``` MATLAB
-% If the location pointed by 'filepath' does not have a '.zarray'
-% or '.zgroup' file, the function issues an error.
-filepath = 'group1\dset1'; 
-Attname = 'pi';
+% If the location pointed by "filepath" does not have a ".zarray"
+% or ".zgroup" file, the function issues an error.
+filepath = "group1\dset1"; 
+Attname = "pi";
 AttValue = 3.14;
 zarrwriteatt(filepath, Attname, Attvalue)
 
 SpeedOfSound.value = 343;
-SpeedOfSound.unit = 'm/s';
-zarrwriteatt(filepath, 'SpeedOfSound', SpeedOfSound)
+SpeedOfSound.unit = "m/s";
+zarrwriteatt(filepath, "SpeedOfSound", SpeedOfSound)
 
 info = zarrread(filepath);
 

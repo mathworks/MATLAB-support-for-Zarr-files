@@ -1,10 +1,10 @@
 # Documentation
-This document highlights the syntaxes of the MATLAB functions for reading and writing Zarr files, and for reading and writing metadata to and from Zarr arrays.
+This document highlights the usage of the MATLAB functions for reading and writing Zarr files, and for reading and writing metadata to and from Zarr arrays.
 
 Please find examples of the usage of these functions in `examples.md`.
 
-Please refer to `README.md` for installation instructions and third party dependencies.
-* The use of this contribution requires MATLAB release R2022b or newer.
+Please refer to `README.md` for installation instructions and third-party dependencies.
+* The use of this repository requires MATLAB release R2022b or newer.
 * Currently, only Zarr v2 is supported.
 
 ## `zarrcreate(filepath,DATASHAPE,Name=Value)`
@@ -27,11 +27,11 @@ do not already exist.
                               compress the Zarr array, specified as a struct containing an "id" field. 
                               The fields for the struct are as follows:
                               "id"    - One of "zlib", "gzip", 
-                                        "blosc", "bz2", "zstd" or []. 
+                                        "blosc", "bz2", "zstd", or []. 
                                         Use [] for no compression.
                               Optional Fields:
                                 "level" - Compression level, specified as an integer. 
-                                          Valid for all but 'blosc' compression.
+                                          Valid for all but "blosc" compression.
                                           The default value is 1. The accepted
                                           integer values for different
                                           compressions are:
@@ -43,7 +43,7 @@ do not already exist.
                                           compression. Name of compression scheme for blosc 
                                           compression, specified as one of these values:  
                                           "blosclz", "lz4", "lz4hc", "snappy", "zlib", "zstd".
-                                          "zstd" uses the same scheme as "lz4".
+                                          "zstd" is the same scheme as "lz4".
                                 "clevel" - Valid only for "blosc"
                                            compression. Compression level for blosc compression, 
                                            specified as an integer in the range [0, 9]. 

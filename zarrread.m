@@ -6,7 +6,7 @@ function data = zarrread(filepath)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
 end
 
 % If the location does not exist, throw an error.
