@@ -1,4 +1,4 @@
-function zarrcreate(filepath, data_shape, options)
+function zarrcreate(filepath, datashape, options)
 %ZARRCREATE Create Zarr dataset
 %   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) creates a Zarr
 %   array at the path specified by FILEPATH and of the dimensions specified
@@ -65,21 +65,16 @@ function zarrcreate(filepath, data_shape, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonempty}
-    data_shape (1,:) double {mustBeFinite, mustBeNonnegative}
-    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = data_shape
+    datashape (1,:) double {mustBeFinite, mustBeNonnegative}
+    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = datashape
     options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
     options.FillValue {mustBeNumeric} = []
     options.Compression {mustBeStructOrEmpty} = []
 end
 
-Zarrobj = Zarr(filepath);
+zarrObj = Zarr(filepath);
 
-dtype = options.Datatype;
-chunk_shape = options.ChunkSize;
-compression = options.Compression;
-fillvalue = options.FillValue;
-
-Zarrobj.create(dtype, data_shape, chunk_shape, fillvalue, compression)
+zarrObj.create(options.Datatype, datashape, options.ChunkSize, options.FillValue, options.Compression)
 
 end
 

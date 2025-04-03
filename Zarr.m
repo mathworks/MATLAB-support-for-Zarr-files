@@ -155,7 +155,7 @@ classdef Zarr < handle
     end
 
     methods (Access = protected)
-        function compression = parseCompression (~,compression)
+        function compression = parseCompression(~,compression)
             % Helper function to validate and parse the compression struct.
 
             % The compression struct should have an 'id' field.
@@ -190,9 +190,9 @@ classdef Zarr < handle
             % map for tensorstore.
             % Define the regular expression patterns for matching S3 URLs and URIs
             % S3 URLs can have 3 syntaxes.
-            pattern1 = '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$';  % Format 1
-            pattern2 = '^https://s3\.amazonaws\.com/([^/]+)/(.+)$';   % Format 2
-            pattern3 = '^s3://([^/]+)/(.+)$';                         % Format 3
+            pattern1 = '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$';  % Format 1 : https://mybucket.s3.amazonaws.com/path/to/myfile
+            pattern2 = '^https://s3\.amazonaws\.com/([^/]+)/(.+)$';   % Format 2 : https://s3.amazonaws.com/mybucket/path/to/myfile
+            pattern3 = '^s3://([^/]+)/(.+)$';                         % Format 3 : s3://mybucket/path/to/myfile
 
             % Try matching the first pattern
             tokens = regexp(url, pattern1, 'tokens');
@@ -208,7 +208,7 @@ classdef Zarr < handle
             end
 
             % Extract the bucket name and object path from the tokens
-            if ~isempty(tokens)
+            if ~isempty(tokens) && iscell(tokens{1}) && numel(tokens{1}) == 2
                 bucketName = tokens{1}{1};
                 objectPath = tokens{1}{2};
             else

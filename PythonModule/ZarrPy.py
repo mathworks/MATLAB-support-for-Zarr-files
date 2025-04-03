@@ -61,7 +61,6 @@ def readZarr (kvstore_schema):
 
     Parameters:
     - kvstore_schema (dictionary): Schema for the file store (local or remote)
-    - subset_slice (tuple): A tuple of slice objects specifying the subset to read.
     
     Returns:
     - numpy.ndarray: The subset of the data read from the Zarr file.
