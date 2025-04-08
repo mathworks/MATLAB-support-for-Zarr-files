@@ -14,6 +14,6 @@ if ~isfolder(filepath)
     error("Invalid location.")
 end
 
-Zarrobj = Zarr(filepath);
-data = Zarrobj.read;
+zarrObj = Zarr(filepath);
+data = zarrObj.read;
 end
