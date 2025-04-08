@@ -16,7 +16,7 @@ if ~isfile(fullfile(filepath, '.zarray'))
 end
 
 
-Zarrobj = Zarr(filepath);
-Zarrobj.write(data)
+zarrObj = Zarr(filepath);
+zarrObj.write(data)
 
 end
