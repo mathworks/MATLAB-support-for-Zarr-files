@@ -10,12 +10,6 @@ arguments
     data
 end
 
-% If the Zarr array has not been created yet, throw an error.
-if ~isfile(fullfile(filepath, '.zarray'))
-    error("Invalid location.")
-end
-
-
 zarrObj = Zarr(filepath);
 zarrObj.write(data)
 

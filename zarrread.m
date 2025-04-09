@@ -9,11 +9,6 @@ arguments
     filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
 end
 
-% If the location does not exist, throw an error.
-if ~isfolder(filepath)
-    error("Invalid location.")
-end
-
 zarrObj = Zarr(filepath);
 data = zarrObj.read;
 end

@@ -13,11 +13,6 @@ arguments
     attvalue
 end
 
-% If the location does not exist, throw an error.
-if ~isfolder(filepath)
-    error("Invalid location.")
-end
-
 info = zarrinfo(filepath);
 info.(attname) = attvalue;
 
