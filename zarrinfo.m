@@ -12,11 +12,6 @@ arguments
     filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
 end
 
-% If the location does not exist, throw an error.
-if ~isfolder(filepath)
-    error("Invalid location.")
-end
-
 % If the location is a Zarr array
 if isfile(fullfile(filepath, '.zarray'))
     infoStr = fileread(fullfile(filepath, '.zarray'));

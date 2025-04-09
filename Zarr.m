@@ -149,6 +149,9 @@ classdef Zarr < handle
             if ~isequal(info.shape, datasize(:))
                 error("Size of the data to be written does not match.");
             end
+            if any(info.chunks > datasize(:))
+                error("Chunk size cannot be greater than size of the data to be written.");
+            end
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
         end
 
