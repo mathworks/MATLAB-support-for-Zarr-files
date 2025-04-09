@@ -24,7 +24,7 @@ classdef Zarr < handle
     properties(Constant, Access = protected)
         MATLABDatatypes = ["logical", "uint8", "int8", "uint16", "int16", "uint32", "int32", "uint64", "int64", "single", "double"];
         TstoreDatatypes = ["bool", "uint8", "int8", "uint16", "int16", "uint32", "int32", "uint64", "int64", "float32", "float64"];
-        ZarrDatatypes   = ["|b1",   "|u1",  "|i1",  "<u2",    "|i2",   "|u4",    "|i4",   "|u8",    "|i8",   "<f4",     "<f8"];
+        ZarrDatatypes   = ["|b1",   "|u1",  "|i1",  "<u2",    "<i2",   "<u4",    "<i4",   "<u8",    "<i8",   "<f4",     "<f8"];
         
     end
 
