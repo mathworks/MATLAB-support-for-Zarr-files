@@ -4,6 +4,7 @@ function zarrcreate(filepath, datashape, options)
 %   array at the path specified by FILEPATH and of the dimensions specified
 %   by DATASHAPE. If FILEPATH is a full path name, all
 %   intermediate groups are created if they don't already exist.
+%   If FILEPATH exists already, the contents are overwritten.
 %
 %   Parameter Value Pairs
 %   ---------------------
