@@ -1,5 +1,5 @@
 function zarrcreate(filepath, datashape, options)
-%ZARRCREATE Create Zarr dataset
+%ZARRCREATE Create Zarr array.
 %   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) creates a Zarr
 %   array at the path specified by FILEPATH and of the dimensions specified
 %   by DATASHAPE. If FILEPATH is a full path name, all
@@ -11,7 +11,7 @@ function zarrcreate(filepath, datashape, options)
 %                                  'int64', 'uint32', 'int32', 'uint16', 'int16',  
 %                                  'uint8', 'int8', or 'string'. Defaults to 'double'.
 %       'ChunkSize'              - Defines chunking layout. Default is not chunked.
-%       'FillValue'              - Defines the fill value for numeric datasets.
+%       'FillValue'              - Defines the fill value for numeric arrays.
 %                                  The default is no fill value, specified
 %                                  as [].
 %       'Compression'            - Primary compression codec used to
