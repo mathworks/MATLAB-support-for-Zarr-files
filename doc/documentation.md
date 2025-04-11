@@ -10,7 +10,7 @@ Please refer to `README.md` for installation instructions and third-party depend
 ## `zarrcreate(filepath,DATASHAPE,Name=Value)`
 Create a Zarr array at the path specified by `filepath` and of the dimensions specified
 by DATASHAPE. If `filepath` is a full path name, the function creates all intermediate groups that
-do not already exist.
+do not already exist. If `filepath` exists already, the contents are overwritten.
    
 ###	Name - Value Pairs
     Datatype                - One of "double", "single", "uint64",  
