@@ -9,7 +9,7 @@ import tensorstore as ts
 
 def createZarr(kvstore_schema, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor, fillvalue):
     """
-    Creates a new Zarr dataset and writes data to it.
+    Creates a new Zarr array and writes data to it.
 
     Parameters:
     - kvstore_schema (dictionary): Schema for the file store (local or remote)

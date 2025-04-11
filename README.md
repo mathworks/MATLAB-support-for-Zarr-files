@@ -1,6 +1,6 @@
 # MATLAB Support for Zarr files
 
-[Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large datasets efficiently.
+[Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
 For complete documentation, refer to the `documentation.md` file, or refer to the help section of each function.
@@ -116,8 +116,7 @@ To view documentation of a function, type `help <function_name>`. For example,
 ``` MATLAB
 >> help zarrcreate
 ```
-or refer to the `documentation.md` and `examples.md` files.
-For more examples, see the `examples` directory in the repository.
+or refer to the [documentation.md](https://github.com/mathworks/MATLAB-support-for-Zarr-files/blob/main/doc/documentation.md) and [examples.md](https://github.com/mathworks/MATLAB-support-for-Zarr-files/blob/main/doc/examples.md) files.
 
 
 ## License

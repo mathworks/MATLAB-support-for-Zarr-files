@@ -20,7 +20,7 @@ do not already exist.
     ChunkSize               - Defines chunking layout specified as an array of integers. 
                               Default is [], which specifies no chunking.  
 
-    FillValue               - Defines the Fill value for numeric datasets.  
+    FillValue               - Defines the Fill value for numeric arrays.  
                               Default is [], which specifies no fill value.
 
     Compression             - Primary compression codec used to
@@ -72,7 +72,7 @@ The datatype of DATA is the MATLAB equivalent of the Zarr datatype of the array
 located at `filepath`.
 
 ## `INFO = zarrinfo(filepath)`
-Read the metadata associated with a Zarr array or group located at `filepath` and return the information in a structure INFO, whose fields are the names of the metdata keys. 
+Read the metadata associated with a Zarr array or group located at `filepath` and return the information in a structure INFO, whose fields are the names of the metadata keys. 
 If `filepath` is a Zarr array (has a valid `.zarray` file), the value of `node_type` is "array"; if `filepath` is a Zarr group (has a valid `.zgroup` file), the value of the field `node_type` is "group".
 If you specify the `filepath` as a group (intermediate directory) with no `.zgroup` file, then the function will issue an error.
 
