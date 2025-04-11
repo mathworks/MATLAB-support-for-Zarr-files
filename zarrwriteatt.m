@@ -13,6 +13,10 @@ arguments
     attvalue
 end
 
+if isfile(fullfile(filepath,'zarr.json'))
+    error("Writing attributes to Zarr v3 files is not supported.");
+end
+
 info = zarrinfo(filepath);
 info.(attname) = attvalue;
 
