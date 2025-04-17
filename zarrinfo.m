@@ -39,8 +39,10 @@ end
 if isfile(fullfile(filepath, '.zattrs'))
     userDefinedInfoStruct = readZattrs(filepath);
     userDefinedfieldnames = fieldnames(userDefinedInfoStruct);
-    for i = 1:numel(userDefinedfieldnames)
-        infoStruct.(userDefinedfieldnames{i}) = userDefinedInfoStruct.(userDefinedfieldnames{i});
+    if (numel(userDefinedfieldnames) > 0)
+        for i = 1:numel(userDefinedfieldnames)
+            infoStruct.(userDefinedfieldnames{i}) = userDefinedInfoStruct.(userDefinedfieldnames{i});
+        end
     end
 end
 
