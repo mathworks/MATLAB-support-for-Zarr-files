@@ -17,26 +17,25 @@ if isfile(fullfile(filepath,'zarr.json'))
     error("Writing attributes to Zarr v3 files is not supported.");
 end
 
-info = zarrinfo(filepath);
-info.(attname) = attvalue;
-
-switch (info.node_type)
-    case "array"
-        jsonfilename = fullfile(filepath, '.zarray');
-    case "group"
-        jsonfilename = fullfile(filepath, '.zgroup');
+if (~isfile(fullfile(filepath,'.zgroup')) && ~isfile(fullfile(filepath,'.zarray')))
+    error("Not a valid Zarr group or array.");
 end
 
-% 'node_type' was synthetically added by zarrinfo. So,
-% remove it from the info struct before writing it back to the
-% JSON file.
-info = rmfield(info, 'node_type');
+attrsJSONFile = fullfile(filepath, '.zattrs');
+% If .zattrs file exists already, append to it. If not, create the file and
+% write to it.
+if isfile(attrsJSONFile)
+    userDefinedInfoStruct = readZattrs(filepath);
+else
+    userDefinedInfoStruct = struct();
+end
+userDefinedInfoStruct.(attname) = attvalue;
 
 % Encode the updated structure back to JSON
-updatedJsonStr = jsonencode(info);
+updatedJsonStr = jsonencode(userDefinedInfoStruct);
 
 % Write the updated JSON data back to the file
-fid = fopen(jsonfilename, 'w');
+fid = fopen(attrsJSONFile, 'w');
 if fid == -1
     error(['Could not open file ''' filepath ''' for writing.']);
 end
