@@ -1,0 +1,9 @@
+{
+  "attributes": {
+    "group_description": "This is a sample Zarr group",
+    "group_level": 1
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}

@@ -1,0 +1,5 @@
+{
+    "array_description": "This is a sample Zarr array",
+    "array_level": 1,
+    "array_type": "double"
+}
