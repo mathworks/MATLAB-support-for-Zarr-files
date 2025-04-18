@@ -118,6 +118,10 @@ classdef Zarr < handle
             obj.TensorstoreDatatype = obj.TstoredtypeMap(dtype);
             obj.ZarrDatatype = obj.ZarrdtypeMap(dtype);
 
+            if any(obj.ChunkSize > obj.DsetSize)
+                error("Chunk size cannot be greater than size of the data to be written.");
+            end
+
             % If compression is empty, it means no compression
             if isempty(compression)
                 obj.Compression = py.None;

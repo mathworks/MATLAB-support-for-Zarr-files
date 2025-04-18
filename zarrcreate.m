@@ -75,6 +75,11 @@ end
 
 zarrObj = Zarr(filepath);
 
+% Dimensionality of the dataset and the chunk size must be the same
+if any(size(datashape) ~= size(options.ChunkSize))
+    error("Chunk size and the dataset must have same number of dimensions.");
+end
+
 zarrObj.create(options.Datatype, datashape, options.ChunkSize, options.FillValue, options.Compression)
 
 end
