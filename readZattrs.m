@@ -1,6 +1,6 @@
 function zattrsStruct = readZattrs(filepath)
 %READZATTRS Helper function to read the JSON file .zattrs which contains
-%user defined attributes for a Zarr array or group.
+%user-defined attributes for a Zarr array or group.
 
 %   Copyright 2025 The MathWorks, Inc.
 
