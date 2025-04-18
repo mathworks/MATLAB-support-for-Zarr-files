@@ -8,15 +8,17 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
         ArrSize = [20 25]
         ChunkSize = [4 5]
 
-        % Path for read functions
-        % GrpPathRead = "dataFiles/grp_v2"
-        % ArrPathRead = "dataFiles/grp_v2/arr_v2"
-
         % Path for write tests
         ArrPathWrite = "prt_grp_write/arr1"
     end
 
     methods(TestClassSetup)
+	function addSrcCodePath(testcase)
+	    % Add source code path before running the tests
+            import matlab.unittest.fixtures.PathFixture
+	    testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
+	end
+
         function setupWorkingFolderToCreateArr(testcase)
             % Use working folder fixture to create Zarr array.
             import matlab.unittest.fixtures.WorkingFolderFixture;
