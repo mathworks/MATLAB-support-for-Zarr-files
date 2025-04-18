@@ -11,7 +11,13 @@ classdef tZarrInfo < matlab.unittest.TestCase
         ExpInfo = load(fullfile(pwd,"dataFiles","expZarrArrInfo.mat"))
     end
 
-    % Add tests for remote file reading
+    methods(TestClassSetup)
+        function addSrcCodePath(testcase)
+            % Add source code path before running the tests
+            import matlab.unittest.fixtures.PathFixture
+            testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
+        end
+    end
 
     methods(Test)
         function verifyArrayInfoV2(testcase)
@@ -43,7 +49,7 @@ classdef tZarrInfo < matlab.unittest.TestCase
         end
 
         function missingZgroupFile(testcase)
-            % Verify error when using zarrinfo function on a group not 
+            % Verify error when using zarrinfo function on a group not
             % containing .zgroup file.
             testcase.assumeTrue(false,'Filtered until error ID is added.');
 
@@ -57,7 +63,7 @@ classdef tZarrInfo < matlab.unittest.TestCase
         end
 
         function nonExistentArr(testcase)
-            % Verify zarrinfo error when a user tries to read a non-existent 
+            % Verify zarrinfo error when a user tries to read a non-existent
             % array.
             errID = 'MATLAB:validators:mustBeFolder';
             testcase.verifyError(@()zarrinfo('nonexistentArr/'),errID);

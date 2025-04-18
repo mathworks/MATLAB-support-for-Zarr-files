@@ -12,6 +12,14 @@ classdef tZarrRead < matlab.unittest.TestCase
         ExpData = load(fullfile(pwd,"dataFiles","expZarrArrData.mat"))
     end
 
+    methods(TestClassSetup)
+        function addSrcCodePath(testcase)
+            % Add source code path before running the tests
+            import matlab.unittest.fixtures.PathFixture
+            testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
+        end
+    end
+
     methods(Test)
         function verifyArrayData(testcase)
             % Verify array data using zarrread function.
@@ -21,7 +29,7 @@ classdef tZarrRead < matlab.unittest.TestCase
         end
 
         function verifyGroupInpError(testcase)
-            % Verify error if a user tries to pass the group as input to 
+            % Verify error if a user tries to pass the group as input to
             % zarrread function.
             errID = 'MATLAB:Python:PyException';
             testcase.verifyError(@()zarrread(testcase.GrpPathRead),errID);
@@ -35,7 +43,7 @@ classdef tZarrRead < matlab.unittest.TestCase
         end
 
         function nonExistentArray(testcase)
-            % Verify zarrread error when a user tries to read a non-existent 
+            % Verify zarrread error when a user tries to read a non-existent
             % file.
             errID = 'MATLAB:validators:mustBeFolder';
             testcase.verifyError(@()zarrread('nonexistent/'),errID);
@@ -43,7 +51,7 @@ classdef tZarrRead < matlab.unittest.TestCase
 
         function invalidFilePath(testcase)
             % Verify zarrread error when an invalid file path is used.
-            
+
             % Using a cell input with a valid array path
             errID = 'MATLAB:validators:mustBeTextScalar';
             testcase.verifyError(@()zarrread({testcase.ArrPathRead}),errID);
@@ -51,7 +59,7 @@ classdef tZarrRead < matlab.unittest.TestCase
             % Empty cell or double
             testcase.verifyError(@()zarrread({}),errID);
             testcase.verifyError(@()zarrread([]),errID);
-            
+
             % Non-scalar input
             testcase.verifyError(@()zarrread([testcase.ArrPathRead,testcase.ArrPathRead]), ...
                 errID);

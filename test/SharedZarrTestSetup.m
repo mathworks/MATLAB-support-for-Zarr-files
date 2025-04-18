@@ -13,11 +13,11 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
     end
 
     methods(TestClassSetup)
-	function addSrcCodePath(testcase)
-	    % Add source code path before running the tests
+    	function addSrcCodePath(testcase)
+    	    % Add source code path before running the tests
             import matlab.unittest.fixtures.PathFixture
-	    testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
-	end
+    	    testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
+    	end
 
         function setupWorkingFolderToCreateArr(testcase)
             % Use working folder fixture to create Zarr array.
