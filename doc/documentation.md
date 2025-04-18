@@ -26,9 +26,9 @@ do not already exist. If `filepath` exists already, the contents are overwritten
     Compression             - Primary compression codec used to
                               compress the Zarr array, specified as a struct containing an "id" field. 
                               The fields for the struct are as follows:
-                              "id"    - One of "zlib", "gzip", 
-                                        "blosc", "bz2", "zstd", or []. 
-                                        Use [] for no compression.
+                              "id"    - The accepted values are 'zlib', 'gzip', 
+                                        'blosc', 'bz2', 'zstd' or '[]' (default)
+                                        for no compression.
                               Optional Fields:
                                 "level" - Compression level, specified as an integer. 
                                           Valid for all but "blosc" compression.

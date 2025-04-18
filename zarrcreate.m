@@ -23,7 +23,7 @@ function zarrcreate(filepath, datashape, options)
 %                                  are as follows:
 %                                  Required Fields:
 %                                    'id'    - The accepted values are 'zlib', 'gzip', 
-%                                              'blosc', 'bz2', 'zstd' or 'null' (default)
+%                                              'blosc', 'bz2', 'zstd' or '[]' (default)
 %                                               for no compression.
 %                                  Optional Fields:
 %                                    'level' - The compression level to
