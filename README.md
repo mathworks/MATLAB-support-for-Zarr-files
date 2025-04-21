@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
+
 # MATLAB Support for Zarr files
 
 [Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
