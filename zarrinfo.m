@@ -12,6 +12,9 @@ arguments
     filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
 end
 
+% .zarray and .zgroup are valid metadata files for Zarr v2 which contain
+% library-defined attributes. zarr.json is valid metadata file for Zarr v3
+% containing library-defined attributes.
 % If the location is a Zarr array
 if isfile(fullfile(filepath, '.zarray'))
     infoStr = fileread(fullfile(filepath, '.zarray'));
@@ -30,4 +33,14 @@ elseif isfile(fullfile(filepath, 'zarr.json'))
 else
     error("Not a valid Zarr array or group");
 end
+
+% User defined attributes are contained in .zattrs file in each array or group store
+if isfile(fullfile(filepath, '.zattrs'))
+    userDefinedInfoStruct = readZattrs(filepath);
+    userDefinedFieldNames = fieldnames(userDefinedInfoStruct);
+    for i = 1:numel(userDefinedFieldNames)
+            infoStruct.(userDefinedFieldNames{i}) = userDefinedInfoStruct.(userDefinedFieldNames{i});
+    end
+end
+
 end
