@@ -1,10 +1,9 @@
-name: Test setup and measure coverage
+name: Run Tests
 
 on:
   push:
     branches:
       - main
-      - add-test-branch
 
 jobs:
   test:
