@@ -83,6 +83,10 @@ end
 if any(options.ChunkSize > datashape)
     error("Chunk size cannot be greater than size of the data to be written.");
 end
+if isscalar(datashape)
+    datashape = [datashape 1];
+    options.ChunkSize = [options.ChunkSize 1];
+end
 
 zarrObj.create(options.Datatype, datashape, options.ChunkSize, options.FillValue, options.Compression)
 

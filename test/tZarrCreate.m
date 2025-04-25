@@ -138,8 +138,7 @@ classdef tZarrCreate < SharedZarrTestSetup
             % Verify error when an invalid size input is used.
             % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,[]), ...
             %     testcase.PyException);
-            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,10), ...
-                testcase.PyException);
+            
         end
 
         function invalidCompressionInputType(testcase)
