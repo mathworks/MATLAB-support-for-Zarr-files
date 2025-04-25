@@ -79,7 +79,7 @@ filepath   = "myZarrfiles\singleDset";
 data_shape = [10,10];              % shape of the Zarr array to be written
 data       = 5*ones(10,10);        % Data to be written
 
-zarrcreate (filepath, data_shape)  % Create the Zarr array with default attributes
+zarrcreate(filepath, data_shape)  % Create the Zarr array with default attributes
 zarrwrite(filepath, data)          % Write data to the Zarr array
 ```
 
