@@ -1,66 +1,81 @@
 function zarrcreate(filepath, datashape, options)
 %ZARRCREATE Create Zarr array.
-%   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) creates a Zarr
-%   array at the path specified by FILEPATH and of the dimensions specified
-%   by DATASHAPE. If FILEPATH is a full path name, all
-%   intermediate groups are created if they don't already exist.
-%   If FILEPATH exists already, the contents are overwritten.
-%
-%   Parameter Value Pairs
-%   ---------------------
-%       'Datatype'               - May be one of 'double', 'single', 'uint64',
-%                                  'int64', 'uint32', 'int32', 'uint16', 'int16',  
-%                                  'uint8', 'int8', or 'string'. Defaults to 'double'.
-%       'ChunkSize'              - Defines chunking layout. Default is not chunked.
-%       'FillValue'              - Defines the fill value for numeric arrays.
-%                                  The default is no fill value, specified
-%                                  as [].
-%       'Compression'            - Primary compression codec used to
-%                                  compress the Zarr array. The compression
-%                                  needs to provided as a struct, with 'id'
-%                                  being a required field. The required and
-%                                  optional fields for compression struct
-%                                  are as follows:
-%                                  Required Fields:
-%                                    'id'    - The accepted values are 'zlib', 'gzip', 
-%                                              'blosc', 'bz2', 'zstd' or '[]' (default)
-%                                               for no compression.
-%                                  Optional Fields:
-%                                    'level' - The compression level to
-%                                              use. Valid for all but
-%                                              'null' and 'blosc'.
-%                                              compression. The default
-%                                              value is 1. The accepted
-%                                              integer values for different
-%                                              compressions are:
-%                                              zlib - [0, 9]
-%                                              gzip - [0, 9]
-%                                              bz2  - [1, 9]
-%                                              zstd - [-131072, 22]
-%                                    'cname' - Valid only for 'blosc'
-%                                              compression. Specifies the compression
-%                                              method used by 'blosc'. Accepted
-%                                              values are: 
-%                                             {'blosclz' | 'lz4' | 'lz4hc' | 'snappy' | 'zlib' | 'zstd' = 'lz4
-%                                    'clevel' - Valid only for 'blosc'
-%                                               compression. Specifies the blosc
-%                                               compression level to use. Accepted
-%                                               values are integers in the range 
-%                                               [0, 9]. The default is 5.
-%                                    'shuffle' - Valid only for 'blosc'
-%                                                Options for rearranging of
-%                                                the input data. The
-%                                                accepted integer values are:
-%                                                -1 - Automatic shuffle. Bit-wise shuffle if the element size is 1 byte, otherwise byte-wise shuffle.
-%                                                 0 - No shuffle
-%                                                 1 - Byte-wise shuffle
-%                                                 2 - Bit-wise shuffle
-%                                    'blocksize' - Valid only for 'blosc'
-%                                                  Specifies the blosc
-%                                                  blocksize. Accepted
-%                                                  values are integer in
-%                                                  the range [0 inf]. The
-%                                                  default value is 0.
+%   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) Create a Zarr
+%   array at the path specified by "filepath" and of the dimensions specified
+%   by DATASHAPE. 
+% If "filepath" is a full path name, the function creates all
+% intermediate groups that do not already exist. If "filepath" exists
+% already, the contents are overwritten.
+% 
+% Name - Value Pairs
+% ------------------
+%     Datatype                - One of "double", "single", "uint64",
+%                               "int64", "uint32", "int32", "uint16",
+%                               "int16", "uint8", "int8", or "string".
+%                               Defaults to "double".
+% 
+%     ChunkSize               - Defines chunking layout specified as an
+%                               array of integers.
+%                               Default is [], which specifies no chunking.
+% 
+%     FillValue               - Defines the Fill value for numeric arrays.
+%                               Default is [], which specifies no fill
+%                               value.
+% 
+%     Compression             - Primary compression codec used to
+%                               compress the Zarr array, specified as a
+%                               struct containing an "id" field. The fields
+%                               for the struct are as follows: "id"    -
+%                               The accepted values are "zlib", "gzip",
+%                                         "blosc", "bz2", "zstd" or []
+%                                         (default) for no compression.
+%                               Optional Fields:
+%                                 "level" - Compression level, specified as
+%                                           an integer.
+%                                           Valid for all but "blosc"
+%                                           compression. The default value
+%                                           is 1. The accepted integer
+%                                           values for different
+%                                           compressions are: zlib - [0, 9]
+%                                           gzip - [0, 9] bz2  - [1, 9]
+%                                           zstd - [-131072, 22]
+%                                 "cname" - Valid only for "blosc"
+%                                           compression. Name of
+%                                           compression scheme for blosc
+%                                           compression, specified as one
+%                                           of these values: "blosclz",
+%                                           "lz4", "lz4hc", "snappy",
+%                                           "zlib", "zstd". "zstd" is the
+%                                           same scheme as "lz4".
+%                                 "clevel" - Valid only for "blosc"
+%                                            compression. Compression level
+%                                            for blosc compression,
+%                                            specified as an integer in the
+%                                            range [0, 9]. The default
+%                                            value is 5.
+%                                 "shuffle" - Valid only for "blosc"
+%                                             compression.
+%                                             Method for rearranging input
+%                                             data for blosc compression,
+%                                             specified as one of these
+%                                             values:
+%                                                -1 - Automatic shuffle.
+%                                                The function performs a
+%                                                bit-wise shuffle
+%                                                     if the element size
+%                                                     is one byte and
+%                                                     otherwise performs a
+%                                                     byte-wise shuffle.
+%                                                 0 - No shuffle. 1 -
+%                                                 Byte-wise shuffle. 2 -
+%                                                 Bit-wise shuffle.
+%                                             The default value is 0.
+%                                 "blocksize" - Valid only for "blosc"
+%                                               compression.
+%                                               Block size for blosc
+%                                               compression, specified as a
+%                                               nonnegative integer or inf.
+%                                               The default value is 0.
 
 %   Copyright 2025 The MathWorks, Inc.
 
