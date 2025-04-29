@@ -20,7 +20,6 @@ def createZarr(kvstore_schema, data_shape, chunk_shape, tstoreDataType, zarrData
     - compressor (dictionary): The compression to be used for the Zarr array.
     - fillvalue (numeric scalar): The fill value to be used for the Zarr array.
     """
-    print(data_shape)
     schema = {
         'driver': 'zarr',
         'kvstore': kvstore_schema,
