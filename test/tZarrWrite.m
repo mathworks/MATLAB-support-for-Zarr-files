@@ -17,7 +17,7 @@ classdef tZarrWrite < SharedZarrTestSetup
             % datatype is double.;
             zarrcreate(testcase.ArrPathWrite,ArrSizeWrite);
             if isscalar(ArrSizeWrite)
-                expData = rand(ArrSizeWrite, 1);
+                expData = (1:10)*pi;
             else
                 expData = rand(ArrSizeWrite);
             end
