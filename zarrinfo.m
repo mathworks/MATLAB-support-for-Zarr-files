@@ -1,10 +1,13 @@
 function infoStruct = zarrinfo(filepath)
 %ZARRINFO Retrieve info about the Zarr array
-%   INFO = ZARRINFO(FILEPATH) reads the metadata associated with a Zarr array or
-%   group located at FILEPATH, and returns the information in a structure
-%   INFO, whose fields are the names of the metdata keys. If FILEPATH is a
-%   Zarr array, the value of the field 'node_type' is "array". If FILEPATH
-%   is a Zarr group, the value of the field 'node_type' is "group".
+% %   INFO = ZARRINFO(FILEPATH) reads the metadata associated with a Zarr
+% array or group located at "filepath" and return the information in a
+% structure INFO, whose fields are the names of the metadata keys. 
+% If "filepath" is a Zarr array (has a valid `.zarray` file), the value of
+% "node_type" is "array"; if "filepath" is a Zarr group (has a valid
+% `.zgroup` file), the value of the field "node_type" is "group". If you
+% specify the "filepath" as a group (intermediate directory) with no
+% `.zgroup` file, then the function will issue an error.
 
 %   Copyright 2025 The MathWorks, Inc.
 

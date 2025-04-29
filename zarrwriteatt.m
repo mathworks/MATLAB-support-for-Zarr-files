@@ -1,9 +1,11 @@
 function zarrwriteatt(filepath, attname, attvalue)
 %ZARRWRITEATT Write custom Zarr attributes
-%   ZARRWRITEATT(FILEPATH,ATTNAME,ATTVALUE) writes the attribute named
+%   ZARRWRITEATT(FILEPATH,ATTNAME,ATTVALUE) Write the attribute named
 %   ATTNAME with the value ATTVALUE to the Zarr array or group located at
-%   FILEPATH. The attribute is recorded only if a .zarray or .zgroup file
-%   already exists at the location specified by FILEPATH.
+%   "filepath".
+% The attribute is written only if a .zarray or .zgroup file exists at the
+% location specified by "filepath". Otherwise, the function issues an
+% error.
 
 %   Copyright 2025 The MathWorks, Inc.
 
