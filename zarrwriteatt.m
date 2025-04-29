@@ -16,11 +16,12 @@ arguments
 end
 
 if isfile(fullfile(filepath,'zarr.json'))
-    error("Writing attributes to Zarr v3 files is not supported.");
+    error("MATLAB:zarrwriteatt:ariteAttV3",...
+        "Writing attributes to Zarr v3 files is not supported.");
 end
 
 if (~isfile(fullfile(filepath,'.zgroup')) && ~isfile(fullfile(filepath,'.zarray')))
-    error("Not a valid Zarr group or array.");
+    error("MATLAB:zarrwriteatt:invalidZarrObject","Not a valid Zarr group or array.");
 end
 
 attrsJSONFile = fullfile(filepath, '.zattrs');
@@ -39,7 +40,8 @@ updatedJsonStr = jsonencode(userDefinedInfoStruct);
 % Write the updated JSON data back to the file
 fid = fopen(attrsJSONFile, 'w');
 if fid == -1
-    error(['Could not open file ''' filepath ''' for writing.']);
+    error("MATLAB:zarrwriteatt:fileOpenFailure",...
+        ['Could not open file ''' filepath ''' for writing.']);
 end
 fwrite(fid, updatedJsonStr, 'char');
 fclose(fid);
