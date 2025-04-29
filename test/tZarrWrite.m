@@ -7,7 +7,7 @@ classdef tZarrWrite < SharedZarrTestSetup
         DataType = {'double','single','int8','uint8','int16','uint16', ...
             'int32','uint32','int64','uint64','logical'}
         CompId = {'zlib','gzip','bz2','zstd'}
-        ArrSizeWrite = {[1 10],[20 25],[10 12 5]}
+        ArrSizeWrite = {10, [1 10],[20 25],[10 12 5]}
     end
 
     methods(Test)
@@ -16,7 +16,12 @@ classdef tZarrWrite < SharedZarrTestSetup
             % dimensions using zarrcreate and zarrwrite locally. The default 
             % datatype is double.;
             zarrcreate(testcase.ArrPathWrite,ArrSizeWrite);
-            expData = rand(ArrSizeWrite);
+            if isscalar(ArrSizeWrite)
+                expData = rand(ArrSizeWrite, 1);
+            else
+                expData = rand(ArrSizeWrite);
+            end
+            
             zarrwrite(testcase.ArrPathWrite,expData);
 
             actData = zarrread(testcase.ArrPathWrite);

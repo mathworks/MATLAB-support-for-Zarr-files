@@ -112,8 +112,8 @@ classdef Zarr < handle
         function create(obj, dtype, data_shape, chunk_shape, fillvalue, compression)
             % Function to create the Zarr array
 
-            obj.DsetSize = data_shape;
-            obj.ChunkSize = chunk_shape;
+            obj.DsetSize = int64(data_shape);
+            obj.ChunkSize = int64(chunk_shape);
             obj.MatlabDatatype = dtype;
             obj.TensorstoreDatatype = obj.TstoredtypeMap(dtype);
             obj.ZarrDatatype = obj.ZarrdtypeMap(dtype);
@@ -146,12 +146,18 @@ classdef Zarr < handle
             % Read the Array info
             info = zarrinfo(obj.Path);
             datasize = size(data);
-            if ~isequal(info.shape, datasize(:))
+            % Verify if the data to be written is of correct dimensions
+            if isscalar(info.shape)
+                is_match = (numel(data) == info.shape);
+                
+            else
+                is_match = isequal(info.shape, datasize(:));
+            end
+
+            if ~is_match
                 error("Size of the data to be written does not match.");
             end
-            if any(info.chunks > datasize(:))
-                error("Chunk size cannot be greater than size of the data to be written.");
-            end
+            
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
         end
 
