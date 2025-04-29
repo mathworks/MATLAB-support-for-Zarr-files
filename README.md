@@ -1,6 +1,6 @@
 [![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
 
-# MATLAB Support for Zarr files
+# MATLAB Support for Zarr files 
 
 [Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
@@ -31,7 +31,7 @@ Requires MATLAB release R2022b or newer
 See the link [here](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
 
 
-## Installation
+## Installation 1
 Before proceeding, please ensure that you have a supported version of Python installed on your machine.
 Please refer to the following links to configure your system to use Python with MATLAB:
 - [Configure Your System to Use Python](https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html)
