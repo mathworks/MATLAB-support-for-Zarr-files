@@ -86,8 +86,7 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function noWritePermissions(testcase)
             % Verify error if there are no write permissions to the Zarr array.
-            testcase.assumeTrue(false,'Filtered until the error syntax is fixed.');
-
+            
             % Make the folder read-only.
             fileattrib(testcase.ArrPathWrite,'-w','','s');
             testcase.addTeardown(@()fileattrib(testcase.ArrPathWrite,'+w','','s'));
