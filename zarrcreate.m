@@ -92,11 +92,13 @@ zarrObj = Zarr(filepath);
 
 % Dimensionality of the dataset and the chunk size must be the same
 if any(size(datashape) ~= size(options.ChunkSize))
-    error("Chunk size and the dataset must have the same number of dimensions.");
+    error("MATLAB:zarrcreate:chunkDimsMismatch",...
+        "Chunk size and the dataset must have the same number of dimensions.");
 end
 
 if any(options.ChunkSize > datashape)
-    error("Chunk size cannot be greater than size of the data to be written.");
+    error("MATLAB:zarrcreate:chunkSizeGreater",...
+        "Chunk size cannot be greater than size of the data to be written.");
 end
 if isscalar(datashape)
     datashape = [1 datashape];
@@ -110,6 +112,7 @@ end
 % Input validation for compresion
 function mustBeStructOrEmpty(compression)
 if ~(isstruct(compression) || isempty(compression))
-    error("Compression must be a struct or empty.");
+    error("MATLAB:zarrcreate:invalidCompression",...
+        "Compression must be a struct or empty.");
 end
 end

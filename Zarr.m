@@ -148,14 +148,15 @@ classdef Zarr < handle
             datasize = size(data);
             % Verify if the data to be written is of correct dimensions
             if isscalar(info.shape)
-                is_match = (numel(data) == info.shape);
+                isCorrectShape = (numel(data) == info.shape);
                 
             else
-                is_match = isequal(info.shape, datasize(:));
+                isCorrectShape = isequal(info.shape, datasize(:));
             end
 
-            if ~is_match
-                error("Size of the data to be written does not match.");
+            if ~isCorrectShape
+                error("MATLAB:Zarr:sizeMismatch",...
+                    "Size of the data to be written does not match.");
             end
             
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
@@ -169,7 +170,7 @@ classdef Zarr < handle
 
             % The compression struct should have an 'id' field.
             if ~isfield(compression, 'id')
-                error("Compression id is required");
+                error("MATLAB:Zarr:missingCompressionID","Compression ID is required");
             end
             switch(compression.id)
                 case {"zlib", "gzip", "bz2", "zstd"}
@@ -189,7 +190,8 @@ classdef Zarr < handle
                         compression.shuffle = -1;
                     end
                 otherwise
-                    error('Unsupported compression id: %s', compression.id);
+                    error("MATLAB:Zarr:invalidCompressionID",...
+                        "Invalid compression id: %s", compression.id);
             end
         end
 
@@ -221,7 +223,7 @@ classdef Zarr < handle
                 bucketName = tokens{1}{1};
                 objectPath = tokens{1}{2};
             else
-                error('Invalid S3 URL or URI format');
+                error("MATLAB:Zarr:invalidS3URL","Invalid S3 URL or URI format");
             end
         end
     end
