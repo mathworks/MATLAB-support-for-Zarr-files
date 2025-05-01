@@ -61,12 +61,10 @@ classdef tZarrAttributes < SharedZarrTestSetup
         end
 
         function verifyZarrV3WriteError(testcase)
-            % Verify error when a user tries to write attribute to zarr v3
-            % file.
-            testcase.assumeTrue(false,'Filtered until the right error message is thrown.');
-            filePath = 'dataFiles/grp_v3/arr_v3';
-            testcase.verifyError(@()zarrwriteatt(filePath,'myAttr','attrVal'), ...
-                testcase.PyException);
+            % Verify error when a user tries to write attribute to zarr v3 file.
+            filePath = 'grp_v3/arr_v3';
+            errID = 'MATLAB:zarrwriteatt:writeAttV3';
+            testcase.verifyError(@()zarrwriteatt(filePath,'myAttr','attrVal'),errID);
         end
 
         function nonExistentFile(testcase)
@@ -74,6 +72,29 @@ classdef tZarrAttributes < SharedZarrTestSetup
             % function.
             testcase.verifyError(@()zarrwriteatt('testFile/nonExistentArr','myAttr','attrVal'), ...
                 'MATLAB:validators:mustBeFolder');
+        end
+
+        function notZarrObject(testcase)
+            % Verify error when a user tries to write attributes to an
+            % invalid Zarr object.
+            errID = 'MATLAB:zarrwriteatt:invalidZarrObject';
+            folderPath = fullfile('my_grp','my_arr');
+            mkdir(folderPath);
+            testcase.verifyError(@()zarrwriteatt(folderPath,'myAttr','attrVal'), ...
+                errID);
+        end
+
+        function noWritePermissions(testcase)
+            % Verify error if there are no write permissions to the Zarr array.
+            testcase.assumeTrue(false,'Filtered until the error syntax is fixed.');
+
+            % Make the folder read-only.
+            fileattrib(testcase.ArrPathWrite,'-w','','s');
+            testcase.addTeardown(@()fileattrib(testcase.ArrPathWrite,'+w','','s'));
+
+            errID = 'MATLAB:zarrwriteatt:fileOpenFailure';
+            testcase.verifyError(@()zarrwriteatt(testcase.ArrPathWrite,'myAttr','attrVal'), ...
+                errID);
         end
 
         function tooManyInputs(testcase)

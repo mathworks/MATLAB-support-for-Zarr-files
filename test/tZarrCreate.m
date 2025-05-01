@@ -21,31 +21,31 @@ classdef tZarrCreate < SharedZarrTestSetup
             testcase.verifyError(@()zarrcreate([],testcase.ArrSize),errID);
         end
 
-        % function pathContainingInvalidChars(testcase)
-        %     % Verify error when the array or group name contains
-        %     % unsupported characters.
-              % TOCHECK: Failure on Linux
-        %     testcase.verifyError(@()zarrcreate('grp*/arr',testcase.ArrSize),testcase.PyException);
-        %     testcase.verifyError(@()zarrcreate('grp/arr*',testcase.ArrSize),testcase.PyException);
-        % end
+        function pathContainingInvalidChars(testcase)
+            % Verify error when the array or group name contains
+            % unsupported characters.
+            testcase.assumeTrue(ispc,'Filtered on other platforms');
+            testcase.verifyError(@()zarrcreate('grp*/arr',testcase.ArrSize),testcase.PyException);
+            testcase.verifyError(@()zarrcreate('grp/arr*',testcase.ArrSize),testcase.PyException);
+        end
 
         function chunkSizeGreaterThanArraySize(testcase)
             % Verify error when the chunk size is greater than the array
             % size.
-            testcase.assumeTrue(false,'Filtered until the issue is fixed.');
+            errID = 'MATLAB:zarrcreate:chunkSizeGreater';
             chunkSize = [30 35];
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-                'ChunkSize',chunkSize),testcase.PyException);
+                'ChunkSize',chunkSize),errID);
         end
         
         function chunkSizeMismatch(testcase)
             % Verify error when there is a mismatch between Array size and
             % Chunk size.
-            testcase.assumeTrue(false,'Filtered until issue 25 is fixed.');
             arrSize = [10 12 5];
             chunkSize = [4 5];
+            errID = 'MATLAB:zarrcreate:chunkDimsMismatch';
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,arrSize, ...
-                'ChunkSize',chunkSize),testcase.PyException);
+                'ChunkSize',chunkSize),errID);
         end
 
         function invalidClevelBlosc(testcase)
@@ -124,8 +124,6 @@ classdef tZarrCreate < SharedZarrTestSetup
 
         function invalidFillValue(testcase)
             % Verify error when an invalid type for the fill value is used.
-            % testcase.verifyError(@()zarrcreate(testcase.FilePath,testcase.ArrSize, ...
-            %     "FillValue",[]),testcase.PyException);
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
                 "FillValue",[-9 -9]),testcase.PyException);
             % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
@@ -138,15 +136,20 @@ classdef tZarrCreate < SharedZarrTestSetup
             % Verify error when an invalid size input is used.
             % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,[]), ...
             %     testcase.PyException);
-            
         end
 
         function invalidCompressionInputType(testcase)
             % Verify error when an invalid compression value is used.
-            testcase.assumeTrue(false,'Filtered until the issue is fixed.');
+            %testcase.assumeTrue(false,'Filtered until the issue is fixed.');
             comp.id = 'random';
+            errID = 'MATLAB:Zarr:invalidCompressionID';
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-                'Compression',comp),testcase.PyException);
+                'Compression',comp),errID);
+
+            comp = 'zlib';
+            errID = 'MATLAB:zarrcreate:invalidCompression';
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
+                'Compression',comp),errID);
         end
 
         function invalidCompressionMember(testcase)
@@ -168,6 +171,11 @@ classdef tZarrCreate < SharedZarrTestSetup
         function zlibInvalidCompressionLevel(testcase)
             % Verify error when an invalid compression level is used.
             % For zlib, valid values are [0 9]
+            comp.level = 5;
+            errID = 'MATLAB:Zarr:missingCompressionID';
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
+                'Compression',comp),errID);
+            
             comp.id = 'zlib';
             comp.level = -1;
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
