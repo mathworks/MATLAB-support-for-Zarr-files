@@ -170,7 +170,7 @@ classdef Zarr < handle
 
             % The compression struct should have an 'id' field.
             if ~isfield(compression, 'id')
-                error("MATLAB:Zarr:missingCompressionID","Compression id is required");
+                error("MATLAB:Zarr:missingCompressionID","Compression ID is required");
             end
             switch(compression.id)
                 case {"zlib", "gzip", "bz2", "zstd"}

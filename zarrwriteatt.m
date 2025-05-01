@@ -16,7 +16,7 @@ arguments
 end
 
 if isfile(fullfile(filepath,'zarr.json'))
-    error("MATLAB:zarrwriteatt:ariteAttV3",...
+    error("MATLAB:zarrwriteatt:writeAttV3",...
         "Writing attributes to Zarr v3 files is not supported.");
 end
 
