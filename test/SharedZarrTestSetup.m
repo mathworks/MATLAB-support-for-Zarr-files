@@ -21,8 +21,13 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
 
         function setupWorkingFolderToCreateArr(testcase)
             % Use working folder fixture to create Zarr array.
+            currDir = pwd;
+
             import matlab.unittest.fixtures.WorkingFolderFixture;
             testcase.applyFixture(WorkingFolderFixture);
+            
+            % Add the existing files to the current folder
+            copyfile(fullfile(currDir,'dataFiles'),pwd);
         end
     end
 end

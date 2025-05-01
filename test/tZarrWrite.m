@@ -59,9 +59,23 @@ classdef tZarrWrite < SharedZarrTestSetup
             % Move to a separate file
         end
 
-        function createArrayWithBlosc(testcase)
+        function createArrayWithDefaultBloscConfig(testcase)
             % Verify data when creating and writing to a Zarr array using 
-            % blosc compression.
+            % a default blosc compression configuration.
+            comp.id = 'blosc';
+            expData = randn(testcase.ArrSize);
+
+            zarrcreate(testcase.ArrPathWrite,testcase.ArrSize,'ChunkSize', ...
+                testcase.ChunkSize,'Compression',comp);
+            zarrwrite(testcase.ArrPathWrite,expData);
+
+            actData = zarrread(testcase.ArrPathWrite);
+            testcase.verifyEqual(actData,expData,'Failed to verify data.');
+        end
+
+        function createArrayWithCustomBloscConfig(testcase)
+            % Verify data when creating and writing to a Zarr array using 
+            % custom blosc compression configuration.
             comp.id = 'blosc';
             comp.clevel = 5;
             cname = {'blosclz','lz4','lz4hc','zlib','zstd','snappy'};
@@ -78,6 +92,25 @@ classdef tZarrWrite < SharedZarrTestSetup
                 testcase.verifyEqual(actData,expData,['Failed to verify data for ' cname(i)]);
             end
         end
+
+        function createArrayWithDefaultCompConfig(testcase)
+            % Verify data when creating and writing to a Zarr array using 
+            % a default compression (other than Blosc) configuration.
+            compType = {'zlib','gzip','bz2','zstd'};
+            expData = randn(testcase.ArrSize);
+
+            for i = 1:length(compType)
+                comp.id = compType{i};
+
+                zarrcreate(testcase.ArrPathWrite,testcase.ArrSize,'ChunkSize', ...
+                    testcase.ChunkSize,'Compression',comp);
+                zarrwrite(testcase.ArrPathWrite,expData);
+
+                actData = zarrread(testcase.ArrPathWrite);
+                testcase.verifyEqual(actData,expData,'Failed to verify data.');
+            end
+        end
+
 
         function tooFewInputs(testcase)
             % Verify error when too few inputs to zarrwrite are passed.
@@ -105,8 +138,7 @@ classdef tZarrWrite < SharedZarrTestSetup
         function dataDimensionMismatch(testcase)
             % Verify error when there is a dimension mismatch at the time of 
             % writing to the array.
-            testcase.assumeTrue(false,'Filtered until error ID is added.');
-            errID = '';
+            errID = 'MATLAB:Zarr:sizeMismatch';
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
             data = ones(30,30);
             testcase.verifyError(@()zarrwrite(testcase.ArrPathWrite,data),errID);
