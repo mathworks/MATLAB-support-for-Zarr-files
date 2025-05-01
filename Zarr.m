@@ -148,13 +148,13 @@ classdef Zarr < handle
             datasize = size(data);
             % Verify if the data to be written is of correct dimensions
             if isscalar(info.shape)
-                is_match = (numel(data) == info.shape);
+                isCorrectShape = (numel(data) == info.shape);
                 
             else
-                is_match = isequal(info.shape, datasize(:));
+                isCorrectShape = isequal(info.shape, datasize(:));
             end
 
-            if ~is_match
+            if ~isCorrectShape
                 error("MATLAB:Zarr:sizeMismatch",...
                     "Size of the data to be written does not match.");
             end
