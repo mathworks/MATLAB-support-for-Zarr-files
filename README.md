@@ -76,10 +76,10 @@ data     = zarrread(filepath);
 ### Create and write to a Zarr array
 ``` MATLAB
 filepath   = "myZarrfiles\singleDset";
-data_size = [10,10];              % shape of the Zarr array to be written
+data_size = [10,10];               % shape of the Zarr array to be written
 data       = 5*ones(10,10);        % Data to be written
 
-zarrcreate(filepath, data_size)  % Create the Zarr array with default attributes
+zarrcreate(filepath, data_size)    % Create the Zarr array with default attributes
 zarrwrite(filepath, data)          % Write data to the Zarr array
 ```
 
@@ -90,7 +90,7 @@ filepath = "myZarrfiles\singleZlibDset";
 % Size of the data
 data_size = [10, 20];
 % Chunk size
-chunk_shape = [5, 5];
+chunk_size = [5, 5];
 % Sample data to be written
 data = single(5*ones(10, 20));
 
@@ -99,7 +99,7 @@ compress.id = "zlib";
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_size, ChunkSize=chunk_shape, DataType="single", ...
+zarrcreate(filepath, data_size, ChunkSize=chunk_size, DataType="single", ...
 	Compression=compress)
 	
 % Write to the Zarr array
