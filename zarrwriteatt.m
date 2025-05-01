@@ -2,9 +2,9 @@ function zarrwriteatt(filepath, attname, attvalue)
 %ZARRWRITEATT Write custom Zarr attributes
 %   ZARRWRITEATT(FILEPATH,ATTNAME,ATTVALUE) Write the attribute named
 %   ATTNAME with the value ATTVALUE to the Zarr array or group located at
-%   "filepath".
+%   FILEPATH.
 % The attribute is written only if a .zarray or .zgroup file exists at the
-% location specified by "filepath". Otherwise, the function issues an
+% location specified by FILEPATH. Otherwise, the function issues an
 % error.
 
 %   Copyright 2025 The MathWorks, Inc.
@@ -21,7 +21,8 @@ if isfile(fullfile(filepath,'zarr.json'))
 end
 
 if (~isfile(fullfile(filepath,'.zgroup')) && ~isfile(fullfile(filepath,'.zarray')))
-    error("MATLAB:zarrwriteatt:invalidZarrObject","Not a valid Zarr group or array.");
+    error("MATLAB:zarrwriteatt:invalidZarrObject",...
+        "Invalid file path. File path must refer to a valid Zarr array or group.");
 end
 
 attrsJSONFile = fullfile(filepath, '.zattrs');
@@ -41,7 +42,7 @@ updatedJsonStr = jsonencode(userDefinedInfoStruct);
 fid = fopen(attrsJSONFile, 'w');
 if fid == -1
     error("MATLAB:zarrwriteatt:fileOpenFailure",...
-        ['Could not open file ''' filepath ''' for writing.']);
+        "Could not open file ""%s"" for writing.",filepath);
 end
 fwrite(fid, updatedJsonStr, 'char');
 fclose(fid);

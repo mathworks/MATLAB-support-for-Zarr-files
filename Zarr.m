@@ -109,11 +109,11 @@ classdef Zarr < handle
             data = cast(ndArrayData, obj.MatlabDatatype);
         end
 
-        function create(obj, dtype, data_shape, chunk_shape, fillvalue, compression)
+        function create(obj, dtype, data_size, chunk_size, fillvalue, compression)
             % Function to create the Zarr array
 
-            obj.DsetSize = int64(data_shape);
-            obj.ChunkSize = int64(chunk_shape);
+            obj.DsetSize = int64(data_size);
+            obj.ChunkSize = int64(chunk_size);
             obj.MatlabDatatype = dtype;
             obj.TensorstoreDatatype = obj.TstoredtypeMap(dtype);
             obj.ZarrDatatype = obj.ZarrdtypeMap(dtype);
@@ -156,7 +156,7 @@ classdef Zarr < handle
 
             if ~isCorrectShape
                 error("MATLAB:Zarr:sizeMismatch",...
-                    "Size of the data to be written does not match.");
+                    "Unable to write data. Size of the data to be written must match size of the array.");
             end
             
             py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
@@ -170,7 +170,8 @@ classdef Zarr < handle
 
             % The compression struct should have an 'id' field.
             if ~isfield(compression, 'id')
-                error("MATLAB:Zarr:missingCompressionID","Compression ID is required");
+                error("MATLAB:Zarr:missingCompressionID",...
+                    "Compression structure must contain an id field. Specify compression id as ""zlib"", ""gzip"", ""blosc"", ""bz2"", or ""zstd"".");
             end
             switch(compression.id)
                 case {"zlib", "gzip", "bz2", "zstd"}
@@ -191,7 +192,7 @@ classdef Zarr < handle
                     end
                 otherwise
                     error("MATLAB:Zarr:invalidCompressionID",...
-                        "Invalid compression id: %s", compression.id);
+                        "Invalid compression id. Specify compression id as ""zlib"", ""gzip"", ""blosc"", ""bz2"", or ""zstd"".");
             end
         end
 
@@ -223,7 +224,7 @@ classdef Zarr < handle
                 bucketName = tokens{1}{1};
                 objectPath = tokens{1}{2};
             else
-                error("MATLAB:Zarr:invalidS3URL","Invalid S3 URL or URI format");
+                error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI.");
             end
         end
     end
