@@ -128,9 +128,10 @@ classdef tZarrWrite < SharedZarrTestSetup
         function dataDatatypeMismatch(testcase)
             % Verify error for mismatch between datatype value and datatype 
             % of data to be written with zarrwrite.
+            errID = 'MATLAB:Python:PyExceptionWithNDArrayInfoAndMsg';
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize,"Datatype",'int8');
             data = ones(testcase.ArrSize);
-            testcase.verifyError(@()zarrwrite(testcase.ArrPathWrite,data),testcase.PyException);
+            testcase.verifyError(@()zarrwrite(testcase.ArrPathWrite,data),errID);
         end
 
         function dataDimensionMismatch(testcase)
