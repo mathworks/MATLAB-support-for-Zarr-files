@@ -34,7 +34,8 @@ elseif isfile(fullfile(filepath, 'zarr.json'))
     infoStruct = jsondecode(infoStr);
 % Else, error if it is not an array or group
 else
-    error("MATLAB:zarrinfo:invalidZarrObject","Not a valid Zarr array or group");
+    error("MATLAB:zarrinfo:invalidZarrObject",...
+        "Invalid file path. File path must refer to a valid Zarr array or group.");
 end
 
 % User defined attributes are contained in .zattrs file in each array or group store

@@ -9,10 +9,10 @@ data = zarrread(filepath)
 ### Create and write to a Zarr array
 ``` MATLAB
 filepath   = "myZarrfiles\singleDset";
-data_shape = [10,10];              % shape of the Zarr array to be written
+data_size = [10,10];               % shape of the Zarr array to be written
 data       = 5*ones(10,10);        % Data to be written
 
-zarrcreate(filepath, data_shape)  % Create the Zarr array with default attributes
+zarrcreate(filepath, data_size)    % Create the Zarr array with default attributes
 zarrwrite(filepath, data)          % Write "data" to the zarr array at "filepath" as a double array (default)
 ```
 
@@ -21,9 +21,9 @@ zarrwrite(filepath, data)          % Write "data" to the zarr array at "filepath
 filepath = "myZarrfiles\singleZlibDset";
 
 % Size of the data
-data_shape = [10,10];
+data_size = [10,10];
 % Chunk size
-chunk_shape = [5,5];
+chunk_size = [5,5];
 % Sample data to be written
 data = single(5*ones(10,10));
 
@@ -32,7 +32,7 @@ compress.id = "zlib";
 compress.level = 8;
 
 % Create the Zarr array
-zarrcreate(filepath, data_shape, ChunkSize=chunk_shape, DataType="single", ...
+zarrcreate(filepath, data_size, ChunkSize=chunk_size, DataType="single", ...
 	Compression=compress)
 	
 % Write to the Zarr array
@@ -43,8 +43,8 @@ zarrwrite(filepath, data)
 ### Create a Zarr array and write data to it using blosc compression with non-default fill value
 ``` MATLAB
 filepath = "bloscDsetFV";
-data_shape = [10,10];
-chunk_shape = [5,5];
+data_size = [10,10];
+chunk_size = [5,5];
 
 compstruct.id = "blosc";
 compstruct.cname = "snappy";
@@ -53,7 +53,7 @@ compstruct.shuffle = 0;
 compstruct.blocksize = 5;
 
 data = magic(10);
-zarrcreate(filepath, data_shape, ChunkSize=chunk_shape,...
+zarrcreate(filepath, data_size, ChunkSize=chunk_size,...
     Compression=compstruct, FillValue=42)
 zarrwrite(filepath, data)
 info = zarrinfo(filepath);

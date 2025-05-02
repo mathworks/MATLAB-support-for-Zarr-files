@@ -1,10 +1,10 @@
-function zarrcreate(filepath, datashape, options)
+function zarrcreate(filepath, datasize, options)
 %ZARRCREATE Create Zarr array.
-%   ZARRCREATE(FILEPATH, DATASHAPE, Param1, Value1, ...) Create a Zarr
-%   array at the path specified by "filepath" and of the dimensions specified
+%   ZARRCREATE(FILEPATH, DATASHAPE, Name=Value) creates a Zarr
+%   array at the path specified by FILEPATH and of the dimensions specified
 %   by DATASHAPE. 
-% If "filepath" is a full path name, the function creates all
-% intermediate groups that do not already exist. If "filepath" exists
+% If FILEPATH is a full path name, the function creates all
+% intermediate groups that do not already exist. If FILEPATH exists
 % already, the contents are overwritten.
 % 
 % Name - Value Pairs
@@ -22,13 +22,13 @@ function zarrcreate(filepath, datashape, options)
 %                               Default is [], which specifies no fill
 %                               value.
 % 
-%     Compression             - Primary compression codec used to
-%                               compress the Zarr array, specified as a
-%                               struct containing an "id" field. The fields
-%                               for the struct are as follows: "id"    -
-%                               The accepted values are "zlib", "gzip",
-%                                         "blosc", "bz2", "zstd" or []
-%                                         (default) for no compression.
+%     Compression             - Primary compression codec used to compress
+%                               the Zarr array. By default, no compression
+%                               is applied. To enable compression, specify
+%                               a struct containing an "id" field. The
+%                               fields for the struct are as follows:
+%                               "id"    - The accepted values are "zlib", "gzip",
+%                                         "blosc", "bz2", or "zstd".                               
 %                               Optional Fields:
 %                                 "level" - Compression level, specified as
 %                                           an integer.
@@ -81,8 +81,8 @@ function zarrcreate(filepath, datashape, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonempty}
-    datashape (1,:) double {mustBeFinite, mustBeNonnegative}
-    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = datashape
+    datasize (1,:) double {mustBeFinite, mustBeNonnegative}
+    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = datasize
     options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
     options.FillValue {mustBeNumeric} = []
     options.Compression {mustBeStructOrEmpty} = []
@@ -91,28 +91,28 @@ end
 zarrObj = Zarr(filepath);
 
 % Dimensionality of the dataset and the chunk size must be the same
-if any(size(datashape) ~= size(options.ChunkSize))
+if any(size(datasize) ~= size(options.ChunkSize))
     error("MATLAB:zarrcreate:chunkDimsMismatch",...
-        "Chunk size and the dataset must have the same number of dimensions.");
+        "Invalid chunk size. Chunk size must have the same number of dimensions as data size.");
 end
 
-if any(options.ChunkSize > datashape)
+if any(options.ChunkSize > datasize)
     error("MATLAB:zarrcreate:chunkSizeGreater",...
-        "Chunk size cannot be greater than size of the data to be written.");
+        "Invalid chunk size. Each entry of ChunkSize must be less than or equal to the corresponding entry of datasize.");
 end
-if isscalar(datashape)
-    datashape = [1 datashape];
+if isscalar(datasize)
+    datasize = [1 datasize];
     options.ChunkSize = [1 options.ChunkSize];
 end
 
-zarrObj.create(options.Datatype, datashape, options.ChunkSize, options.FillValue, options.Compression)
+zarrObj.create(options.Datatype, datasize, options.ChunkSize, options.FillValue, options.Compression)
 
 end
 
-% Input validation for compresion
+% Input validation for compression
 function mustBeStructOrEmpty(compression)
 if ~(isstruct(compression) || isempty(compression))
     error("MATLAB:zarrcreate:invalidCompression",...
-        "Compression must be a struct or empty.");
+        "Compression must be a structure or empty.");
 end
 end
