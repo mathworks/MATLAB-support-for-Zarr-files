@@ -15,7 +15,7 @@ do not already exist. If `FILEPATH` exists already, the contents are overwritten
 ###	Name - Value Pairs
     Datatype                - One of "double", "single", "uint64",  
                               "int64", "uint32", "int32", "uint16", "int16",  
-                              "uint8", "int8", or "string". Defaults to "double".  
+                              "uint8", or "int8". Defaults to "double".  
 
     ChunkSize               - Defines chunking layout specified as an array of integers. 
                               Default is [], which specifies no chunking.  
