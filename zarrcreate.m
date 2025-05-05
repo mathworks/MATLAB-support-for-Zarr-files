@@ -113,6 +113,6 @@ end
 function mustBeStructOrEmpty(compression)
 if ~(isstruct(compression) || isempty(compression))
     error("MATLAB:zarrcreate:invalidCompression",...
-        "Compression must be a structure or empty.");
+        "Invalid data type. Specify Compression as a structure.");
 end
 end
