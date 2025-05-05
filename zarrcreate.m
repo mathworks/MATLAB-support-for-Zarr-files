@@ -1,8 +1,8 @@
 function zarrcreate(filepath, datasize, options)
 %ZARRCREATE Create Zarr array.
-%   ZARRCREATE(FILEPATH, DATASHAPE, Name=Value) creates a Zarr
+%   ZARRCREATE(FILEPATH, DATASIZE, Name=Value) creates a Zarr
 %   array at the path specified by FILEPATH and of the dimensions specified
-%   by DATASHAPE. 
+%   by DATASIZE.
 % If FILEPATH is a full path name, the function creates all
 % intermediate groups that do not already exist. If FILEPATH exists
 % already, the contents are overwritten.
