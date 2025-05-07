@@ -16,8 +16,7 @@ arguments
 end
 
 % .zarray and .zgroup are valid metadata files for Zarr v2 which contain
-% library-defined attributes. zarr.json is valid metadata file for Zarr v3
-% containing library-defined attributes.
+% library-defined attributes.
 try
     infoStr = fileread(fullfile(filepath, '.zarray'));
     nodeType = 'array';
