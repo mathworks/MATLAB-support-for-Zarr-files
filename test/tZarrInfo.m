@@ -34,20 +34,6 @@ classdef tZarrInfo < matlab.unittest.TestCase
             testcase.verifyEqual(actInfo,expInfo,'Failed to verify group info.');
         end
 
-        function verifyArrayInfoV3(testcase)
-            % Verify array info created with Zarr v3 format.
-            actInfo = zarrinfo(testcase.ArrPathV3);
-            expInfo = testcase.ExpInfo.zarrV3ArrInfo;
-            testcase.verifyEqual(actInfo,expInfo,'Failed to verify array info.');
-        end
-
-        function verifyGroupInfoV3(testcase)
-            % Verify group info created with Zarr v3 format.
-            actInfo = zarrinfo(testcase.GrpPathV3);
-            expInfo = testcase.ExpInfo.zarrV3GrpInfo;
-            testcase.verifyEqual(actInfo,expInfo,'Failed to verify group info.');
-        end
-
         function missingZgroupFile(testcase)
             % Verify error when using zarrinfo function on a group not
             % containing .zgroup file.
@@ -63,7 +49,7 @@ classdef tZarrInfo < matlab.unittest.TestCase
         function nonExistentArr(testcase)
             % Verify zarrinfo error when a user tries to read a non-existent
             % array.
-            errID = 'MATLAB:validators:mustBeFolder';
+            errID = 'MATLAB:zarrinfo:invalidZarrObject';
             testcase.verifyError(@()zarrinfo('nonexistentArr/'),errID);
         end
 

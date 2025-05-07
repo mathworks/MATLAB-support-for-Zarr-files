@@ -12,39 +12,40 @@ function infoStruct = zarrinfo(filepath)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
 end
 
 % .zarray and .zgroup are valid metadata files for Zarr v2 which contain
 % library-defined attributes. zarr.json is valid metadata file for Zarr v3
 % containing library-defined attributes.
-% If the location is a Zarr array
-if isfile(fullfile(filepath, '.zarray'))
+try
     infoStr = fileread(fullfile(filepath, '.zarray'));
-    infoStruct = jsondecode(infoStr);
-    infoStruct.node_type = 'array';
-% If the location is a Zarr group    
-elseif isfile(fullfile(filepath, '.zgroup'))
-    infoStr = fileread(fullfile(filepath, '.zgroup'));
-    infoStruct = jsondecode(infoStr);
-    infoStruct.node_type = 'group';
-% Supporting zarr.json for zarr v3 (low hanging fruit for future)
-elseif isfile(fullfile(filepath, 'zarr.json'))
-    infoStr = fileread(fullfile(filepath, 'zarr.json'));
-    infoStruct = jsondecode(infoStr);
-% Else, error if it is not an array or group
-else
-    error("MATLAB:zarrinfo:invalidZarrObject",...
-        "Invalid file path. File path must refer to a valid Zarr array or group.");
+    nodeType = 'array';
+catch 
+    try
+        infoStr = fileread(fullfile(filepath, '.zgroup'));
+        nodeType = 'group';
+    catch ME
+        % If either the .zarray or .zgroup file exists
+        if any(isfile({fullfile(filepath, '.zarray'), fullfile(filepath, '.zgroup')}))
+            throw(ME);    
+        else
+            error("MATLAB:zarrinfo:invalidZarrObject",...
+                "Invalid file path. File path must refer to a valid Zarr array or group.");
+        end
+    end
 end
+infoStruct = jsondecode(infoStr);
+infoStruct.node_type = nodeType;
 
 % User defined attributes are contained in .zattrs file in each array or group store
-if isfile(fullfile(filepath, '.zattrs'))
+try
     userDefinedInfoStruct = readZattrs(filepath);
     userDefinedFieldNames = fieldnames(userDefinedInfoStruct);
     for i = 1:numel(userDefinedFieldNames)
-            infoStruct.(userDefinedFieldNames{i}) = userDefinedInfoStruct.(userDefinedFieldNames{i});
+        infoStruct.(userDefinedFieldNames{i}) = userDefinedInfoStruct.(userDefinedFieldNames{i});
     end
+catch
+   % do nothing since the existence of .zattrs file is optional. 
 end
-
 end

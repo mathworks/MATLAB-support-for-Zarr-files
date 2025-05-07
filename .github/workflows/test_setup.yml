@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - branch-bug
-      - update-test-branch
+      - test-branch5
 
 jobs:
   test:
