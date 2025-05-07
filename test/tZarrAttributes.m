@@ -71,7 +71,7 @@ classdef tZarrAttributes < SharedZarrTestSetup
             % Verify error when using a non-existent file with zarrwriteatt 
             % function.
             testcase.verifyError(@()zarrwriteatt('testFile/nonExistentArr','myAttr','attrVal'), ...
-                'MATLAB:validators:mustBeFolder');
+                'MATLAB:zarrwriteatt:invalidZarrObject');
         end
 
         function notZarrObject(testcase)
@@ -113,7 +113,7 @@ classdef tZarrAttributes < SharedZarrTestSetup
         function invalidInput(testcase)
             % Verify error when invalid input is used for zarrwriteatt
             % function.
-            errID =  'MATLAB:validators:mustBeFolder';
+            errID =  'MATLAB:zarrwriteatt:invalidZarrObject';
 
             % Invalid file path type
             testcase.verifyError(@()zarrwriteatt('nonexistent','myAttr',10),errID);

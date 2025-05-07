@@ -63,7 +63,7 @@ classdef tZarrInfo < matlab.unittest.TestCase
         function nonExistentArr(testcase)
             % Verify zarrinfo error when a user tries to read a non-existent
             % array.
-            errID = 'MATLAB:validators:mustBeFolder';
+            errID = 'MATLAB:zarrinfo:invalidZarrObject';
             testcase.verifyError(@()zarrinfo('nonexistentArr/'),errID);
         end
 
