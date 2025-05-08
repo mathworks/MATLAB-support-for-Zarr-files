@@ -12,7 +12,7 @@ function infoStruct = zarrinfo(filepath)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
 end
 
 % .zarray and .zgroup are valid metadata files for Zarr v2 which contain

@@ -10,7 +10,7 @@ function zarrwriteatt(filepath, attname, attvalue)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
     attname {mustBeTextScalar, mustBeNonzeroLengthText}
     attvalue
 end
