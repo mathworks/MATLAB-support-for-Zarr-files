@@ -96,10 +96,10 @@ classdef Zarr < handle
             % Function to read the Zarr array
 
             % If the Zarr array is local, verify that it is a valid folder
-            % Enabling this check only for local Zarr files (for now)
-            % because https S3 links will fail this check even if they are
-            % valid.
-            if ~obj.isRemote
+            % Enabling this check only for local Zarr files and S3 hosted
+            % Zarr files in the s3:// syntax (for now) because https S3
+            % links will fail this check even if they are valid.
+            if ~startsWith(obj.Path, 'http')
                 if ~isfile(fullfile(obj.Path, '.zarray'))
                     error("MATLAB:Zarr:invalidZarrObject",...
                         "Invalid file path. File path must refer to a valid Zarr array.");
