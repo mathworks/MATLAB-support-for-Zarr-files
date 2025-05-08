@@ -8,7 +8,7 @@ function zarrwrite(filepath, data)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
     data
 end
 
