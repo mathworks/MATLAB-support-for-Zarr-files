@@ -6,7 +6,7 @@ on:
       - main
       - branch-bug
       - update-test-branch
-      - test-branch6
+      - test-branch7
 
 jobs:
   test:

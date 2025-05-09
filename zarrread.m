@@ -8,7 +8,7 @@ function data = zarrread(filepath)
 %   Copyright 2025 The MathWorks, Inc.
 
 arguments
-    filepath {mustBeTextScalar, mustBeNonzeroLengthText, mustBeFolder}
+    filepath {mustBeTextScalar, mustBeNonzeroLengthText}
 end
 
 zarrObj = Zarr(filepath);

@@ -31,21 +31,21 @@ classdef tZarrRead < matlab.unittest.TestCase
         function verifyGroupInpError(testcase)
             % Verify error if a user tries to pass the group as input to
             % zarrread function.
-            errID = 'MATLAB:Python:PyException';
+            errID = 'MATLAB:Zarr:invalidZarrObject';
             testcase.verifyError(@()zarrread(testcase.GrpPathRead),errID);
         end
 
         function verifyArrReadV3(testcase)
             % Verify error when a user tries to read a zarr format v3
             % array.
-            errID = 'MATLAB:Python:PyException';
+            errID = 'MATLAB:Zarr:invalidZarrObject';
             testcase.verifyError(@()zarrread(testcase.ArrPathReadV3),errID);
         end
 
         function nonExistentArray(testcase)
             % Verify zarrread error when a user tries to read a non-existent
             % file.
-            errID = 'MATLAB:validators:mustBeFolder';
+            errID = 'MATLAB:Zarr:invalidZarrObject';
             testcase.verifyError(@()zarrread('nonexistent/'),errID);
         end
 

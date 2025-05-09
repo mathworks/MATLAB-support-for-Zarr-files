@@ -157,5 +157,12 @@ classdef tZarrWrite < SharedZarrTestSetup
             actData = zarrread(testcase.ArrPathWrite);
             testcase.verifyEqual(actData,expData,'Failed to verify array data')
         end
+
+        function writeToNonExistentArray(testcase)
+            % Try writing to a Zarr array which has not been created yet
+            errID = 'MATLAB:zarrinfo:invalidZarrObject';
+            data = rand(10);
+            testcase.verifyError(@()zarrwrite('nonExistentArray.zarr',data),errID);
+        end
     end
 end
