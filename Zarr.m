@@ -224,8 +224,11 @@ classdef Zarr < handle
             };
             
             % For each pattern, specify which group is bucket and which is path
-            bucketGroup = [1, 1, 1, 1, 1, 1];
-            pathGroup   = [3, 2, 2, 2, 2, 2];
+            % regexp will extract multiple tokens from the patterns above.
+            % For each pattern, the indices below denote the location of
+            % the bucket and the path name.
+            bucketIdx = [1, 1, 1, 1, 1, 1];
+            pathIdx   = [3, 2, 2, 2, 2, 2];
             
             % Iterate through the patterns and identify the pattern which matches the
             % URI. Extract the bucket name and the path.
@@ -233,8 +236,8 @@ classdef Zarr < handle
                 tokens = regexp(url, patterns{patternIdx}, 'tokens');
                 if ~isempty(tokens)
                     t = tokens{1};
-                    bucketName = t{bucketGroup(patternIdx)};
-                    objectPath = t{pathGroup(patternIdx)};
+                    bucketName = t{bucketIdx(patternIdx)};
+                    objectPath = t{pathIdx(patternIdx)};
                     return;
                 end
             end
