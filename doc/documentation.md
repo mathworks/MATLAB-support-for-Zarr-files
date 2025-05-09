@@ -4,7 +4,7 @@ This document highlights the usage of the MATLAB functions for reading and writi
 Please find examples of the usage of these functions in `examples.md`.
 
 Please refer to `README.md` for installation instructions and third-party dependencies.
-* The use of this repository requires MATLAB release R2022b or newer.
+* The use of this repository requires MATLAB release R2024a or newer.
 * Currently, only Zarr v2 is supported.
 
 ## `zarrcreate(FILEPATH, DATASIZE, Name=Value)`

@@ -21,7 +21,7 @@ For example,
 
 ### MathWorks Products (https://www.mathworks.com)
 
-Requires MATLAB release R2022b or newer
+Requires MATLAB release R2024a or newer
 
 ### 3rd Party Products:
 - Python - v3.10 or newer
