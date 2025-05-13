@@ -49,12 +49,12 @@ classdef tZarrInfo < matlab.unittest.TestCase
         end
 
         function missingZgroupFile(testcase)
-            % Verify error when using zarrinfo function on a group not
+            % Verify error when using zarrinfo function on a directory not
             % containing .zgroup file.
             import matlab.unittest.fixtures.WorkingFolderFixture;
             testcase.applyFixture(WorkingFolderFixture);
 
-            zarrcreate('prt_grp_write/arr1',[10 10]);
+            mkdir('prt_grp_write/arr1');
             grpPath = 'prt_grp_write/';
             errID = 'MATLAB:zarrinfo:invalidZarrObject';
             testcase.verifyError(@()zarrinfo(grpPath),errID);

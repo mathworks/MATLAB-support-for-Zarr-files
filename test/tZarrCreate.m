@@ -4,6 +4,29 @@ classdef tZarrCreate < SharedZarrTestSetup
     % Copyright 2025 The MathWorks, Inc.
 
     methods(Test)
+
+        function createIntermediateZgroups(testcase)
+            % Verify that zarrcreate creates zarr groups when given a
+            % nested path
+            
+            arrayPath = fullfile(testcase.ArrPathWrite, "A", "B");
+            zarrcreate(arrayPath, testcase.ArrSize);
+            [groupPath, ~, ~] = fileparts(arrayPath);
+
+            testcase.verifyTrue(isfile(fullfile(groupPath, ".zgroup")),...
+                ".zgroup file was not created")
+
+            grpInfo = zarrinfo(groupPath);
+            expFormat = '2';
+            expType = 'group';
+            
+            testcase.verifyEqual(grpInfo.zarr_format, expFormat,...
+                "Unexpected Zarr group format");
+            testcase.verifyEqual(grpInfo.node_type, expType,...
+                "Unexpected Zarr group node type");
+
+        end
+
         function invalidFilePath(testcase)
             % Verify error when an invalid file path is used as an input to
             % zarrcreate function.
