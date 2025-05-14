@@ -119,7 +119,7 @@ classdef Zarr < handle
 
         function createGroup(pathToGroup)
             % Create a Zarr group including creating the directory (if
-            % needed) and the .zrgroup file. Assumes the parent directory
+            % needed) and the .zgroup file. Assumes the parent directory
             % exists
 
             if ~isfolder(pathToGroup)
