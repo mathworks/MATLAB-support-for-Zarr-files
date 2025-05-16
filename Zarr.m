@@ -6,7 +6,7 @@ classdef Zarr < handle
 %   Copyright 2025 The MathWorks, Inc.
 
     properties(GetAccess = public, SetAccess = protected)
-        Path
+        Path (1,1) string
         ChunkSize
         DsetSize
         FillValue
@@ -56,6 +56,122 @@ classdef Zarr < handle
                 py.importlib.reload(zarrModule);
             end
         end
+
+        function isZarray = isZarrArray(path)
+            % Given a path, determine if it is a Zarr array
+
+            isZarray = isfile(fullfile(path, '.zarray'));
+        end
+
+        function isZgroup = isZarrGroup(path)
+            % Given a path, determine if it is a Zarr group
+
+            isZgroup = isfile(fullfile(path, '.zgroup'));
+        end
+
+        function resolvedPath = getFullPath(path)
+            % Given a path, resolves it to a full path. The trailing
+            % directories do not have to exist.
+
+            arguments (Input)
+                path (1,1) string
+            end
+
+            if path == ""
+                resolvedPath = pwd;
+                return
+            end
+
+            resolvedPath = matlab.io.internal.filesystem.resolvePath(path).ResolvedPath;
+
+            if resolvedPath == ""
+                % If the given path does not exist, it is likely due to
+                % trailing directories not existing yet. Resolve parent
+                % directory's path, and append child directory.
+
+                [pathToParentFolder, child, ext] = fileparts(path);
+
+                resolvedParentPath = Zarr.getFullPath(pathToParentFolder);
+                resolvedPath = fullfile(resolvedParentPath, child+ext);
+            end
+        end
+
+        function existingParent = getExistingParentFolder(path)
+            % Given a full path where some trailing directories might not yet
+            % exist, determine the longest prefix path that does exist
+
+            arguments (Input)
+                path (1,1) string
+            end
+
+            if isfolder(path)
+                % if the full path exist, we are done
+                existingParent = path;
+                return
+            end
+
+            % See if the parent path exist. Continue recursing until an
+            % exisiting parent path is found
+            [pathToParentFolder, ~, ~] = fileparts(path);
+            existingParent = Zarr.getExistingParentFolder(pathToParentFolder);
+
+        end
+
+        function createGroup(pathToGroup)
+            % Create a Zarr group including creating the directory (if
+            % needed) and the .zgroup file. Assumes the parent directory
+            % exists
+
+            if ~isfolder(pathToGroup)
+                mkdir(pathToGroup)
+            end
+
+            % Currently we support only Zarr v2
+            groupJSON = jsonencode(struct("zarr_format", "2"));
+
+            % Write .zgroup file
+            groupFile = fullfile(pathToGroup, ".zgroup");
+            fid = fopen(groupFile, 'w');
+            if fid == -1
+                error("MATLAB:Zarr:fileOpenFailure",...
+                    "Could not open file ""%s"" for writing.",groupFile);
+            end
+            closeFile = onCleanup(@() fclose(fid));
+
+            fwrite(fid, groupJSON, 'char');
+        end
+
+        function makeZarrGroups(existingParentPath, newGroupsPath)
+            % Create a hierarchy of nested Zarr groups for all directories
+            % in newGroupsPath. For example, if existingParentPath is
+            % "/Users/jsmith/Documents" and newGroupsPath is
+            % "myfile.zarr/A/B", the following directories will be made
+            % into Zgroups:
+            %    /Users/jsmith/Documents/myfile.zarr/
+            %    /Users/jsmith/Documents/myfile.zarr/A
+            %    /Users/jsmith/Documents/myfile.zarr/A/B
+            %
+            % The existingParentPath and newGroupsPath should combine to
+            % create an absolute path to the most nested zarr group to be
+            % created
+            
+            arguments (Input)
+                existingParentPath (1,1) string
+                newGroupsPath (1,1) string
+            end
+
+            newGroups = split(newGroupsPath, filesep);
+
+            for group = newGroups'
+                if group == ""
+                    continue
+                end
+                pathToNewGroup = fullfile(existingParentPath, group);
+                Zarr.createGroup(pathToNewGroup);
+                existingParentPath = pathToNewGroup;
+            end
+
+        end
     end
 
     methods 
@@ -86,6 +202,8 @@ classdef Zarr < handle
                 obj.KVStoreSchema = py.dict(RemoteStoreSchema);
                 
             else % Local file
+                % use full path
+                obj.Path = Zarr.getFullPath(path);
                 FileStoreSchema = dictionary(["driver", "path"], ["file", obj.Path]);
                 obj.KVStoreSchema = py.dict(FileStoreSchema);
             end
@@ -100,7 +218,7 @@ classdef Zarr < handle
             % Zarr files in the s3:// syntax (for now) because https S3
             % links will fail this check even if they are valid.
             if ~startsWith(obj.Path, 'http')
-                if ~isfile(fullfile(obj.Path, '.zarray'))
+                if ~Zarr.isZarrArray(obj.Path)
                     error("MATLAB:Zarr:invalidZarrObject",...
                         "Invalid file path. File path must refer to a valid Zarr array.");
                 end
@@ -144,12 +262,27 @@ classdef Zarr < handle
                 obj.FillValue = cast(fillvalue, obj.MatlabDatatype);
             end
             
+            % see how much of the provided path exists already 
+            existingParentPath = Zarr.getExistingParentFolder(obj.Path);
+
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
             obj.TensorstoreSchema = py.ZarrPy.createZarr(obj.KVStoreSchema, py.numpy.array(obj.DsetSize),...
                 py.numpy.array(obj.ChunkSize), obj.TensorstoreDatatype, ...
                  obj.ZarrDatatype, obj.Compression, obj.FillValue);
             %py.ZarrPy.temp(py.numpy.array([1, 1]), py.numpy.array([2, 2]))
+
+            % if new directories were created as part of creating a
+            % Zarr array, we need to make them into Zarr groups.
+            newDirs = extractAfter(obj.Path, existingParentPath);
+            % the last directory is a Zarr array, ones before should be
+            % Zarr groups
+            [newGroups, ~,~] = fileparts(newDirs);
+            if newGroups ~= ""
+                Zarr.makeZarrGroups(existingParentPath, newGroups);
+            end
+
+
         end
 
         function write(obj, data)
