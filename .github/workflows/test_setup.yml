@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        matlab-version: ['R2023b','R2024a']
 
     steps:
     - name: Checkout code
@@ -23,7 +22,7 @@ jobs:
     - name: Set up MATLAB
       uses: matlab-actions/setup-matlab@v2
       with:
-        release: ${{matrix.matlab-version}}
+        release: R2024a
 
     - name: Set up Python
       uses: actions/setup-python@v5
