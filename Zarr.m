@@ -198,14 +198,12 @@ classdef Zarr < handle
                 % Extract the S3 bucket name and path
                 [bucketName, objectPath] = obj.extractS3BucketNameAndPath(obj.Path);
                 % Create a Python dictionary for the KV store driver
-                RemoteStoreSchema = dictionary(["driver", "bucket", "path"], ["s3", bucketName, objectPath]);
-                obj.KVStoreSchema = py.dict(RemoteStoreSchema);
+                obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
                 
             else % Local file
                 % use full path
                 obj.Path = Zarr.getFullPath(path);
-                FileStoreSchema = dictionary(["driver", "path"], ["file", obj.Path]);
-                obj.KVStoreSchema = py.dict(FileStoreSchema);
+                obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, obj.Path);
             end
         end
 
