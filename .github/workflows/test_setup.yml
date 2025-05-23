@@ -3,10 +3,10 @@ name: Run Tests
 on:
   push:
     branches:
-      - main
-      - branch-bug
-      - test-branch7
-      - test-branch-pyDict
+      #- main
+      #- branch-bug
+      #- test-branch7
+      #- test-branch-pyDict
 
 jobs:
   test:
