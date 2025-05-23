@@ -14,8 +14,8 @@ def createKVStore(isRemote, objPath, bucketName="") -> dict:
     
     Parameters:
     - isRemote (bool): whether the resource to be accessed with this 
-KV store is remote (s3) or local
-    - objPath (str): path to local Zarr file or to s3 object    
+KV store is remote (S3) or local
+    - objPath (str): path to local Zarr file or to S3 object    
     - bucketName (str): If file is remote, this should be the S3 bucket 
 name 
     
