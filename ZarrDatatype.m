@@ -1,7 +1,6 @@
 classdef ZarrDatatype
     %ZARRDATATYPE Datatype of Zarr data
-    %   Represents a datatype of Zarr data and how it is mapped between 
-    %   datatypes in MATLAB, Tensorstore, and Zarr
+    %   Represents the datatype mapping between MATLAB, Tensorstore, and Zarr
 
     
     properties(Constant, Hidden)
@@ -14,7 +13,6 @@ classdef ZarrDatatype
         ZarrTypes   = ["|b1", "|u1", "|i1", "<u2", "<i2",...
             "<u4", "<i4", "<u8", "<i8", "<f4", "<f8"];
     end
-
     
     properties (SetAccess = immutable, GetAccess=private, Hidden)
         % Index into datatype arrays
@@ -22,15 +20,16 @@ classdef ZarrDatatype
     end
 
     properties (Dependent, SetAccess = immutable)
+        % Dependent properties representing the corresponding datatype in
+        % Zarr, Tensorstore, and MATLAB
         ZarrType
         TensorstoreType
         MATLABType
     end
 
-    methods (Hidden) %(Access=private)
-
-        % "Private" constructor. Should not be used directly. 
-        % Use from*Type static methods instead.
+    methods (Hidden)
+        % "Private" constructor - should not be used directly. 
+        % Use from*Type() static methods instead.
         function obj = ZarrDatatype(ind)
             obj.Index = ind;
         end
@@ -54,9 +53,8 @@ classdef ZarrDatatype
     end
 
     methods (Static)
-
         function obj = fromMATLABType(MATLABType)
-            % Create datatype object from MATLAB datatype
+            % Create a datatype object based on MATLAB datatype name
             arguments
                 MATLABType (1,1) string
             end
@@ -67,7 +65,7 @@ classdef ZarrDatatype
         end
 
         function obj = fromTensorstoreType(tensorstoreType)
-            % Create datatype object from Tensorstore datatype
+            % Create a datatype object based on Tensorstore datatype name
             arguments
                 tensorstoreType (1,1) string
             end
