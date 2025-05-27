@@ -1,13 +1,10 @@
 name: Run Tests
 
-on:
-  push:
-    branches:
-      - main
-      - branch-bug
-      - update-test-branch
-      - test-branch7
-      - test-branch8
+#on:
+#  push:
+#    branches:
+      #- main
+      #- test-branch-pyDict
 
 jobs:
   test:
@@ -15,15 +12,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
+        matlab-version: ['R2023b','R2024a']
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up MATLAB R2024a
+    - name: Set up MATLAB
       uses: matlab-actions/setup-matlab@v2
       with:
-        release: R2024a
+        release: ${{matrix.matlab-version}}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -36,7 +34,7 @@ jobs:
         pip install numpy==1.26.4 tensorstore==0.1.73
 
     - name: Run tests
-      uses: matlab-actions/run-tests@v2
+      uses: matlab-actions/run-tests@v4
       with:
         select-by-folder: 'test'
         code-coverage-cobertura: cobertura.xml

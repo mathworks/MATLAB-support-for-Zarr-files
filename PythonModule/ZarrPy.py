@@ -7,6 +7,32 @@ Copyright 2025 The MathWorks, Inc.
 import numpy as np
 import tensorstore as ts
 
+def createKVStore(isRemote, objPath, bucketName="") -> dict:
+    """
+    Creates a KV store (a python dictionary) for reading or writing
+    a Zarr file
+    
+    Parameters:
+    - isRemote (bool): whether the resource to be accessed with this 
+KV store is remote (S3) or local
+    - objPath (str): path to local Zarr file or to S3 object    
+    - bucketName (str): If file is remote, this should be the S3 bucket 
+name 
+    
+    Returns:
+    - KVStore (dict): Key-Value store as required by tensorstore to work 
+with Zarr
+    """
+    KVStore = dict(path=objPath);
+    
+    if isRemote:
+        KVStore['driver'] = 's3'
+        KVStore['bucket'] = bucketName
+    else:
+        KVStore['driver'] = 'file'
+
+    return KVStore
+
 def createZarr(kvstore_schema, data_shape, chunk_shape, tstoreDataType, zarrDataType, compressor, fillvalue):
     """
     Creates a new Zarr array and writes data to it.
