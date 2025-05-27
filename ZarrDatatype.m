@@ -5,7 +5,8 @@ classdef ZarrDatatype
 
     
     properties(Constant, Hidden)
-        % maps between three kinds of datatypes
+        % Same-length arrays that represent mapping between 
+        % three kinds of datatypes
         MATLABTypes = ["logical", "uint8", "int8", "uint16", "int16",...
             "uint32", "int32", "uint64", "int64", "single", "double"];
         TensorstoreTypes = ["bool", "uint8", "int8", "uint16", "int16",...
@@ -16,7 +17,40 @@ classdef ZarrDatatype
 
     
     properties (SetAccess = immutable, GetAccess=private, Hidden)
+        % Index into datatype arrays
         Index (1,1) int32
+    end
+
+    properties (Dependent, SetAccess = immutable)
+        ZarrType
+        TensorstoreType
+        MATLABType
+    end
+
+    methods (Hidden) %(Access=private)
+
+        % "Private" constructor. Should not be used directly. 
+        % Use from*Type static methods instead.
+        function obj = ZarrDatatype(ind)
+            obj.Index = ind;
+        end
+    end
+
+    methods
+        function zType = get.ZarrType(obj)
+            % Get the corresponding Zarr datatype
+            zType = ZarrDatatype.ZarrTypes(obj.Index);
+        end
+
+        function tType = get.TensorstoreType(obj)
+            % Get the corresponding Tensorstore datatype
+            tType = ZarrDatatype.TensorstoreTypes(obj.Index);
+        end
+
+        function mType = get.MATLABType(obj)
+            % Get the corresponding MATLAB datatype
+            mType = ZarrDatatype.MATLABTypes(obj.Index);
+        end
     end
 
     methods (Static)
@@ -39,33 +73,9 @@ classdef ZarrDatatype
             end
 
             validatestring(tensorstoreType, ZarrDatatype.TensorstoreTypes);
-            obj = ZarrDatatype(find(tensorstoreType == ZarrDatatype.TensorstoreTypes));
+            ind = find(tensorstoreType == ZarrDatatype.TensorstoreTypes);
+            obj = ZarrDatatype(ind);
         end
     end
 
-    methods (Hidden) %(Access=protected)
-
-        % "Private" constructor
-        function obj = ZarrDatatype(ind)
-            obj.Index = ind;
-        end
-    end
-
-    methods
-
-        function zType = ZarrType(obj)
-            % Get the corresponding Zarr datatype
-            zType = ZarrDatatype.ZarrTypes(obj.Index);
-        end
-
-        function tType = TensorstoreType(obj)
-            % Get the corresponding Tensorstore datatype
-            tType = ZarrDatatype.TensorstoreTypes(obj.Index);
-        end
-
-        function mType = MATLABType(obj)
-            % Get the corresponding MATLAB datatype
-            mType = ZarrDatatype.MATLABTypes(obj.Index);
-        end
-    end
 end
