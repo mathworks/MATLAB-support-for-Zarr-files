@@ -2,6 +2,7 @@ classdef ZarrDatatype
     %ZARRDATATYPE Datatype of Zarr data
     %   Represents the datatype mapping between MATLAB, Tensorstore, and Zarr
 
+    % Copyright 2025 The MathWorks, Inc.
     
     properties(Constant, Hidden)
         % Same-length arrays that represent mapping between 
@@ -56,10 +57,9 @@ classdef ZarrDatatype
         function obj = fromMATLABType(MATLABType)
             % Create a datatype object based on MATLAB datatype name
             arguments
-                MATLABType (1,1) string
+                MATLABType (1,1) string {ZarrDatatype.mustBeMATLABType}
             end
 
-            validatestring(MATLABType, ZarrDatatype.MATLABTypes);
             ind = find(MATLABType == ZarrDatatype.MATLABTypes);
             obj = ZarrDatatype(ind);
         end
@@ -67,12 +67,22 @@ classdef ZarrDatatype
         function obj = fromTensorstoreType(tensorstoreType)
             % Create a datatype object based on Tensorstore datatype name
             arguments
-                tensorstoreType (1,1) string
+                tensorstoreType (1,1) string {ZarrDatatype.mustBeTensorstoreType}
             end
 
-            validatestring(tensorstoreType, ZarrDatatype.TensorstoreTypes);
             ind = find(tensorstoreType == ZarrDatatype.TensorstoreTypes);
             obj = ZarrDatatype(ind);
+        end
+
+
+        function mustBeMATLABType(type)
+            % Validator for MATLAB types
+            mustBeMember(type, ZarrDatatype.MATLABTypes);
+        end
+
+        function mustBeTensorstoreType(type)
+            % Validator for Tensorstore types
+            mustBeMember(type, ZarrDatatype.TensorstoreTypes)
         end
     end
 
