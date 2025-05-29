@@ -161,6 +161,14 @@ classdef tZarrCreate < SharedZarrTestSetup
             %     testcase.PyException);
         end
 
+
+        function invalidDatatype(testcase)
+            % Verify the error when an usupported datatype is used.
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,...
+                testcase.ArrSize,Datatype="bla"),...
+                'MATLAB:validators:mustBeMember');
+        end
+
         function invalidCompressionInputType(testcase)
             % Verify error when an invalid compression value is used.
             %testcase.assumeTrue(false,'Filtered until the issue is fixed.');

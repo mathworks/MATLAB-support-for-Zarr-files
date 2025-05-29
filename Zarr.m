@@ -10,29 +10,13 @@ classdef Zarr < handle
         ChunkSize
         DsetSize
         FillValue
-        MatlabDatatype
+        Datatype
         Compression
         TensorstoreSchema
-        KVStoreSchema       % Schema to represent the storage backend specification (local file, S3, etc)
+        KVStoreSchema % Schema to represent the storage backend specification (local file, S3, etc)
         isRemote
     end
 
-    properties (Access = protected)
-        TensorstoreDatatype
-        ZarrDatatype
-    end
-
-    properties(Constant, Access = protected)
-        MATLABDatatypes = ["logical", "uint8", "int8", "uint16", "int16", "uint32", "int32", "uint64", "int64", "single", "double"];
-        TstoreDatatypes = ["bool", "uint8", "int8", "uint16", "int16", "uint32", "int32", "uint64", "int64", "float32", "float64"];
-        ZarrDatatypes   = ["|b1",   "|u1",  "|i1",  "<u2",    "<i2",   "<u4",    "<i4",   "<u8",    "<i8",   "<f4",     "<f8"];
-        
-    end
-
-    properties (Dependent, Access = protected)
-        TstoredtypeMap        % hash map from MATLAB datatypes to Tensorstore datatypes
-        ZarrdtypeMap          % hash map from MATLAB datatypes to Zarr datatypes.
-    end
 
     methods(Static)
         function pySetup
@@ -175,19 +159,7 @@ classdef Zarr < handle
     end
 
     methods 
-        
-        function TstoredtypeMap = get.TstoredtypeMap(obj)
-            % Function to create hash map from MATLAB datatypes to
-            % Tensorstore datatypes.
-            TstoredtypeMap = dictionary(obj.MATLABDatatypes, obj.TstoreDatatypes);
-        end
-
-        function ZarrdtypeMap = get.ZarrdtypeMap(obj)
-            % Function to create hash map from MATLAB datatypes to
-            % Zarr datatypes.
-            ZarrdtypeMap = dictionary(obj.MATLABDatatypes, obj.ZarrDatatypes);
-        end
-            
+                    
         function obj = Zarr(path)
             % Load the Python library
             Zarr.pySetup;
@@ -223,18 +195,12 @@ classdef Zarr < handle
             end
 
             ndArrayData = py.ZarrPy.readZarr(obj.KVStoreSchema);
-            % Identify the Python datatype
-            obj.TensorstoreDatatype = string(ndArrayData.dtype.name);
 
-            % Extract the corresponding MATLAB datatype key from the
-            % dictionary
-            TstoredtypeTable = entries(obj.TstoredtypeMap);
-            obj.MatlabDatatype = TstoredtypeTable.Key(TstoredtypeTable.Value == obj.TensorstoreDatatype);
-
-            obj.ZarrDatatype = obj.ZarrdtypeMap(obj.MatlabDatatype);
+            % Store the datatype
+            obj.Datatype = ZarrDatatype.fromTensorstoreType(ndArrayData.dtype.name);
 
             % Convert the numpy array to MATLAB array
-            data = cast(ndArrayData, obj.MatlabDatatype);
+            data = cast(ndArrayData, obj.Datatype.MATLABType);
         end
 
         function create(obj, dtype, data_size, chunk_size, fillvalue, compression)
@@ -242,9 +208,7 @@ classdef Zarr < handle
 
             obj.DsetSize = int64(data_size);
             obj.ChunkSize = int64(chunk_size);
-            obj.MatlabDatatype = dtype;
-            obj.TensorstoreDatatype = obj.TstoredtypeMap(dtype);
-            obj.ZarrDatatype = obj.ZarrdtypeMap(dtype);
+            obj.Datatype = ZarrDatatype.fromMATLABType(dtype);
 
             % If compression is empty, it means no compression
             if isempty(compression)
@@ -257,7 +221,7 @@ classdef Zarr < handle
             if isempty(fillvalue)
                 obj.FillValue = py.None;
             else
-                obj.FillValue = cast(fillvalue, obj.MatlabDatatype);
+                obj.FillValue = cast(fillvalue, obj.Datatype.MATLABType);
             end
             
             % see how much of the provided path exists already 
@@ -266,8 +230,8 @@ classdef Zarr < handle
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
             obj.TensorstoreSchema = py.ZarrPy.createZarr(obj.KVStoreSchema, py.numpy.array(obj.DsetSize),...
-                py.numpy.array(obj.ChunkSize), obj.TensorstoreDatatype, ...
-                 obj.ZarrDatatype, obj.Compression, obj.FillValue);
+                py.numpy.array(obj.ChunkSize), obj.Datatype.TensorstoreType, ...
+                 obj.Datatype.ZarrType, obj.Compression, obj.FillValue);
             %py.ZarrPy.temp(py.numpy.array([1, 1]), py.numpy.array([2, 2]))
 
             % if new directories were created as part of creating a
