@@ -28,6 +28,16 @@ classdef tZarrRead < matlab.unittest.TestCase
             testcase.verifyEqual(actArrData,expArrData,'Failed to verify array data.');
         end
 
+        function verifyArrayDataRelativePath(testcase)
+            % Verify array data if the input is using relative path to the
+            % array.
+            inpPath = fullfile('..','test',testcase.ArrPathRead);
+            actArrData = zarrread(inpPath);
+            expArrData = testcase.ExpData.arr_v2;
+            testcase.verifyEqual(actArrData,expArrData,['Failed to verify array ' ...
+                'data with relative path.']);
+        end
+
         function verifyGroupInpError(testcase)
             % Verify error if a user tries to pass the group as input to
             % zarrread function.
