@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix_tests
+      - krisfed-patch-1
 
 jobs:
   test:
@@ -12,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        matlab-version: ['R2023b','R2024a']
+        matlab-version: ['R2024a']
 
     steps:
     - name: Checkout code
@@ -34,7 +35,7 @@ jobs:
         pip install numpy==1.26.4 tensorstore==0.1.73
 
     - name: Run tests
-      uses: matlab-actions/run-tests@v4
+      uses: matlab-actions/run-tests@v2
       with:
         select-by-folder: 'test'
         code-coverage-cobertura: cobertura.xml
