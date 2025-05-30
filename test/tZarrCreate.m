@@ -55,6 +55,14 @@ classdef tZarrCreate < SharedZarrTestSetup
 
             % Non-text input
             testcase.verifyError(@()zarrcreate([],testcase.ArrSize),errID);
+
+            % Invalid bucket path
+            errID = 'MATLAB:Zarr:invalidS3URL';
+            inpPath = 'https://invalid/arr/path';
+            testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
+            
+            inpPath = 'http://invalid/arr/path';
+            testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
         end
 
         function pathContainingInvalidChars(testcase)
