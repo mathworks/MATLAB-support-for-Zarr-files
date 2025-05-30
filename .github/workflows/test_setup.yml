@@ -1,10 +1,10 @@
 name: Run Tests
 
-#on:
-#  push:
-#    branches:
-      #- main
-      #- test-branch-pyDict
+on:
+  push:
+    branches:
+      - main
+      - fix_tests
 
 jobs:
   test:
