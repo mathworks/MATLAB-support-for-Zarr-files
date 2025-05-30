@@ -95,7 +95,7 @@ classdef Zarr < handle
             end
 
             % See if the parent path exist. Continue recursing until an
-            % exisiting parent path is found
+            % existing parent path is found
             [pathToParentFolder, ~, ~] = fileparts(path);
             existingParent = Zarr.getExistingParentFolder(pathToParentFolder);
 
