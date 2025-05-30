@@ -77,6 +77,11 @@ classdef tZarrRead < matlab.unittest.TestCase
             % Empty char
             errID = 'MATLAB:validators:mustBeNonzeroLengthText';
             testcase.verifyError(@()zarrread(''),errID);
+
+            % Non-existent bucket
+            inpPath = 's3://invalid/bucket/path';
+            errID = 'MATLAB:Zarr:invalidZarrObject';
+            testcase.verifyError(@()zarrread(inpPath),errID);
         end
     end
 end
