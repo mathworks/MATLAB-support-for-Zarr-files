@@ -34,6 +34,16 @@ classdef tZarrInfo < matlab.unittest.TestCase
             testcase.verifyEqual(actInfo,expInfo,'Failed to verify group info.');
         end
 
+        function getArrayInfoRelativePath(testcase)
+            % Verify array info if the input is using relative path to the
+            % array.
+            inpPath = fullfile('..','test',testcase.ArrPathV2);
+            actInfo = zarrinfo(inpPath);
+            expInfo = testcase.ExpInfo.zarrV2ArrInfo;
+            testcase.verifyEqual(actInfo, expInfo, ['Failed to verify array info ' ...
+                'with relative path.']);
+        end
+
         function verifyArrayInfoV3(testcase)
             % Verify array info created with Zarr v3 format.
             actInfo = zarrinfo(testcase.ArrPathV3);

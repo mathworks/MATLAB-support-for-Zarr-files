@@ -4,11 +4,9 @@ classdef tZarrCreate < SharedZarrTestSetup
     % Copyright 2025 The MathWorks, Inc.
 
     methods(Test)
-
         function createIntermediateZgroups(testcase)
             % Verify that zarrcreate creates zarr groups when given a
             % nested path
-            
             arrayPath = fullfile(testcase.ArrPathWrite, "A", "B");
             zarrcreate(arrayPath, testcase.ArrSize);
             [groupPath, ~, ~] = fileparts(arrayPath);
@@ -19,12 +17,27 @@ classdef tZarrCreate < SharedZarrTestSetup
             grpInfo = zarrinfo(groupPath);
             expFormat = '2';
             expType = 'group';
-            
+
             testcase.verifyEqual(grpInfo.zarr_format, expFormat,...
                 "Unexpected Zarr group format");
             testcase.verifyEqual(grpInfo.node_type, expType,...
                 "Unexpected Zarr group node type");
+        end
 
+        function createArrayRelativePath(testcase)
+            % Verify that the array is successfully created if a relative
+            % path is used.
+            newDir = 'myFolder';
+            currDir = pwd;
+            mkdir(newDir);
+            testcase.addTeardown(@()cd(currDir));
+
+            cd(newDir);
+            inpPath = fullfile('..','myGrp','myArr');
+            zarrcreate(inpPath,[10 10]);
+            arrInfo = zarrinfo(inpPath);
+            testcase.verifyEqual(arrInfo.zarr_format,2,'Failed to Zarr array format');
+            testcase.verifyEqual(arrInfo.node_type,'array','Unexpected Zarr array node type');
         end
 
         function invalidFilePath(testcase)
@@ -42,6 +55,14 @@ classdef tZarrCreate < SharedZarrTestSetup
 
             % Non-text input
             testcase.verifyError(@()zarrcreate([],testcase.ArrSize),errID);
+
+            % Invalid bucket path
+            errID = 'MATLAB:Zarr:invalidS3URL';
+            inpPath = 'https://invalid/arr/path';
+            testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
+            
+            inpPath = 'http://invalid/arr/path';
+            testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
         end
 
         function pathContainingInvalidChars(testcase)
@@ -60,7 +81,7 @@ classdef tZarrCreate < SharedZarrTestSetup
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
                 'ChunkSize',chunkSize),errID);
         end
-        
+
         function chunkSizeMismatch(testcase)
             % Verify error when there is a mismatch between Array size and
             % Chunk size.
@@ -72,7 +93,7 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function invalidClevelBlosc(testcase)
-            % Verify error when an invalid clevel value is used with blosc 
+            % Verify error when an invalid clevel value is used with blosc
             % compression. Valid values are [0 9], where 0 is for no compression.
             comp.id = 'blosc';
             level = {-1,10,NaN};
@@ -87,7 +108,7 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function invalidBlockSizeBlosc(testcase)
-            % Verify error when an invalid blocksize value is used with blosc 
+            % Verify error when an invalid blocksize value is used with blosc
             % compression. Valid values for blocksize are [0 inf].
             comp.id = 'blosc';
             comp.level = 5;
@@ -103,7 +124,7 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function invalidCnameBlosc(testcase)
-            % Verify error when an invalid cname value is used with blosc 
+            % Verify error when an invalid cname value is used with blosc
             % compression.
             comp.id = 'blosc';
             comp.level = 5;
@@ -161,7 +182,6 @@ classdef tZarrCreate < SharedZarrTestSetup
             %     testcase.PyException);
         end
 
-
         function invalidDatatype(testcase)
             % Verify the error when an usupported datatype is used.
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,...
@@ -184,8 +204,8 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function invalidCompressionMember(testcase)
-            % Verify error when additional compression members (cname, blocksize, 
-            % and shuffle) are used. These members are not supported for 
+            % Verify error when additional compression members (cname, blocksize,
+            % and shuffle) are used. These members are not supported for
             % compression other than blosc.
             compType = {'gzip','zlib','bz2','zstd'};
             comp.level = 5;
@@ -206,7 +226,7 @@ classdef tZarrCreate < SharedZarrTestSetup
             errID = 'MATLAB:Zarr:missingCompressionID';
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
                 'Compression',comp),errID);
-            
+
             comp.id = 'zlib';
             comp.level = -1;
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
@@ -273,7 +293,7 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function tooFewInputs(testcase)
-            % Verify error when too few inputs are passed to the zarrcreate 
+            % Verify error when too few inputs are passed to the zarrcreate
             % function.
             errID = 'MATLAB:minrhs';
             testcase.verifyError(@()zarrcreate(),errID);

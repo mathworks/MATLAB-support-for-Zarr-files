@@ -6,6 +6,7 @@ on:
       - main
       - fix_tests
       - krisfed-patch-1
+      - add_tests
 
 jobs:
   test:
