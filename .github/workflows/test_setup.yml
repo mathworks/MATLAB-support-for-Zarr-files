@@ -1,12 +1,6 @@
 name: Run Tests
 
-on:
-  push:
-    branches:
-      - main
-      - fix_tests
-      - krisfed-patch-1
-      - add_tests
+on: push
 
 jobs:
   test:
