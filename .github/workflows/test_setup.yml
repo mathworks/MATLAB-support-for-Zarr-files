@@ -8,11 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        include:
+        matlab-version: ['R2022b','R2024a']
+        python-version: ['3.10','3.11']
+        exclude:
             - matlab-version: 'R2022b'
-              python-version: '3.10'
-            - matlab-version: 'R2024a'
               python-version: '3.11'
+            - matlab-version: 'R2024a'
+              python-version: '3.10'
 
     steps:
     - name: Checkout code
