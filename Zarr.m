@@ -72,8 +72,15 @@ classdef Zarr < handle
                 % If the given path does not exist, it is likely due to
                 % trailing directories not existing yet. Resolve parent
                 % directory's path, and append child directory.
-
                 [pathToParentFolder, child, ext] = fileparts(path);
+
+                if pathToParentFolder==path
+                    % If the path was not resolved and we are not able to
+                    % exract a different parent path, we have failed to
+                    % resolve a full path
+                    error("MATLAB:Zarr:invalidPath",...
+                    "Unable to access path ""%s"".", path)
+                end
 
                 resolvedParentPath = Zarr.getFullPath(pathToParentFolder);
                 resolvedPath = fullfile(resolvedParentPath, child+ext);
