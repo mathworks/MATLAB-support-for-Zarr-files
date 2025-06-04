@@ -88,17 +88,22 @@ classdef Zarr < handle
                 path (1,1) string
             end
 
-            if isfolder(path) || path == ""
-                % If the full path exist, we are done. 
-                % If it is empty, we are also done (but it likely indicates
-                % an issue with the path)
+            if isfolder(path)
+                % If the full path exist, we are done.
                 existingParent = path;
                 return
             end
 
-            % See if the parent path exist. Continue recursing until an
-            % exisiting parent path is found
+            % Get the parent path
             [pathToParentFolder, ~, ~] = fileparts(path);
+            if pathToParentFolder == path
+                % If the path is not an existing folder and it has no
+                % parent folder, we have failed to find an existing parent
+                % folder. This likely indicates a problem.
+                existingParent = "";
+                return
+            end
+            % Continue recursing until an exisiting parent path is found
             existingParent = Zarr.getExistingParentFolder(pathToParentFolder);
 
         end
@@ -230,12 +235,12 @@ classdef Zarr < handle
             existingParentPath = Zarr.getExistingParentFolder(obj.Path);
 
             if existingParentPath == ""
-                % if a full path was reduced to empty (no existing parent
-                % folder was found), it likely indicates an issue (esp. for
-                % remote paths) - maybe the path is invalid (non-existent
-                % bucket, etc.) or connection/permission issue caused none
-                % of the parent directories on the path to be recognized as
-                % existing fodlers.
+                % If no existing parent folder was found, it likely
+                % indicates an issue (esp. for remote paths) - maybe the
+                % path is invalid (non-existent bucket, etc.) or
+                % connection/permission issue caused none of the parent
+                % directories on the path to be recognized as existing
+                % fodlers.
                 error("MATLAB:Zarr:invalidPath",...
                     "Unable to access path ""%s"".", obj.Path)
             end

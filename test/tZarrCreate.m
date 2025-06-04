@@ -68,8 +68,16 @@ classdef tZarrCreate < SharedZarrTestSetup
             errID = 'MATLAB:Zarr:invalidPath';
             inpPath = 's3://invalid/bucket/path';
             testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
+        end
 
+        function invalidFilePathWindows(testcase)
+            % Verify error when a non-existent Windows path starting with
+            % "//" is used
 
+            testcase.assumeTrue(ispc, "Windows-specific test")
+            errID = 'MATLAB:Zarr:invalidPath';
+            inpPath = '//invalid/bucket/path';
+            testcase.verifyError(@()zarrcreate(inpPath,[10 10]),errID);
         end
 
         function pathContainingInvalidChars(testcase)
