@@ -6,3 +6,7 @@ test_files/
 
 # OSX / *nix default autosave extension
 *.m~
+
+# Bytecode-compiled version of python code
+PythonModule/__pycache__
+*.pyc
