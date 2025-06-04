@@ -88,8 +88,10 @@ classdef Zarr < handle
                 path (1,1) string
             end
 
-            if isfolder(path)
-                % if the full path exist, we are done
+            if isfolder(path) || path == ""
+                % If the full path exist, we are done. 
+                % If it is empty, we are also done (but it likely indicates
+                % an issue with the path)
                 existingParent = path;
                 return
             end
@@ -226,6 +228,17 @@ classdef Zarr < handle
             
             % see how much of the provided path exists already 
             existingParentPath = Zarr.getExistingParentFolder(obj.Path);
+
+            if existingParentPath == ""
+                % if a full path was reduced to empty (no existing parent
+                % folder was found), it likely indicates an issue (esp. for
+                % remote paths) - maybe the path is invalid (non-existent
+                % bucket, etc.) or connection/permission issue caused none
+                % of the parent directories on the path to be recognized as
+                % existing fodlers.
+                error("MATLAB:Zarr:invalidPath",...
+                    "Unable to access path ""%s"".", obj.Path)
+            end
 
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
