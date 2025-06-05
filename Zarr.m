@@ -70,18 +70,19 @@ classdef Zarr < handle
 
             if resolvedPath == ""
                 % If the given path does not exist, it is likely due to
-                % trailing directories not existing yet. Resolve parent
-                % directory's path, and append child directory.
+                % trailing directories not existing yet. Try to resolve its
+                % parent path.
                 [pathToParentFolder, child, ext] = fileparts(path);
 
                 if pathToParentFolder==path
-                    % If the path was not resolved and we are not able to
-                    % exract a different parent path, we have failed to
-                    % resolve a full path
-                    error("MATLAB:Zarr:invalidPath",...
-                    "Unable to access path ""%s"".", path)
+                    % If the path was not resolved and it is the same as
+                    % its parent path, then we have failed to resolve a
+                    % full path. This likely indicates a problem.
+                    resolvedPath = "";
+                    return
                 end
 
+                % Resolve parent directory's path, and append child directory.
                 resolvedParentPath = Zarr.getFullPath(pathToParentFolder);
                 resolvedPath = fullfile(resolvedParentPath, child+ext);
             end
@@ -104,13 +105,13 @@ classdef Zarr < handle
             % Get the parent path
             [pathToParentFolder, ~, ~] = fileparts(path);
             if pathToParentFolder == path
-                % If the path is not an existing folder and it has no
-                % parent folder, we have failed to find an existing parent
-                % folder. This likely indicates a problem.
+                % If the path is not an existing folder and it is the same
+                % as its parent path, we have failed to find an existing
+                % parent folder. This likely indicates a problem.
                 existingParent = "";
                 return
             end
-            % Continue recursing until an exisiting parent path is found
+            % Continue recursing until an existing parent path is found
             existingParent = Zarr.getExistingParentFolder(pathToParentFolder);
 
         end
@@ -187,8 +188,13 @@ classdef Zarr < handle
                 obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
                 
             else % Local file
-                % use full path
+                % Use full path
                 obj.Path = Zarr.getFullPath(path);
+                if obj.Path == ""
+                    % Error out if the full path could not be resolved
+                    error("MATLAB:Zarr:invalidPath",...
+                        "Unable to access path ""%s"".", path)
+                end
                 obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, obj.Path);
             end
         end
