@@ -253,7 +253,7 @@ classdef Zarr < handle
                 % path is invalid (non-existent bucket, etc.) or
                 % connection/permission issue caused none of the parent
                 % directories on the path to be recognized as existing
-                % fodlers.
+                % folders.
                 error("MATLAB:Zarr:invalidPath",...
                     "Unable to access path ""%s"".", obj.Path)
             end
