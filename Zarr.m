@@ -97,7 +97,7 @@ classdef Zarr < handle
             end
 
             if isfolder(path)
-                % If the full path exist, we are done.
+                % If the full path exists, we are done.
                 existingParent = path;
                 return
             end
@@ -368,7 +368,7 @@ classdef Zarr < handle
                 end
             end
             
-            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI.");
+            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI format.");
         end
     end
 
