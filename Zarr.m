@@ -70,11 +70,19 @@ classdef Zarr < handle
 
             if resolvedPath == ""
                 % If the given path does not exist, it is likely due to
-                % trailing directories not existing yet. Resolve parent
-                % directory's path, and append child directory.
-
+                % trailing directories not existing yet. Try to resolve its
+                % parent path.
                 [pathToParentFolder, child, ext] = fileparts(path);
 
+                if pathToParentFolder==path
+                    % If the path was not resolved and it is the same as
+                    % its parent path, then we have failed to resolve a
+                    % full path. This likely indicates a problem.
+                    resolvedPath = "";
+                    return
+                end
+
+                % Resolve parent directory's path, and append child directory.
                 resolvedParentPath = Zarr.getFullPath(pathToParentFolder);
                 resolvedPath = fullfile(resolvedParentPath, child+ext);
             end
@@ -89,14 +97,21 @@ classdef Zarr < handle
             end
 
             if isfolder(path)
-                % if the full path exist, we are done
+                % If the full path exists, we are done.
                 existingParent = path;
                 return
             end
 
-            % See if the parent path exist. Continue recursing until an
-            % existing parent path is found
+            % Get the parent path
             [pathToParentFolder, ~, ~] = fileparts(path);
+            if pathToParentFolder == path
+                % If the path is not an existing folder and it is the same
+                % as its parent path, we have failed to find an existing
+                % parent folder. This likely indicates a problem.
+                existingParent = "";
+                return
+            end
+            % Continue recursing until an existing parent path is found
             existingParent = Zarr.getExistingParentFolder(pathToParentFolder);
 
         end
@@ -173,8 +188,13 @@ classdef Zarr < handle
                 obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
                 
             else % Local file
-                % use full path
+                % Use full path
                 obj.Path = Zarr.getFullPath(path);
+                if obj.Path == ""
+                    % Error out if the full path could not be resolved
+                    error("MATLAB:Zarr:invalidPath",...
+                        "Unable to access path ""%s"".", path)
+                end
                 obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, obj.Path);
             end
         end
@@ -226,6 +246,17 @@ classdef Zarr < handle
             
             % see how much of the provided path exists already 
             existingParentPath = Zarr.getExistingParentFolder(obj.Path);
+
+            if existingParentPath == ""
+                % If no existing parent folder was found, it likely
+                % indicates an issue (esp. for remote paths) - maybe the
+                % path is invalid (non-existent bucket, etc.) or
+                % connection/permission issue caused none of the parent
+                % directories on the path to be recognized as existing
+                % folders.
+                error("MATLAB:Zarr:invalidPath",...
+                    "Unable to access path ""%s"".", obj.Path)
+            end
 
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
@@ -337,7 +368,7 @@ classdef Zarr < handle
                 end
             end
             
-            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI.");
+            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI format.");
         end
     end
 
