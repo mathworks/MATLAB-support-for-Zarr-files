@@ -52,7 +52,7 @@ classdef tZarrAttributes < SharedZarrTestSetup
         end
 
         function verifyGroupAttributeInfo(testcase)
-            % Write attribute info using zarrwriteatt function to a group.
+            % Verify group attribute info.
             grpPath = 'grp_v2/';
             grpInfo = zarrinfo(grpPath);
             
