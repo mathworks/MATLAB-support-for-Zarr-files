@@ -36,7 +36,6 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function verifyAttrOverwrite(testcase)
             % Verify attribute value after overwrite.
-            %testcase.assumeTrue(false,'Filtered until the attributes display is fixed.');
             expAttrStr = ["new","attribute","value"];
             zarrwriteatt(testcase.ArrPathWrite,'attr1',expAttrStr);
             expAttrDbl = 10;
@@ -54,10 +53,16 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function verifyGroupAttributeInfo(testcase)
             % Write attribute info using zarrwriteatt function to a group.
-            testcase.assumeTrue(false,'Filtered until Issue-35 is fixed.');
+            grpPath = 'grp_v2/';
+            grpInfo = zarrinfo(grpPath);
+            
+            actAttr.attr1 = grpInfo.group_description;
+            actAttr.attr2 = grpInfo.group_level;
 
-            % Unable to read attribute data from a group/array created
-            % using Python.
+            expAttr.attr1 = 'This is a sample Zarr group';
+            expAttr.attr2 = 1;
+
+            testcase.verifyEqual(actAttr,expAttr,'Failed to verify group info.');
         end
 
         function verifyZarrV3WriteError(testcase)
