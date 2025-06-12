@@ -4,6 +4,30 @@ classdef tZarrCreate < SharedZarrTestSetup
     % Copyright 2025 The MathWorks, Inc.
 
     methods(Test)
+
+        function createDefaultArray(testcase)
+            % Verify that zarrcreate correctly creates a Zarr array with
+            % all default properties
+
+            zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
+            
+            expInfo.chunks = testcase.ArrSize';
+            expInfo.compressor = [];
+            expInfo.dimension_separator = '.';
+            expInfo.dtype = '<f8';
+            expInfo.fill_value = [];
+            expInfo.filters = [];
+            expInfo.order = 'C';
+            expInfo.shape = testcase.ArrSize';
+            expInfo.zarr_format = 2;
+            expInfo.node_type = 'array';
+
+            actInfo = zarrinfo(testcase.ArrPathWrite);
+            testcase.verifyEqual(actInfo, expInfo,...
+                'Failed to verify creating Zarr array with default properties');
+
+        end
+
         function createIntermediateZgroups(testcase)
             % Verify that zarrcreate creates zarr groups when given a
             % nested path
@@ -36,7 +60,7 @@ classdef tZarrCreate < SharedZarrTestSetup
             inpPath = fullfile('..','myGrp','myArr');
             zarrcreate(inpPath,[10 10]);
             arrInfo = zarrinfo(inpPath);
-            testcase.verifyEqual(arrInfo.zarr_format,2,'Failed to Zarr array format');
+            testcase.verifyEqual(arrInfo.zarr_format,2,'Failed to verify Zarr array format');
             testcase.verifyEqual(arrInfo.node_type,'array','Unexpected Zarr array node type');
         end
 
@@ -172,29 +196,50 @@ classdef tZarrCreate < SharedZarrTestSetup
 
         function invalidChunkSize(testcase)
             % Verify error when an invalid type for the chunk size is used.
-            testcase.assumeTrue(false,'Filtered until issue 25 is fixed.');
+
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-                'ChunkSize',5),testcase.PyException);
+                'ChunkSize',5),'MATLAB:zarrcreate:chunkDimsMismatch');
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-                'ChunkSize',[]),testcase.PyException);
+                'ChunkSize',[]),'MATLAB:zarrcreate:chunkDimsMismatch');
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-                'ChunkSize',[0 0]),testcase.PyException);
+                'ChunkSize',[0 0]),'MATLAB:validators:mustBePositive');
         end
 
         function invalidFillValue(testcase)
             % Verify error when an invalid type for the fill value is used.
+
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
                 "FillValue",[-9 -9]),testcase.PyException);
-            % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-            %     "FillValue",NaN),testcase.PyException);
-            % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
-            %     "FillValue",inf),testcase.PyException);
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize, ...
+                "FillValue","none"),'MATLAB:validators:mustBeNumeric');
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,testcase.ArrSize,...
+                Datatype="int8", FillValue=1.4), 'MATLAB:zarrcreate:invalidFillValueType')
+        end
+
+        function specialFillValue(testcase)
+            % Verify creating Zarr arrays using special fill values like
+            % NaN and Inf
+
+            expData = [NaN,NaN];
+            zarrcreate(testcase.ArrPathWrite, [1,2], FillValue=NaN)
+            actData = zarrread(testcase.ArrPathWrite);
+            testcase.verifyEqual(expData, actData)
+
+            expData = [Inf,Inf];
+            zarrcreate(testcase.ArrPathWrite, [1,2], FillValue=Inf)
+            actData = zarrread(testcase.ArrPathWrite);
+            testcase.verifyEqual(expData, actData)
         end
 
         function invalidSizeInput(testcase)
             % Verify error when an invalid size input is used.
-            % testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,[]), ...
-            %     testcase.PyException);
+
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,[]), ...
+                'MATLAB:validators:mustBeNonempty');
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,Inf), ...
+                'MATLAB:validators:mustBeFinite');
+            testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,-2), ...
+                'MATLAB:validators:mustBePositive');
         end
 
         function invalidDatatype(testcase)

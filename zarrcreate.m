@@ -81,14 +81,12 @@ function zarrcreate(filepath, datasize, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonempty}
-    datasize (1,:) double {mustBeFinite, mustBeNonnegative}
-    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = datasize
+    datasize (1,:) double {mustBeFinite, mustBePositive, mustBeNonempty}
+    options.ChunkSize (1,:) double {mustBeFinite, mustBePositive} = datasize
     options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
-    options.FillValue {mustBeNumeric} = []
+    options.FillValue {mustBeNumericOrLogical} = []
     options.Compression {mustBeStructOrEmpty} = []
 end
-
-zarrObj = Zarr(filepath);
 
 % Dimensionality of the dataset and the chunk size must be the same
 if any(size(datasize) ~= size(options.ChunkSize))
@@ -105,6 +103,7 @@ if isscalar(datasize)
     options.ChunkSize = [1 options.ChunkSize];
 end
 
+zarrObj = Zarr(filepath);
 zarrObj.create(options.Datatype, datasize, options.ChunkSize, options.FillValue, options.Compression)
 
 end

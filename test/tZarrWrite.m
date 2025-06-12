@@ -39,7 +39,7 @@ classdef tZarrWrite < SharedZarrTestSetup
             % Verify the data when creating and writing to arrays with 
             % user-defined properties using zarrcreate and zarrwrite locally.
             comp.level = 5;
-            fillValue = -9;
+            fillValue = cast(-9, DataType);
             expData = cast(ones(testcase.ArrSize),DataType);
             comp.id = CompId;
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize,'ChunkSize',testcase.ChunkSize, ...
