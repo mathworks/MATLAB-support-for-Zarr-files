@@ -7,11 +7,17 @@ classdef tZarrAttributes < SharedZarrTestSetup
         function createZarrArrayWithAttrs(testcase)
             % Create Zarr array and add some attributes.
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
+            
+            % Write array attributes
             zarrwriteatt(testcase.ArrPathWrite,'attr1','This is an array attribute.');
             zarrwriteatt(testcase.ArrPathWrite,'attr2',{1,2,3});
             attr3.numVal = 10;
             attr3.strArr = ["array","attribute"];
             zarrwriteatt(testcase.ArrPathWrite,'attr3',attr3);
+
+            % Write group attributes
+            zarrwriteatt(testcase.GrpPathWrite,'grp_description','This is a group');
+            zarrwriteatt(testcase.GrpPathWrite,'grp_level',1);
         end
     end
 
@@ -53,16 +59,15 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function verifyGroupAttributeInfo(testcase)
             % Verify group attribute info.
-            grpPath = 'grp_v2/';
-            grpInfo = zarrinfo(grpPath);
+            grpInfo = zarrinfo(testcase.GrpPathWrite);
             
-            actAttr.attr1 = grpInfo.group_description;
-            actAttr.attr2 = grpInfo.group_level;
+            actAttr1 = grpInfo.grp_description;
+            expAttr1 = 'This is a group';
+            testcase.verifyEqual(actAttr1,expAttr1,'Failed to verify text attribute.');
 
-            expAttr.attr1 = 'This is a sample Zarr group';
-            expAttr.attr2 = 1;
-
-            testcase.verifyEqual(actAttr,expAttr,'Failed to verify group info.');
+            actAttr2 = grpInfo.grp_level;
+            expAttr2 = 1;
+            testcase.verifyEqual(actAttr2,expAttr2,'Failed to verify numeric attribute.');
         end
 
         function verifyZarrV3WriteError(testcase)
