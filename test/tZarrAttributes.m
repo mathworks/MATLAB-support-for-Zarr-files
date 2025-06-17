@@ -7,11 +7,17 @@ classdef tZarrAttributes < SharedZarrTestSetup
         function createZarrArrayWithAttrs(testcase)
             % Create Zarr array and add some attributes.
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
+            
+            % Write array attributes
             zarrwriteatt(testcase.ArrPathWrite,'attr1','This is an array attribute.');
             zarrwriteatt(testcase.ArrPathWrite,'attr2',{1,2,3});
             attr3.numVal = 10;
             attr3.strArr = ["array","attribute"];
             zarrwriteatt(testcase.ArrPathWrite,'attr3',attr3);
+
+            % Write group attributes
+            zarrwriteatt(testcase.GrpPathWrite,'grp_description','This is a group');
+            zarrwriteatt(testcase.GrpPathWrite,'grp_level',1);
         end
     end
 
@@ -36,7 +42,6 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function verifyAttrOverwrite(testcase)
             % Verify attribute value after overwrite.
-            %testcase.assumeTrue(false,'Filtered until the attributes display is fixed.');
             expAttrStr = ["new","attribute","value"];
             zarrwriteatt(testcase.ArrPathWrite,'attr1',expAttrStr);
             expAttrDbl = 10;
@@ -53,11 +58,16 @@ classdef tZarrAttributes < SharedZarrTestSetup
         end
 
         function verifyGroupAttributeInfo(testcase)
-            % Write attribute info using zarrwriteatt function to a group.
-            testcase.assumeTrue(false,'Filtered until Issue-35 is fixed.');
+            % Verify group attribute info.
+            grpInfo = zarrinfo(testcase.GrpPathWrite);
+            
+            actAttr1 = grpInfo.grp_description;
+            expAttr1 = 'This is a group';
+            testcase.verifyEqual(actAttr1,expAttr1,'Failed to verify text attribute.');
 
-            % Unable to read attribute data from a group/array created
-            % using Python.
+            actAttr2 = grpInfo.grp_level;
+            expAttr2 = 1;
+            testcase.verifyEqual(actAttr2,expAttr2,'Failed to verify numeric attribute.');
         end
 
         function verifyZarrV3WriteError(testcase)
