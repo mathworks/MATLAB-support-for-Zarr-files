@@ -9,6 +9,7 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
         ChunkSize = [4 5]
 
         % Path for write tests
+        GrpPathWrite = "prt_grp_write"
         ArrPathWrite = "prt_grp_write/arr1"
     end
 

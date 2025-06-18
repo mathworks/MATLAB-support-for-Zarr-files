@@ -243,7 +243,7 @@ classdef tZarrCreate < SharedZarrTestSetup
         end
 
         function invalidDatatype(testcase)
-            % Verify the error when an usupported datatype is used.
+            % Verify the error when an unsupported datatype is used.
             testcase.verifyError(@()zarrcreate(testcase.ArrPathWrite,...
                 testcase.ArrSize,Datatype="bla"),...
                 'MATLAB:validators:mustBeMember');

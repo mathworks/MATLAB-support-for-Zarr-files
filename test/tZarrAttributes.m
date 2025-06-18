@@ -7,6 +7,8 @@ classdef tZarrAttributes < SharedZarrTestSetup
         function createZarrArrayWithAttrs(testcase)
             % Create Zarr array and add some attributes.
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
+
+            % Write array attributes
             zarrwriteatt(testcase.ArrPathWrite,'scalarText','This is an array attribute.');
             zarrwriteatt(testcase.ArrPathWrite,'numericVector',[1,2,3]);
             zarrwriteatt(testcase.ArrPathWrite,'numericCellArray',{1,2,3});
@@ -14,6 +16,10 @@ classdef tZarrAttributes < SharedZarrTestSetup
             attrStruct.numVal = 10;
             attrStruct.strArr = ["array","attribute"];
             zarrwriteatt(testcase.ArrPathWrite,'struct',attrStruct);
+
+            % Write group attributes
+            zarrwriteatt(testcase.GrpPathWrite,'grp_description','This is a group');
+            zarrwriteatt(testcase.GrpPathWrite,'grp_level',1);
         end
     end
 
@@ -48,9 +54,10 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function verifyAttrOverwrite(testcase)
             % Verify attribute value after overwrite.
-            
+
             expAttrStr = 'New attribute value';
             zarrwriteatt(testcase.ArrPathWrite,'scalarText',expAttrStr);
+
             expAttrDbl = 10;
             zarrwriteatt(testcase.ArrPathWrite,'numericVector',expAttrDbl);
 
@@ -66,11 +73,16 @@ classdef tZarrAttributes < SharedZarrTestSetup
         end
 
         function verifyGroupAttributeInfo(testcase)
-            % Write attribute info using zarrwriteatt function to a group.
-            testcase.assumeTrue(false,'Filtered until Issue-35 is fixed.');
+            % Verify group attribute info.
+            grpInfo = zarrinfo(testcase.GrpPathWrite);
+            
+            actAttr1 = grpInfo.grp_description;
+            expAttr1 = 'This is a group';
+            testcase.verifyEqual(actAttr1,expAttr1,'Failed to verify text attribute.');
 
-            % Unable to read attribute data from a group/array created
-            % using Python.
+            actAttr2 = grpInfo.grp_level;
+            expAttr2 = 1;
+            testcase.verifyEqual(actAttr2,expAttr2,'Failed to verify numeric attribute.');
         end
 
         function verifyZarrV3WriteError(testcase)
