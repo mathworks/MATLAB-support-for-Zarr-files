@@ -22,9 +22,9 @@ function data = zarrread(filepath, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonzeroLengthText}
-    options.Start {mustBeInteger, mustBePositive, mustBeRow} = double.empty(1,0);
-    options.Count {mustBeInteger, mustBePositive, mustBeRow} = double.empty(1,0);
-    options.Stride {mustBeInteger, mustBePositive, mustBeRow} = double.empty(1,0);
+    options.Start (1,:) {mustBeInteger, mustBePositive} = [];
+    options.Count (1,:) {mustBeInteger, mustBePositive} = [];
+    options.Stride (1,:) {mustBeInteger, mustBePositive} = [];
 end
 
 zarrObj = Zarr(filepath);
