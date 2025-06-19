@@ -60,7 +60,7 @@ classdef tZarrRead < matlab.unittest.TestCase
 
             % Start, Stride, and Count
             actData = zarrread(zpath,...
-                Start=[2, 1], Stride=[1, 2], Count=[1,2]);
+                Start=[2, 1], Stride=[1, 2], Count=[1, 2]);
             expData = [2, 8];
             testcase.verifyEqual(actData,expData,...
                 'Failed to verify reading with Start, Stride, and Count.');
