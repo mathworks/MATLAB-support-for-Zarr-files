@@ -7,6 +7,7 @@ classdef tZarrRead < matlab.unittest.TestCase
         % Path for read functions
         GrpPathRead = "dataFiles/grp_v2"
         ArrPathRead = "dataFiles/grp_v2/arr_v2"
+        ArrPathReadSmall = "dataFiles/grp_v2/smallArr"
         ArrPathReadV3 = "dataFiles/grp_v3/arr_v3"
 
         ExpData = load(fullfile(pwd,"dataFiles","expZarrArrData.mat"))
@@ -26,6 +27,42 @@ classdef tZarrRead < matlab.unittest.TestCase
             actArrData = zarrread(testcase.ArrPathRead);
             expArrData = testcase.ExpData.arr_v2;
             testcase.verifyEqual(actArrData,expArrData,'Failed to verify array data.');
+        end
+
+        function verifyPartialArrayData(testcase)
+            % Verify array data using zarrread function with Start/Stride/Count.
+
+            % The full data in the small array is
+            % 
+            % 1    4    7   10
+            % 2    5    8   11
+            % 3    6    9   12
+            zpath = testcase.ArrPathReadSmall;
+
+            % Start
+            actData = zarrread(zpath, Start=[2, 3]);
+            expData = [8, 11; 9, 12];
+            testcase.verifyEqual(actData,expData,...
+                'Failed to verify reading with Start.');
+
+            % Count
+            actData = zarrread(zpath, Count=[2, 1]);
+            expData = [1;2];
+            testcase.verifyEqual(actData,expData,...
+                'Failed to verify reading with Count.');
+
+            % Stride
+            actData = zarrread(zpath, Stride=[3, 2]);
+            expData = [1, 7];
+            testcase.verifyEqual(actData,expData,...
+                'Failed to verify reading with Stride.');
+
+            % Start, Stride, and Count
+            actData = zarrread(zpath,...
+                Start=[2, 1], Stride=[1, 2], Count=[1,2]);
+            expData = [2, 8];
+            testcase.verifyEqual(actData,expData,...
+                'Failed to verify reading with Start, Stride, and Count.');
         end
 
         function verifyArrayDataRelativePath(testcase)
@@ -82,6 +119,40 @@ classdef tZarrRead < matlab.unittest.TestCase
             inpPath = 's3://invalid/bucket/path';
             errID = 'MATLAB:Zarr:invalidZarrObject';
             testcase.verifyError(@()zarrread(inpPath),errID);
+        end
+
+        function invalidPartialReadParams(testcase)
+            % Verify zarrread errors when invalid partial read
+            % Start/Stride/Count are used
+            
+            zpath = testcase.ArrPathReadSmall; % a 2D array, 3x4
+    
+            errID = 'MATLAB:Zarr:badPartialReadDimensions';
+            wrongNumberOfDimensions = [1,1,1];
+            testcase.verifyError(...
+                @()zarrread(zpath,Start=wrongNumberOfDimensions),...
+                errID);
+            testcase.verifyError(...
+                @()zarrread(zpath,Stride=wrongNumberOfDimensions),...
+                errID);
+            testcase.verifyError(...
+                @()zarrread(zpath,Count=wrongNumberOfDimensions),...
+                errID);
+
+            errID = 'MATLAB:validators:mustBeRow';
+            wrongSize = [1; 1];
+            testcase.verifyError(...
+                @()zarrread(zpath,Start=wrongSize),...
+                errID);
+            testcase.verifyError(...
+                @()zarrread(zpath,Stride=wrongSize),...
+                errID);
+            testcase.verifyError(...
+                @()zarrread(zpath,Count=wrongSize),...
+                errID);
+
+            %TODO: negative values, wrong datatypes, out of bounds
+           
         end
     end
 end

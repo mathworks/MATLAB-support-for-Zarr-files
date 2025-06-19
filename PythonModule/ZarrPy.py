@@ -81,12 +81,16 @@ def writeZarr (kvstore_schema, data):
     zarr_file[...] = data
 
 
-def readZarr (kvstore_schema):
+def readZarr (kvstore_schema, starts, ends, strides):
     """
     Reads a subset of data from a Zarr file.
 
     Parameters:
     - kvstore_schema (dictionary): Schema for the file store (local or remote)
+    - starts (list): Array of start indices for each dimension (0-based)
+    - ends (list): Array of end indices for each dimension (elements 
+                   at the end index will not be read)
+    - strides (list): Array of strides for each dimensions
     
     Returns:
     - numpy.ndarray: The subset of the data read from the Zarr file.
@@ -96,6 +100,10 @@ def readZarr (kvstore_schema):
         'kvstore': kvstore_schema,
     }).result()
     
+    # Construct the indexing slices
+    slices = tuple(slice(start, end, stride) for start, end, stride in zip(starts, ends, strides))
+
     # Read a subset of the data
-    data = zarr_file[...].read().result()
+    data = zarr_file[slices].read().result()
+    #data = zarr_file[...].read().result()
     return data
