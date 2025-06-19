@@ -8,6 +8,7 @@ classdef tZarrRead < matlab.unittest.TestCase
         GrpPathRead = "dataFiles/grp_v2"
         ArrPathRead = "dataFiles/grp_v2/arr_v2"
         ArrPathReadSmall = "dataFiles/grp_v2/smallArr"
+        ArrPathReadVector = "dataFiles/grp_v2/vectorData"
         ArrPathReadV3 = "dataFiles/grp_v3/arr_v3"
 
         ExpData = load(fullfile(pwd,"dataFiles","expZarrArrData.mat"))
@@ -63,6 +64,18 @@ classdef tZarrRead < matlab.unittest.TestCase
             expData = [2, 8];
             testcase.verifyEqual(actData,expData,...
                 'Failed to verify reading with Start, Stride, and Count.');
+        end
+
+        function verifyPartialVectorData(testcase)
+            % Verify that specifying a scalar value for Start/Stride/Count
+            % for vector datasets works as expected
+
+            zpath = testcase.ArrPathReadVector; % data is 1:10
+
+            expData = [2,5];
+            actData = zarrread(zpath, Start=2, Stride=3, Count=2);
+            testcase.verifyEqual(actData,expData,...
+                'Failed to verify using scalar Start, Stride, and Count.');
         end
 
         function verifyArrayDataRelativePath(testcase)
