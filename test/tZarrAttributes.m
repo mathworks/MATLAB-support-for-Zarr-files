@@ -7,13 +7,15 @@ classdef tZarrAttributes < SharedZarrTestSetup
         function createZarrArrayWithAttrs(testcase)
             % Create Zarr array and add some attributes.
             zarrcreate(testcase.ArrPathWrite,testcase.ArrSize);
-            
+
             % Write array attributes
-            zarrwriteatt(testcase.ArrPathWrite,'attr1','This is an array attribute.');
-            zarrwriteatt(testcase.ArrPathWrite,'attr2',{1,2,3});
-            attr3.numVal = 10;
-            attr3.strArr = ["array","attribute"];
-            zarrwriteatt(testcase.ArrPathWrite,'attr3',attr3);
+            zarrwriteatt(testcase.ArrPathWrite,'scalarText','This is an array attribute.');
+            zarrwriteatt(testcase.ArrPathWrite,'numericVector',[1,2,3]);
+            zarrwriteatt(testcase.ArrPathWrite,'numericCellArray',{1,2,3});
+            zarrwriteatt(testcase.ArrPathWrite,'mixedCellArray',{1,'two',3});
+            attrStruct.numVal = 10;
+            attrStruct.strArr = ["array","attribute"];
+            zarrwriteatt(testcase.ArrPathWrite,'struct',attrStruct);
 
             % Write group attributes
             zarrwriteatt(testcase.GrpPathWrite,'grp_description','This is a group');
@@ -23,38 +25,51 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
     methods(Test)
         function verifyArrayAttributeInfo(testcase)
-            % Write attribute info using zarrwriteatt function to an array.
+            % Write attribute info using zarrwriteatt function to an array
+            % (during test setup) and verify written values using zarrinfo
 
-            arrInfo = zarrinfo(testcase.ArrPathWrite);
-            actAttr.attr1 = arrInfo.attr1;
-            
-            % TODO: Enable code once Issue-34 is fixed.
-            %actAttr.attr2 = arrInfo.attr2;
-            %actAttr.attr3 = arrInfo.attr3;
+            actInfo = zarrinfo(testcase.ArrPathWrite);
 
-            expAttr.attr1 = 'This is an array attribute.';
-            %expAttr.attr2 = {1,2,3};
-            %expAttr.attr3.numVal = 10;
-            %expAttr.attr4.strArr = ["array","attribute"];
+            testcase.verifyEqual(actInfo.scalarText,...
+                'This is an array attribute.',...
+                'Failed to verify attribute info for scalar text.');
+            testcase.verifyEqual(actInfo.numericVector,...
+                [1;2;3],... % JSON stores all vectors as column vectors
+                'Failed to verify attribute info for numeric vector.');
+            testcase.verifyEqual(actInfo.numericCellArray,...
+                [1;2;3],... % JSON stores numeric cell array as column vector
+                'Failed to verify attribute info for numeric cell array.');
+            testcase.verifyEqual(actInfo.mixedCellArray,...
+                {1; 'two'; 3},...% JSON stores all vectors as column vectors
+                'Failed to verify attribute info for mixed cell array.');
 
-            testcase.verifyEqual(actAttr,expAttr,'Failed to verify attribute info.');
+            expStruct.numVal = 10;
+            % JSON stores string arrays as column cell arrays of char
+            % vectors
+            expStruct.strArr = {'array';'attribute'}; 
+            testcase.verifyEqual(actInfo.struct,...
+                expStruct,...
+                'Failed to verify attribute info for struct.');
         end
 
         function verifyAttrOverwrite(testcase)
             % Verify attribute value after overwrite.
-            expAttrStr = ["new","attribute","value"];
-            zarrwriteatt(testcase.ArrPathWrite,'attr1',expAttrStr);
+
+            expAttrStr = 'New attribute value';
+            zarrwriteatt(testcase.ArrPathWrite,'scalarText',expAttrStr);
+
             expAttrDbl = 10;
-            zarrwriteatt(testcase.ArrPathWrite,'attr2',expAttrDbl);
+            zarrwriteatt(testcase.ArrPathWrite,'numericVector',expAttrDbl);
 
             arrInfo = zarrinfo(testcase.ArrPathWrite);
-            
-            % TODO: Enable code once Issue-34 is fixed.
-            %actAttrStr = arrInfo.attr1;
-            actAttrDbl = arrInfo.attr2;
 
-            %testcase.verifyEqual(actAttrStr,expAttrStr,'Failed to verify string attribute info');
-            testcase.verifyEqual(actAttrDbl,expAttrDbl,'Failed to verify double attribute info');
+            actAttrStr = arrInfo.scalarText;
+            actAttrDbl = arrInfo.numericVector;
+
+            testcase.verifyEqual(actAttrStr,expAttrStr,...
+                'Failed to verify string attribute info');
+            testcase.verifyEqual(actAttrDbl,expAttrDbl,...
+                'Failed to verify double attribute info');
         end
 
         function verifyGroupAttributeInfo(testcase)

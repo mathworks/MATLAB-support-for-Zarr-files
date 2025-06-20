@@ -171,6 +171,43 @@ classdef Zarr < handle
             end
 
         end
+
+        function [bucketName, objectPath] = extractS3BucketNameAndPath(url)
+            % Helper function to extract S3 bucket name and path to file
+            % bucketName and objectPath are needed to fill the KVstore hash
+            % map for tensorstore.
+            % Define the regular expression patterns for matching S3 URLs and URIs
+            % S3 URLs can have the following patterns.
+            patterns = { ...
+                '^https://([^.]+)\.s3\.([^.]+)\.amazonaws\.com/(.+)$', ... % 1: AWS virtual-hosted, region (https://mybucket.s3.us-west-2.amazonaws.com/path/to/myZarrFile)
+                '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$', ...          % 2: AWS virtual-hosted, no region (https://mybucket.s3.amazonaws.com/path/to/myZarrFile)
+                '^https://([^.]+)\.s3\.[^/]+/(.+)$', ...                   % 3: Custom endpoint virtual-hosted (https://mybucket.s3.custom-endpoint.org/path/to/myZarrFile)
+                '^https://s3\.amazonaws\.com/([^/]+)/(.+)$', ...           % 4: AWS path-style (https://s3.amazonaws.com/mybucket/path/to/myZarrFile)
+                '^https://s3\.[^/]+/([^/]+)/(.+)$', ...                    % 5: Custom endpoint path-style (https://s3.eu-central-1.example.edu/mybucket/path/to/myZarrFile)
+                '^s3://([^/]+)/(.+)$' ...                                  % 6: S3 URI (s3://mybucket/path/to/myZarrFile)
+                };
+
+            % For each pattern, specify which group is bucket and which is path
+            % regexp will extract multiple tokens from the patterns above.
+            % For each pattern, the indices below denote the location of
+            % the bucket and the path name.
+            bucketIdx = [1, 1, 1, 1, 1, 1];
+            pathIdx   = [3, 2, 2, 2, 2, 2];
+
+            % Iterate through the patterns and identify the pattern which matches the
+            % URI. Extract the bucket name and the path.
+            for patternIdx = 1:numel(patterns)
+                tokens = regexp(url, patterns{patternIdx}, 'tokens');
+                if ~isempty(tokens)
+                    t = tokens{1};
+                    bucketName = t{bucketIdx(patternIdx)};
+                    objectPath = t{pathIdx(patternIdx)};
+                    return;
+                end
+            end
+
+            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI format.");
+        end
     end
 
     methods 
@@ -183,7 +220,7 @@ classdef Zarr < handle
             obj.isRemote = matlab.io.internal.vfs.validators.hasIriPrefix(obj.Path);
             if obj.isRemote % Remote file (only S3 support at the moment)
                 % Extract the S3 bucket name and path
-                [bucketName, objectPath] = obj.extractS3BucketNameAndPath(obj.Path);
+                [bucketName, objectPath] = Zarr.extractS3BucketNameAndPath(obj.Path);
                 % Create a Python dictionary for the KV store driver
                 obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
                 
@@ -241,7 +278,13 @@ classdef Zarr < handle
             if isempty(fillvalue)
                 obj.FillValue = py.None;
             else
-                obj.FillValue = cast(fillvalue, obj.Datatype.MATLABType);
+                % Fill value must be of the same datatype as data.
+                if ~isa(fillvalue, dtype)
+                    error("MATLAB:zarrcreate:invalidFillValueType",...
+                        "Fill value must have the same data type (""%s"") as the Zarr array.",...
+                        dtype)
+                end
+                obj.FillValue = fillvalue;
             end
             
             % see how much of the provided path exists already 
@@ -334,42 +377,7 @@ classdef Zarr < handle
             end
         end
 
-        function [bucketName, objectPath] = extractS3BucketNameAndPath(~,url)
-            % Helper function to extract S3 bucket name and path to file
-            % bucketName and objectPath are needed to fill the KVstore hash
-            % map for tensorstore.
-            % Define the regular expression patterns for matching S3 URLs and URIs
-            % S3 URLs can have the following patterns.
-            patterns = { ...
-                '^https://([^.]+)\.s3\.([^.]+)\.amazonaws\.com/(.+)$', ... % 1: AWS virtual-hosted, region (https://mybucket.s3.us-west-2.amazonaws.com/path/to/myZarrFile)
-                '^https://([^.]+)\.s3\.amazonaws\.com/(.+)$', ...          % 2: AWS virtual-hosted, no region (https://mybucket.s3.amazonaws.com/path/to/myZarrFile)
-                '^https://([^.]+)\.s3\.[^/]+/(.+)$', ...                   % 3: Custom endpoint virtual-hosted (https://mybucket.s3.custom-endpoint.org/path/to/myZarrFile)
-                '^https://s3\.amazonaws\.com/([^/]+)/(.+)$', ...           % 4: AWS path-style (https://s3.amazonaws.com/mybucket/path/to/myZarrFile)
-                '^https://s3\.[^/]+/([^/]+)/(.+)$', ...                    % 5: Custom endpoint path-style (https://s3.eu-central-1.example.edu/mybucket/path/to/myZarrFile)
-                '^s3://([^/]+)/(.+)$' ...                                  % 6: S3 URI (s3://mybucket/path/to/myZarrFile)
-            };
-            
-            % For each pattern, specify which group is bucket and which is path
-            % regexp will extract multiple tokens from the patterns above.
-            % For each pattern, the indices below denote the location of
-            % the bucket and the path name.
-            bucketIdx = [1, 1, 1, 1, 1, 1];
-            pathIdx   = [3, 2, 2, 2, 2, 2];
-            
-            % Iterate through the patterns and identify the pattern which matches the
-            % URI. Extract the bucket name and the path.
-            for patternIdx = 1:numel(patterns)
-                tokens = regexp(url, patterns{patternIdx}, 'tokens');
-                if ~isempty(tokens)
-                    t = tokens{1};
-                    bucketName = t{bucketIdx(patternIdx)};
-                    objectPath = t{pathIdx(patternIdx)};
-                    return;
-                end
-            end
-            
-            error("MATLAB:Zarr:invalidS3URL","Invalid S3 URI format.");
-        end
+ 
     end
 
 end

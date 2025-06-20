@@ -81,30 +81,29 @@ function zarrcreate(filepath, datasize, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonempty}
-    datasize (1,:) double {mustBeFinite, mustBeNonnegative}
-    options.ChunkSize (1,:) double {mustBeFinite, mustBeNonnegative} = datasize
+    datasize (1,:) double {mustBeFinite, mustBePositive, mustBeNonempty}
+    options.ChunkSize (1,:) double {mustBeFinite, mustBePositive} = datasize
     options.Datatype {mustBeTextScalar, mustBeNonempty} = 'double'
-    options.FillValue {mustBeNumeric} = []
+    options.FillValue {mustBeNumericOrLogical} = []
     options.Compression {mustBeStructOrEmpty} = []
 end
-
-zarrObj = Zarr(filepath);
 
 % Dimensionality of the dataset and the chunk size must be the same
 if any(size(datasize) ~= size(options.ChunkSize))
     error("MATLAB:zarrcreate:chunkDimsMismatch",...
-        "Invalid chunk size. Chunk size must have the same number of dimensions as data size.");
+        "Invalid chunk size. Chunk size must have the same number of dimensions as Zarr array size.");
 end
 
 if any(options.ChunkSize > datasize)
     error("MATLAB:zarrcreate:chunkSizeGreater",...
-        "Invalid chunk size. Each entry of ChunkSize must be less than or equal to the corresponding entry of datasize.");
+        "Invalid chunk size. Each entry of ChunkSize must be less than or equal to the corresponding entry of Zarr array size.");
 end
 if isscalar(datasize)
     datasize = [1 datasize];
     options.ChunkSize = [1 options.ChunkSize];
 end
 
+zarrObj = Zarr(filepath);
 zarrObj.create(options.Datatype, datasize, options.ChunkSize, options.FillValue, options.Compression)
 
 end
