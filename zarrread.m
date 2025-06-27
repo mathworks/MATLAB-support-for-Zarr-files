@@ -3,25 +3,25 @@ function data = zarrread(filepath, options)
 %   DATA = ZARRREAD(FILEPATH) retrieves all the data from the Zarr array
 %   located at FILEPATH. The datatype of DATA is the MATLAB equivalent of 
 %   the Zarr datatype of the array located at FILEPATH.
-% 
-%   DATA = ZARRREAD(FILEPATH, Start=start) retrieves a subset of the data 
-%   from the Zarr array located at FILEPATH. Start is a row vector of 
-%   one-based indices of the first element to be read in each dimension.
-%   Default is to read all the elements starting from the first (Start=
-%   [1,1,..].
-% 
-%   DATA = ZARRREAD(FILEPATH, Count=count) retrieves a subset of the data 
-%   from the Zarr array located at FILEPATH. Count is a row vector
-%   of number of elements to be read in each dimension. Default is to read 
-%   all the available elements (based on dimension size and the specified 
-%   Start and Stride).
-% 
-%   DATA = ZARRREAD(FILEPATH, Stride=stride) retrieves a subset of the data 
-%   from the Zarr array located at FILEPATH. Stride is a row vector of 
-%   spaces between indices along each dimension. A value of 1 accesses 
-%   adjacent elements in the corresponding dimension, a value of 2
-%   accesses every other element in the corresponding dimension, etc.
-%   Default is to read all elements without skipping (Stride=[1,1,...])
+%
+%   DATA = ZARRREAD(..., Start=start) retrieves a subset of the data from
+%   the Zarr array. Specify start as a row vector of one-based indices of
+%   the first elements to be read in each dimension. If you do not specify
+%   start, then the function starts reading the dataset from the first
+%   index along each dimension.
+%
+%   DATA = ZARRREAD(..., Count=count) retrieves a subset of the data from
+%   the Zarr array. Specify count as a row vector of numbers of elements to
+%   be read in each dimension. If you do not specify count, then the
+%   function reads data until the end of each dimension.
+%
+%   DATA = ZARRREAD(..., Stride=stride) retrieves a subset of the data from
+%   the Zarr array. Specify stride as a row vector of differences between
+%   indices along each dimension. A value of 1 accesses adjacent elements
+%   in the corresponding dimension, a value of 2 accesses every other
+%   element in the corresponding dimension, and so on. If you do not
+%   specify stride, then the function reads data without skipping indices
+%   along each dimension.
 
 %   Copyright 2025 The MathWorks, Inc.
 

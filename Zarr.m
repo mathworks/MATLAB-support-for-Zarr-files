@@ -53,12 +53,19 @@ classdef Zarr < handle
             isZgroup = isfile(fullfile(path, '.zgroup'));
         end
 
-        function newParams = validatePartialReadParams(params, dims, defaultValues)
-            % Validate the parameters for partial read (Start, Stride,
+        function newParams = processPartialReadParams(params, dims,...
+                defaultValues, paramName)
+            % Process the parameters for partial read (Start, Stride,
             % Count)
+            arguments (Input)
+                params % Start/Stride/Count parameter to be validated
+                dims (1,:) double  % Zarr array dimensions
+                defaultValues (1,:) 
+                paramName (1,1) string 
+            end
 
             arguments (Output)
-                newParams (1,:) int64
+                newParams (1,:) int64 % must be integers for tensorstore
             end
             
             if isempty(params)
@@ -78,8 +85,9 @@ classdef Zarr < handle
             if numel(params) ~= numel(dims)
                 error("MATLAB:Zarr:badPartialReadDimensions",...
                     "Number of elements in " +...
-                    "Start/Stride/Count must be the same "+...
-                    "as the number of Zarr array dimensions.")
+                    "%s must be the same "+...
+                    "as the number of Zarr array dimensions.",...
+                    paramName)
             end
 
             newParams = params;
@@ -249,13 +257,13 @@ classdef Zarr < handle
             % Validate partial read parameters
             info = zarrinfo(obj.Path);
             numDims = numel(info.shape);
-            start = Zarr.validatePartialReadParams(start, info.shape,...
-                ones([1,numDims]));
-            stride = Zarr.validatePartialReadParams(stride, info.shape,...
-                ones([1,numDims])); 
+            start = Zarr.processPartialReadParams(start, info.shape,...
+                ones([1,numDims]), "Start");
+            stride = Zarr.processPartialReadParams(stride, info.shape,...
+                ones([1,numDims]), "Stride"); 
             maxCount = (int64(info.shape') - start + 1)./stride; % has to be a row vector
-            count = Zarr.validatePartialReadParams(count, info.shape,...
-                maxCount); 
+            count = Zarr.processPartialReadParams(count, info.shape,...
+                maxCount, "Count"); 
 
             % Convert partial read parameters to tensorstore-style
             % indexing

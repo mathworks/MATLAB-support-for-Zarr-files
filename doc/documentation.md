@@ -68,10 +68,31 @@ do not already exist. If `FILEPATH` exists already, the contents are overwritten
 Write the MATLAB variable data (specified by DATA) to the path specified by `FILEPATH`.
 The size of `DATA` must match the size of the Zarr array specified during creation.
 
-## `DATA = zarrread(FILEPATH)`
-Retrieve all the data from the Zarr array located at `FILEPATH`.
+## `DATA = zarrread(FILEPATH, Name=Value)`
+Retrieve data from the Zarr array located at `FILEPATH`.
 The datatype of DATA is the MATLAB equivalent of the Zarr datatype of the array
 located at `FILEPATH`.
+
+###	Name - Value Pairs
+```
+Start    - a row vector of one-based indices of the first 
+           elements to be read in each dimension. If you 
+           do not specify start, then the function starts 
+           reading the dataset from the first index along 
+           each dimension.
+
+Count    - a row vector of numbers of elements to
+           be read in each dimension. If you do not specify 
+           count, then the function reads data until the end 
+           of each dimension.
+
+Stride   - a row vector of differences between indices along 
+           each dimension. A value of 1 accesses adjacent elements
+           in the corresponding dimension, a value of 2 accesses 
+           every other element in the corresponding dimension, and 
+           so on. If you do not specify stride, then the function 
+           reads data without skipping indices along each dimension.
+```
 
 ## `INFO = zarrinfo(FILEPATH)`
 Read the metadata associated with a Zarr array or group located at `FILEPATH` and return the information in a structure INFO, whose fields are the names of the metadata keys. 
