@@ -33,9 +33,15 @@ classdef Zarr < handle
             
             % Check if the ZarrPy module is loaded already. If not, load
             % it.
-            sys = py.importlib.import_module('sys');
-            loadedModules = dictionary(sys.modules);
-            if ~loadedModules.isKey("ZarrPy")
+            try
+                sys = py.importlib.import_module('sys');
+                loadedModuleNames = string( py.list( sys.modules.keys() ) );
+                requiresZarrPyReload = any(loadedModuleNames == "ZarrPy");
+            catch
+                requiresZarrPyReload = true;
+            end
+
+            if requiresZarrPyReload
                 zarrModule = py.importlib.import_module('ZarrPy');
                 py.importlib.reload(zarrModule);
             end
