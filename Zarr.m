@@ -53,6 +53,46 @@ classdef Zarr < handle
             isZgroup = isfile(fullfile(path, '.zgroup'));
         end
 
+        function newParams = processPartialReadParams(params, dims,...
+                defaultValues, paramName)
+            % Process the parameters for partial read (Start, Stride,
+            % Count)
+            arguments (Input)
+                params % Start/Stride/Count parameter to be validated
+                dims (1,:) double  % Zarr array dimensions
+                defaultValues (1,:) 
+                paramName (1,1) string 
+            end
+
+            arguments (Output)
+                newParams (1,:) int64 % must be integers for tensorstore
+            end
+            
+            if isempty(params)
+                newParams = defaultValues;
+                return
+            end
+
+            % Allow using a scalar value for indexing into row or column
+            % datasets
+            if isscalar(params) && any(dims==1) && numel(dims)==2
+                newParams = defaultValues;
+                % use the provided value for the non-scalar dimension
+                newParams(dims~=1) = params;
+                return
+            end
+
+            if numel(params) ~= numel(dims)
+                error("MATLAB:Zarr:badPartialReadDimensions",...
+                    "Number of elements in " +...
+                    "%s must be the same "+...
+                    "as the number of Zarr array dimensions.",...
+                    paramName)
+            end
+
+            newParams = params;
+        end
+
         function resolvedPath = getFullPath(path)
             % Given a path, resolves it to a full path. The trailing
             % directories do not have to exist.
@@ -237,7 +277,7 @@ classdef Zarr < handle
         end
 
         
-        function data = read(obj)
+        function data = read(obj, start, count, stride)
             % Function to read the Zarr array
 
             % If the Zarr array is local, verify that it is a valid folder
@@ -251,7 +291,27 @@ classdef Zarr < handle
                 end
             end
 
-            ndArrayData = py.ZarrPy.readZarr(obj.KVStoreSchema);
+            % Validate partial read parameters
+            info = zarrinfo(obj.Path);
+            numDims = numel(info.shape);
+            start = Zarr.processPartialReadParams(start, info.shape,...
+                ones([1,numDims]), "Start");
+            stride = Zarr.processPartialReadParams(stride, info.shape,...
+                ones([1,numDims]), "Stride"); 
+            maxCount = (int64(info.shape') - start + 1)./stride; % has to be a row vector
+            count = Zarr.processPartialReadParams(count, info.shape,...
+                maxCount, "Count"); 
+
+            % Convert partial read parameters to tensorstore-style
+            % indexing
+            start = start - 1; % tensorstore is 0-based
+            % Tensorstore uses end index instead of count
+            % (it does NOT include element at the end index)
+            endInds = start + stride.*count;
+
+            % Read the data
+            ndArrayData = py.ZarrPy.readZarr(obj.KVStoreSchema,...
+                start, endInds, stride);
 
             % Store the datatype
             obj.Datatype = ZarrDatatype.fromTensorstoreType(ndArrayData.dtype.name);

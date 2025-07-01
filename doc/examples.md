@@ -6,6 +6,18 @@ filepath = "group1\dset1";
 data = zarrread(filepath)
 ```
 
+### Read a subset of Zarr array
+Read a 2x2 subset of a 3x4 array, starting with the second element in the second dimension, and only reading every other element in the second dimension.
+``` MATLAB
+filepath = "grp_v2/smallArr";
+d = zarrread(filepath, Start=[1,2], Stride=[1,2], Count=[2,2])
+
+d =
+
+     4    10
+     5    11
+```
+
 ### Create and write to a Zarr array
 ``` MATLAB
 filepath   = "myZarrfiles\singleDset";
