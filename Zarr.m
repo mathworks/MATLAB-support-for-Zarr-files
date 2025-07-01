@@ -36,7 +36,7 @@ classdef Zarr < handle
             try
                 sys = py.importlib.import_module('sys');
                 loadedModuleNames = string( py.list( sys.modules.keys() ) );
-                requiresZarrPyReload = any(loadedModuleNames == "ZarrPy");
+                requiresZarrPyReload = ~any(loadedModuleNames == "ZarrPy");
             catch
                 requiresZarrPyReload = true;
             end
