@@ -25,20 +25,23 @@ classdef Zarr < handle
             % Python module setup and bootstrapping to MATLAB
             fullPath = mfilename('fullpath');
             zarrDirectory = fileparts(fullPath);
-            modpath = fullfile(zarrDirectory, 'PythonModule');
-            % Add the current folder to the Python search path
-            if count(py.sys.path,modpath) == 0
-                insert(py.sys.path,int32(0),modpath);
+            zarrPyPath = fullfile(zarrDirectory, 'PythonModule');
+            % Add ZarrPy to the Python search path if it is not there
+            % already
+            if count(py.sys.path,zarrPyPath) == 0
+                insert(py.sys.path,int32(0),zarrPyPath);
             end
-            
-            % Check if the ZarrPy module is loaded already. If not, load
-            % it.
-            sys = py.importlib.import_module('sys');
-            loadedModules = dictionary(sys.modules);
-            if ~loadedModules.isKey("ZarrPy")
-                zarrModule = py.importlib.import_module('ZarrPy');
-                py.importlib.reload(zarrModule);
-            end
+        end
+
+        function pyReload()
+            % Reload ZarrPy module after it has been modified (for
+            % In-Process Python only). Need to do `clear classes` before
+            % this call. For Out-of-Process Python, can just use
+            % `terminate(pyenv)` instead.
+
+            Zarr.pySetup() % make sure ZarrPy is on the path
+            zarrModule = py.importlib.import_module('ZarrPy');
+            py.importlib.reload(zarrModule);
         end
 
         function isZarray = isZarrArray(path)
