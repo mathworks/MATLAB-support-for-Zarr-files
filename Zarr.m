@@ -34,15 +34,11 @@ classdef Zarr < handle
 
         function zarrPy = ZarrPy()
             % Get ZarrPy Python module
-            
-            sys = py.importlib.import_module('sys');
-            loadedModules = sys.modules;
-            zarrPy = loadedModules.get("ZarrPy", 0);
 
-            % if the zarrPy module is not loaded
-            if isnumeric(zarrPy)
-                zarrPy = py.importlib.import_module('ZarrPy');
-            end
+            % Python will compile and cache the module after the first call
+            % to import_module, so there is no harm in making this call
+            % multiple times.
+            zarrPy = py.importlib.import_module('ZarrPy');
         end
 
         function pyReloadInProcess()
@@ -51,7 +47,7 @@ classdef Zarr < handle
             % this call. For Out-of-Process Python, can just use
             % `terminate(pyenv)` instead.
 
-            py.importlib.reload(Zarr.ZarrPy)
+           py.importlib.reload(Zarr.ZarrPy);
         end
 
         function isZarray = isZarrArray(path)
