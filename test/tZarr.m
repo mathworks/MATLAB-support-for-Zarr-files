@@ -29,7 +29,7 @@ classdef tZarr < SharedZarrTestSetup
         function verifyReload(testcase)
             % Verify that calling reload method does not cause any issues
 
-            Zarr.pyReloadInProcess();
+            Zarr.pyReloadInProcess()
             zarrPyModule = Zarr.ZarrPy;
             testcase.verifyTrue(isa(zarrPyModule, 'py.module'))
 

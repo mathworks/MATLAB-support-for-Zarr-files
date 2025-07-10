@@ -47,7 +47,11 @@ classdef Zarr < handle
             % this call. For Out-of-Process Python, can just use
             % `terminate(pyenv)` instead.
 
-           py.importlib.reload(Zarr.ZarrPy);
+            % make sure the python module is on the path
+            Zarr.pySetup()
+
+            % reload
+            py.importlib.reload(Zarr.ZarrPy);
         end
 
         function isZarray = isZarrArray(path)
