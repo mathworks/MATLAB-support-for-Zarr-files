@@ -136,24 +136,35 @@ classdef tZarrRead < matlab.unittest.TestCase
 
         function invalidPartialReadParams(testcase)
             % Verify zarrread errors when invalid partial read
-            % Start/Stride/Count are used
-            
+            % Start/Stride/Count are used.
             zpath = testcase.ArrPathReadSmall; % a 2D array, 3x4
     
+            % Wrong dimensions
             errID = 'MATLAB:Zarr:badPartialReadDimensions';
-            wrongNumberOfDimensions = [1,1,1];
-            testcase.verifyError(...
-                @()zarrread(zpath,Start=wrongNumberOfDimensions),...
-                errID);
-            testcase.verifyError(...
-                @()zarrread(zpath,Stride=wrongNumberOfDimensions),...
-                errID);
-            testcase.verifyError(...
-                @()zarrread(zpath,Count=wrongNumberOfDimensions),...
-                errID);
+            wrongDims = [1,1,1];
+            testcase.verifyError(@()zarrread(zpath,Start=wrongDims),errID);
+            testcase.verifyError(@()zarrread(zpath,Stride=wrongDims),errID);
+            testcase.verifyError(@()zarrread(zpath,Count=wrongDims),errID);
 
-            %TODO: negative values, wrong datatypes, out of bounds
-           
+            % Invalid type
+            errID = 'MATLAB:validators:mustBeNumericOrLogical';
+            testcase.verifyError(@()zarrread(zpath,"Start",""),errID);
+            testcase.verifyError(@()zarrread(zpath,"Stride",""),errID);
+            testcase.verifyError(@()zarrread(zpath,"Count",""),errID);
+
+            % Negative values
+            inpVal = [-1 1];
+            errID = 'MATLAB:validators:mustBePositive';
+            testcase.verifyError(@()zarrread(zpath,"Start",inpVal),errID);
+            testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
+            testcase.verifyError(@()zarrread(zpath,"Count",inpVal),errID);
+
+            % Input out of bounds
+            inpVal = [100 200];
+            errID = 'MATLAB:Python:PyException';
+            testcase.verifyError(@()zarrread(zpath,"Start",inpVal),errID);
+            %testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
+            testcase.verifyError(@()zarrread(zpath,"Count",inpVal),errID);
         end
     end
 end
