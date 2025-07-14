@@ -336,13 +336,28 @@ classdef Zarr < handle
             % (it does NOT include element at the end index)
             endInds = start + stride.*count;
 
+            % Store the datatype
+            obj.Datatype = ZarrDatatype.fromZarrType(info.dtype);
+
+            % Check if reading requested data might exceed available memory
+            try
+                zeros(count, obj.Datatype.MATLABType);
+            catch ME
+                if strcmp(ME.identifier, 'MATLAB:array:SizeLimitExceeded')
+                    %rethrow(ME)
+                    error("MATLAB:Zarr:OutOfMemory",...
+                        "Reading requested data (%s %s array) "+...
+                        "might exceed available memory.",...
+                        join(string(count), "x"), obj.Datatype.MATLABType)
+                end
+            end
+
             % Read the data
             ndArrayData = Zarr.ZarrPy.readZarr(obj.KVStoreSchema,...
                 start, endInds, stride);
 
-            % Store the datatype
-            obj.Datatype = ZarrDatatype.fromTensorstoreType(ndArrayData.dtype.name);
-
+            % assert(ndArrayData.dtype.name == obj.Datatype.TensorstoreType)
+            
             % Convert the numpy array to MATLAB array
             data = cast(ndArrayData, obj.Datatype.MATLABType);
         end
