@@ -103,6 +103,13 @@ classdef Zarr < handle
                     paramName)
             end
 
+            if any(params>dims)
+                error("MATLAB:Zarr:PartialReadOutOfBounds",...
+                    "Elements in %s must not exceed "+...
+                    "the corresponding Zarr array dimensions (%s).",...
+                    paramName, join(string(dims), "x"))
+            end
+
             newParams = params;
         end
 
@@ -314,6 +321,13 @@ classdef Zarr < handle
             maxCount = (int64(info.shape') - start + 1)./stride; % has to be a row vector
             count = Zarr.processPartialReadParams(count, info.shape,...
                 maxCount, "Count"); 
+
+            if any(count>maxCount)
+                error("MATLAB:Zarr:PartialReadOutOfBounds",...
+                    "Requested Count in combination with other "+...
+                    "partial read parameters exceeds "+...
+                    "Zarr array dimensions.")
+            end
 
             % Convert partial read parameters to tensorstore-style
             % indexing
