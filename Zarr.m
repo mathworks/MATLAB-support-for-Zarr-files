@@ -17,28 +17,41 @@ classdef Zarr < handle
         isRemote
     end
 
-
     methods(Static)
         function pySetup
-            % Load the Python library
+            % Set up Python path
             
             % Python module setup and bootstrapping to MATLAB
             fullPath = mfilename('fullpath');
             zarrDirectory = fileparts(fullPath);
-            modpath = fullfile(zarrDirectory, 'PythonModule');
-            % Add the current folder to the Python search path
-            if count(py.sys.path,modpath) == 0
-                insert(py.sys.path,int32(0),modpath);
+            zarrPyPath = fullfile(zarrDirectory, 'PythonModule');
+            % Add ZarrPy to the Python search path if it is not there
+            % already
+            if count(py.sys.path,zarrPyPath) == 0
+                insert(py.sys.path,int32(0),zarrPyPath);
             end
-            
-            % Check if the ZarrPy module is loaded already. If not, load
-            % it.
-            sys = py.importlib.import_module('sys');
-            loadedModules = dictionary(sys.modules);
-            if ~loadedModules.isKey("ZarrPy")
-                zarrModule = py.importlib.import_module('ZarrPy');
-                py.importlib.reload(zarrModule);
-            end
+        end
+
+        function zarrPy = ZarrPy()
+            % Get ZarrPy Python module
+
+            % Python will compile and cache the module after the first call
+            % to import_module, so there is no harm in making this call
+            % multiple times.
+            zarrPy = py.importlib.import_module('ZarrPy');
+        end
+
+        function pyReloadInProcess()
+            % Reload ZarrPy module after it has been modified (for
+            % In-Process Python only). Need to do `clear classes` before
+            % this call. For Out-of-Process Python, can just use
+            % `terminate(pyenv)` instead.
+
+            % make sure the python module is on the path
+            Zarr.pySetup()
+
+            % reload
+            py.importlib.reload(Zarr.ZarrPy);
         end
 
         function isZarray = isZarrArray(path)
@@ -262,7 +275,7 @@ classdef Zarr < handle
                 % Extract the S3 bucket name and path
                 [bucketName, objectPath] = Zarr.extractS3BucketNameAndPath(obj.Path);
                 % Create a Python dictionary for the KV store driver
-                obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
+                obj.KVStoreSchema = Zarr.ZarrPy.createKVStore(obj.isRemote, objectPath, bucketName);
                 
             else % Local file
                 % Use full path
@@ -272,7 +285,7 @@ classdef Zarr < handle
                     error("MATLAB:Zarr:invalidPath",...
                         "Unable to access path ""%s"".", path)
                 end
-                obj.KVStoreSchema = py.ZarrPy.createKVStore(obj.isRemote, obj.Path);
+                obj.KVStoreSchema = Zarr.ZarrPy.createKVStore(obj.isRemote, obj.Path);
             end
         end
 
@@ -310,7 +323,7 @@ classdef Zarr < handle
             endInds = start + stride.*count;
 
             % Read the data
-            ndArrayData = py.ZarrPy.readZarr(obj.KVStoreSchema,...
+            ndArrayData = Zarr.ZarrPy.readZarr(obj.KVStoreSchema,...
                 start, endInds, stride);
 
             % Store the datatype
@@ -363,7 +376,7 @@ classdef Zarr < handle
 
             % The Python function returns the Tensorstore schema, but we
             % do not use it for anything at the moment.
-            obj.TensorstoreSchema = py.ZarrPy.createZarr(obj.KVStoreSchema, py.numpy.array(obj.DsetSize),...
+            obj.TensorstoreSchema = Zarr.ZarrPy.createZarr(obj.KVStoreSchema, py.numpy.array(obj.DsetSize),...
                 py.numpy.array(obj.ChunkSize), obj.Datatype.TensorstoreType, ...
                  obj.Datatype.ZarrType, obj.Compression, obj.FillValue);
             %py.ZarrPy.temp(py.numpy.array([1, 1]), py.numpy.array([2, 2]))
@@ -400,7 +413,7 @@ classdef Zarr < handle
                     "Unable to write data. Size of the data to be written must match size of the array.");
             end
             
-            py.ZarrPy.writeZarr(obj.KVStoreSchema, data);
+            Zarr.ZarrPy.writeZarr(obj.KVStoreSchema, data);
         end
 
     end
