@@ -168,6 +168,7 @@ classdef tZarrRead < matlab.unittest.TestCase
             testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
             testcase.verifyError(@()zarrread(zpath,"Count",inpVal),errID);
 
+
             % Parameters out of bounds
             inpVal = [100 200];
             errID = 'MATLAB:Zarr:PartialReadOutOfBounds';
@@ -178,7 +179,6 @@ classdef tZarrRead < matlab.unittest.TestCase
             % Combination of parameters out of bounds
             testcase.verifyError(...
                 @()zarrread(zpath,Start=[3 4],Count=[2 2]),errID)
-
         end
     end
 end
