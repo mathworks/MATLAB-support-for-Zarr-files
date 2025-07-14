@@ -139,7 +139,7 @@ classdef tZarrRead < matlab.unittest.TestCase
             % Start/Stride/Count are used.
             zpath = testcase.ArrPathReadSmall; % a 2D array, 3x4
     
-            % Wrong dimensions
+            % Wrong number of dimensions in comparison to the array
             errID = 'MATLAB:Zarr:badPartialReadDimensions';
             wrongDims = [1,1,1];
             testcase.verifyError(@()zarrread(zpath,Start=wrongDims),errID);
