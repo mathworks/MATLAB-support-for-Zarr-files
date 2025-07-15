@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        matlab-version: ['R2024b']
+        matlab-version: ['R2024a', 'R2024b']
 
     steps:
     - name: Checkout code

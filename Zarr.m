@@ -106,8 +106,8 @@ classdef Zarr < handle
             if any(params>dims)
                 error("MATLAB:Zarr:PartialReadOutOfBounds",...
                     "Elements in %s must not exceed "+...
-                    "the corresponding Zarr array dimensions (%s).",...
-                    paramName, join(string(dims), "x"))
+                    "the corresponding Zarr array dimensions.",...
+                    paramName)
             end
 
             newParams = params;
@@ -325,8 +325,7 @@ classdef Zarr < handle
             if any(count>maxCount)
                 error("MATLAB:Zarr:PartialReadOutOfBounds",...
                     "Requested Count in combination with other "+...
-                    "partial read parameters exceeds "+...
-                    "Zarr array dimensions.")
+                    "parameters exceeds Zarr array dimensions.")
             end
 
             % Convert partial read parameters to tensorstore-style
@@ -344,19 +343,16 @@ classdef Zarr < handle
                 zeros(count, obj.Datatype.MATLABType);
             catch ME
                 if strcmp(ME.identifier, 'MATLAB:array:SizeLimitExceeded')
-                    %rethrow(ME)
                     error("MATLAB:Zarr:OutOfMemory",...
-                        "Reading requested data (%s %s array) "+...
+                        "Reading requested data (%s %s matrix) "+...
                         "might exceed available memory.",...
-                        join(string(count), "x"), obj.Datatype.MATLABType)
+                        join(string(count), "-by-"), obj.Datatype.MATLABType)
                 end
             end
 
             % Read the data
             ndArrayData = Zarr.ZarrPy.readZarr(obj.KVStoreSchema,...
                 start, endInds, stride);
-
-            % assert(ndArrayData.dtype.name == obj.Datatype.TensorstoreType)
             
             % Convert the numpy array to MATLAB array
             data = cast(ndArrayData, obj.Datatype.MATLABType);
