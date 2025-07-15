@@ -74,6 +74,15 @@ classdef ZarrDatatype
             obj = ZarrDatatype(ind);
         end
 
+        function obj = fromZarrType(zarrType)
+            % Create a datatype object based on Zarr datatype name
+            arguments
+                zarrType (1,1) string {ZarrDatatype.mustBeZarrType}
+            end
+
+            ind = find(zarrType == ZarrDatatype.ZarrTypes);
+            obj = ZarrDatatype(ind);
+        end
 
         function mustBeMATLABType(type)
             % Validator for MATLAB types
@@ -83,6 +92,11 @@ classdef ZarrDatatype
         function mustBeTensorstoreType(type)
             % Validator for Tensorstore types
             mustBeMember(type, ZarrDatatype.TensorstoreTypes)
+        end
+
+        function mustBeZarrType(type)
+            % Validator for Zarr types
+            mustBeMember(type, ZarrDatatype.ZarrTypes)
         end
     end
 
