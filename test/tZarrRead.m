@@ -113,11 +113,10 @@ classdef tZarrRead < matlab.unittest.TestCase
             % Verify zarrread error when a user tries to read data that is
             % too large
             
-            testcase.assumeFalse(isMATLABReleaseOlderThan('R2024b'),...
-                "Remote workflows are fully supported only from R2024b")
+            bigDataPath = "bigData/myzarr";
+            zarrcreate(bigDataPath, [100000,100000], Datatype='single');
             errID = 'MATLAB:Zarr:OutOfMemory';
-            bigData = 'https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/elevation/';
-            testcase.verifyError(@()zarrread(bigData,Count=[100000,100000]),errID);
+            testcase.verifyError(@()zarrread(bigDataPath),errID);
         end
 
         function invalidFilePath(testcase)
