@@ -344,7 +344,7 @@ classdef Zarr < handle
             catch ME
                 if strcmp(ME.identifier, 'MATLAB:array:SizeLimitExceeded')
                     error("MATLAB:Zarr:OutOfMemory",...
-                        "Reading requested data (%s %s matrix) "+...
+                        "Reading requested data (%s %s array) "+...
                         "might exceed available memory.",...
                         join(string(count), "-by-"), obj.Datatype.MATLABType)
                 end
@@ -353,7 +353,7 @@ classdef Zarr < handle
             % Read the data
             ndArrayData = Zarr.ZarrPy.readZarr(obj.KVStoreSchema,...
                 start, endInds, stride);
-            
+
             % Convert the numpy array to MATLAB array
             data = cast(ndArrayData, obj.Datatype.MATLABType);
         end
