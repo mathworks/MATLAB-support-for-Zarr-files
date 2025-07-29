@@ -27,9 +27,9 @@ function data = zarrread(filepath, options)
 
 arguments
     filepath {mustBeTextScalar, mustBeNonzeroLengthText}
-    options.Start (1,:) {mustBeInteger, mustBePositive} = [];
-    options.Count (1,:) {mustBeInteger, mustBePositive} = [];
-    options.Stride (1,:) {mustBeInteger, mustBePositive} = [];
+    options.Start (1,:) {mustBeNumeric, mustBeInteger, mustBePositive} = [];
+    options.Count (1,:) {mustBeNumeric, mustBeInteger, mustBePositive} = [];
+    options.Stride (1,:) {mustBeNumeric, mustBeInteger, mustBePositive} = [];
 end
 
 zarrObj = Zarr(filepath);

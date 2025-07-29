@@ -109,6 +109,16 @@ classdef tZarrRead < matlab.unittest.TestCase
             testcase.verifyError(@()zarrread('nonexistent/'),errID);
         end
 
+        function tooBigArray(testcase)
+            % Verify zarrread error when a user tries to read data that is
+            % too large
+            
+            bigDataPath = "bigData/myzarr";
+            zarrcreate(bigDataPath, [100000,100000], Datatype='single');
+            errID = 'MATLAB:Zarr:OutOfMemory';
+            testcase.verifyError(@()zarrread(bigDataPath),errID);
+        end
+
         function invalidFilePath(testcase)
             % Verify zarrread error when an invalid file path is used.
 
@@ -147,7 +157,7 @@ classdef tZarrRead < matlab.unittest.TestCase
             testcase.verifyError(@()zarrread(zpath,Count=wrongDims),errID);
 
             % Invalid type
-            errID = 'MATLAB:validators:mustBeNumericOrLogical';
+            errID = 'MATLAB:validators:mustBeNumeric';
             testcase.verifyError(@()zarrread(zpath,"Start",""),errID);
             testcase.verifyError(@()zarrread(zpath,"Stride",""),errID);
             testcase.verifyError(@()zarrread(zpath,"Count",""),errID);
@@ -159,12 +169,17 @@ classdef tZarrRead < matlab.unittest.TestCase
             testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
             testcase.verifyError(@()zarrread(zpath,"Count",inpVal),errID);
 
-            % Input out of bounds
+
+            % Parameters out of bounds
             inpVal = [100 200];
-            errID = 'MATLAB:Python:PyException';
+            errID = 'MATLAB:Zarr:PartialReadOutOfBounds';
             testcase.verifyError(@()zarrread(zpath,"Start",inpVal),errID);
-            %testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
+            testcase.verifyError(@()zarrread(zpath,"Stride",inpVal),errID);
             testcase.verifyError(@()zarrread(zpath,"Count",inpVal),errID);
+
+            % Combination of parameters out of bounds
+            testcase.verifyError(...
+                @()zarrread(zpath,Start=[3 4],Count=[2 2]),errID)
         end
     end
 end

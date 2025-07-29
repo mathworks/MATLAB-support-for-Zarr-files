@@ -103,6 +103,13 @@ classdef Zarr < handle
                     paramName)
             end
 
+            if any(params>dims)
+                error("MATLAB:Zarr:PartialReadOutOfBounds",...
+                    "Elements in %s must not exceed "+...
+                    "the corresponding Zarr array dimensions.",...
+                    paramName)
+            end
+
             newParams = params;
         end
 
@@ -315,6 +322,12 @@ classdef Zarr < handle
             count = Zarr.processPartialReadParams(count, info.shape,...
                 maxCount, "Count"); 
 
+            if any(count>maxCount)
+                error("MATLAB:Zarr:PartialReadOutOfBounds",...
+                    "Requested Count in combination with other "+...
+                    "parameters exceeds Zarr array dimensions.")
+            end
+
             % Convert partial read parameters to tensorstore-style
             % indexing
             start = start - 1; % tensorstore is 0-based
@@ -322,12 +335,25 @@ classdef Zarr < handle
             % (it does NOT include element at the end index)
             endInds = start + stride.*count;
 
+            % Store the datatype
+            obj.Datatype = ZarrDatatype.fromZarrType(info.dtype);
+
+            % Check if reading requested data might exceed available memory
+            try
+                zeros(count, obj.Datatype.MATLABType);
+            catch ME
+                if strcmp(ME.identifier, 'MATLAB:array:SizeLimitExceeded')
+                    error("MATLAB:Zarr:OutOfMemory",...
+                        "Reading requested data (%s %s array) "+...
+                        "would exceed maximum array size preference. "+...
+                        "Select a smaller subset of data to read.",...
+                        join(string(count), "-by-"), obj.Datatype.MATLABType)
+                end
+            end
+
             % Read the data
             ndArrayData = Zarr.ZarrPy.readZarr(obj.KVStoreSchema,...
                 start, endInds, stride);
-
-            % Store the datatype
-            obj.Datatype = ZarrDatatype.fromTensorstoreType(ndArrayData.dtype.name);
 
             % Convert the numpy array to MATLAB array
             data = cast(ndArrayData, obj.Datatype.MATLABType);
