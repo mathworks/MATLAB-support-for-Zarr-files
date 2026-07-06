@@ -35,6 +35,97 @@ classdef tZarr < SharedZarrTestSetup
 
         end
 
-  
+        function verifyIsZarrArrayAndGroup(testcase)
+            % Verify that isZarrArray and isZarrGroup correctly identify a
+            % Zarr array (has .zarray) versus a Zarr group (has .zgroup).
+            % SharedZarrTestSetup copies the *contents* of dataFiles into
+            % the working folder, so fixtures live at grp_v2/... directly.
+            arrPath = "grp_v2/arr_v2";
+            grpPath = "grp_v2";
+
+            testcase.verifyTrue(Zarr.isZarrArray(arrPath),...
+                "Expected an array path to be a Zarr array.");
+            testcase.verifyFalse(Zarr.isZarrArray(grpPath),...
+                "Did not expect a group path to be a Zarr array.");
+
+            testcase.verifyTrue(Zarr.isZarrGroup(grpPath),...
+                "Expected a group path to be a Zarr group.");
+            testcase.verifyFalse(Zarr.isZarrGroup(arrPath),...
+                "Did not expect an array path to be a Zarr group.");
+        end
+
+        function verifyDatatypeRoundTrip(testcase)
+            % Verify that ZarrDatatype maps consistently across MATLAB,
+            % Tensorstore, and Zarr type names, regardless of which static
+            % constructor is used to create it.
+            mlType = "double";
+            tsType = "float64";
+            zType  = "<f8";
+
+            fromML = ZarrDatatype.fromMATLABType(mlType);
+            fromTS = ZarrDatatype.fromTensorstoreType(tsType);
+            fromZarr = ZarrDatatype.fromZarrType(zType);
+
+            for dt = [fromML, fromTS, fromZarr]
+                testcase.verifyEqual(dt.MATLABType, mlType);
+                testcase.verifyEqual(dt.TensorstoreType, tsType);
+                testcase.verifyEqual(dt.ZarrType, zType);
+            end
+        end
+
+        function verifyInvalidTensorstoreType(testcase)
+            % Verify error when an unsupported Tensorstore type name is used.
+            testcase.verifyError(...
+                @()ZarrDatatype.fromTensorstoreType("not_a_type"),...
+                "MATLAB:validators:mustBeMember");
+        end
+
+        function verifyCreateGroupMakesFolder(testcase)
+            % Verify that createGroup creates the directory when it does not
+            % already exist, and writes a valid .zgroup file into it.
+            groupPath = fullfile(pwd, "brandNewGroup");
+            testcase.verifyFalse(isfolder(groupPath),...
+                "Group folder should not exist before createGroup.");
+
+            Zarr.createGroup(groupPath);
+
+            testcase.verifyTrue(isfolder(groupPath),...
+                "createGroup should have created the folder.");
+            testcase.verifyTrue(isfile(fullfile(groupPath, ".zgroup")),...
+                "createGroup should have written a .zgroup file.");
+            testcase.verifyEqual(zarrinfo(groupPath).node_type, 'group',...
+                "createGroup should produce a valid Zarr group.");
+        end
+
+        function verifyCreateGroupOpenFailure(testcase)
+            % Verify error when the .zgroup file cannot be opened for
+            % writing (e.g. the target folder is read-only). The read-only
+            % folder lives inside an isolated temporary folder fixture, so
+            % no real data is modified and cleanup is automatic (removal
+            % succeeds via the writable parent, so no permission restore is
+            % needed).
+            import matlab.unittest.fixtures.TemporaryFolderFixture
+            tempFixture = testcase.applyFixture(TemporaryFolderFixture);
+
+            groupPath = fullfile(tempFixture.Folder, "readOnlyGroup");
+            mkdir(groupPath);
+            fileattrib(groupPath, '-w', '', 's');
+
+            testcase.verifyError(@()Zarr.createGroup(groupPath),...
+                "MATLAB:Zarr:fileOpenFailure");
+        end
+
+        function verifyWriteScalarShapedArray(testcase)
+            % Verify writing to an array whose stored shape is a true scalar
+            % (shape [1]). This exercises the isscalar(info.shape) branch of
+            % Zarr.write, which zarrcreate cannot produce on its own because
+            % it expands scalar sizes to [1 N].
+            scalarPath = "grp_v2/scalarData";
+
+            zarrwrite(scalarPath, 42);
+            testcase.verifyEqual(zarrread(scalarPath), 42,...
+                "Failed to write/read a scalar-shaped Zarr array.");
+        end
+
     end
 end
