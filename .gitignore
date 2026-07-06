@@ -1,5 +1,13 @@
 # Folder for generating test Zarr files
-test_files/ 
+test_files/
+
+# Coverage artifacts produced by tools/run_coverage.m
+test/coverageReport/
+test/cobertura.xml
+test/coverage_results.mat
+
+# Leaked by tZarrRead/tooBigArray (runs outside a WorkingFolderFixture)
+test/bigData/
 
 # Windows default autosave extension
 *.asv
@@ -10,3 +18,8 @@ test_files/
 # Bytecode-compiled version of python code
 PythonModule/__pycache__
 *.pyc
+.venv-zarr/
+
+# Local Claude Code profile (per-developer, not shared)
+.claude/
+.claude-profiles
