@@ -110,19 +110,28 @@ classdef tZarrAttributes < SharedZarrTestSetup
         end
 
         function noWritePermissions(testcase)
-            % Verify error if there are no write permissions to the Zarr array.
-            % Create the array inside an isolated temporary folder fixture so
-            % no shared fixture data is modified and cleanup is automatic
-            % (removal succeeds via the writable parent, so no permission
-            % restore is needed).
+            % Verify error if the .zattrs file cannot be opened for writing.
+            % Everything lives inside an isolated temporary folder fixture so
+            % no shared fixture data is modified.
+            %
+            % We make the existing .zattrs *file* read-only rather than its
+            % folder: a read-only folder does not prevent file creation on
+            % Windows (the directory read-only attribute is ignored there),
+            % whereas a read-only file is honored on both Windows and Unix.
             import matlab.unittest.fixtures.TemporaryFolderFixture
             tempFixture = testcase.applyFixture(TemporaryFolderFixture);
 
             arrPath = fullfile(tempFixture.Folder, "roArr");
             zarrcreate(arrPath, testcase.ArrSize);
+            % Write one attribute so the .zattrs file exists, then make it
+            % read-only so the next write cannot open it.
+            zarrwriteatt(arrPath, 'existingAttr', 1);
+            zattrsFile = fullfile(arrPath, '.zattrs');
 
-            % Make the array folder read-only.
-            fileattrib(arrPath,'-w','','s');
+            fileattrib(zattrsFile, '-w');
+            % Restore write permission before the fixture is torn down so its
+            % contents can be removed (runs before the fixture's rmdir).
+            testcase.addTeardown(@()fileattrib(zattrsFile, '+w'));
 
             errID = 'MATLAB:zarrwriteatt:fileOpenFailure';
             testcase.verifyError(@()zarrwriteatt(arrPath,'myAttr','attrVal'), ...

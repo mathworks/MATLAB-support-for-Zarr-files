@@ -99,17 +99,24 @@ classdef tZarr < SharedZarrTestSetup
 
         function verifyCreateGroupOpenFailure(testcase)
             % Verify error when the .zgroup file cannot be opened for
-            % writing (e.g. the target folder is read-only). The read-only
-            % folder lives inside an isolated temporary folder fixture, so
-            % no real data is modified and cleanup is automatic (removal
-            % succeeds via the writable parent, so no permission restore is
-            % needed).
+            % writing. Everything lives inside an isolated temporary folder
+            % fixture, so no real data is modified.
+            %
+            % We make the existing .zgroup *file* read-only rather than its
+            % folder: a read-only folder does not prevent file creation on
+            % Windows (the directory read-only attribute is ignored there),
+            % whereas a read-only file is honored on both Windows and Unix.
             import matlab.unittest.fixtures.TemporaryFolderFixture
             tempFixture = testcase.applyFixture(TemporaryFolderFixture);
 
             groupPath = fullfile(tempFixture.Folder, "readOnlyGroup");
-            mkdir(groupPath);
-            fileattrib(groupPath, '-w', '', 's');
+            Zarr.createGroup(groupPath);            % writes .zgroup
+            zgroupFile = fullfile(groupPath, ".zgroup");
+
+            fileattrib(zgroupFile, '-w');
+            % Restore write permission before the fixture is torn down so its
+            % contents can be removed (runs before the fixture's rmdir).
+            testcase.addTeardown(@()fileattrib(zgroupFile, '+w'));
 
             testcase.verifyError(@()Zarr.createGroup(groupPath),...
                 "MATLAB:Zarr:fileOpenFailure");
