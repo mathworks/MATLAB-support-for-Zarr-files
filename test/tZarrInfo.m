@@ -1,22 +1,18 @@
-classdef tZarrInfo < matlab.unittest.TestCase
+classdef tZarrInfo < SharedZarrTestSetup
     % Tests for zarrinfo function to get info of the Zarr file in MATLAB.
 
     % Copyright 2025 The MathWorks, Inc.
 
     properties(Constant)
-        GrpPathV2 = "dataFiles/grp_v2"
-        ArrPathV2 = "dataFiles/grp_v2/arr_v2"
-        GrpPathV3 = "dataFiles/grp_v3"
-        ArrPathV3 = "dataFiles/grp_v3/arr_v3"
-        ExpInfo = load(fullfile(pwd,"dataFiles","expZarrArrInfo.mat"))
-    end
+        % SharedZarrTestSetup copies the contents of dataFiles/ into the
+        % working folder, so fixtures are at the working folder root.
+        GrpPathV2 = "grp_v2"
+        ArrPathV2 = "grp_v2/arr_v2"
+        GrpPathV3 = "grp_v3"
+        ArrPathV3 = "grp_v3/arr_v3"
 
-    methods(TestClassSetup)
-        function addSrcCodePath(testcase)
-            % Add source code path before running the tests
-            import matlab.unittest.fixtures.PathFixture
-            testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
-        end
+        % Loaded at class-load time, while pwd is still the test folder.
+        ExpInfo = load(fullfile(pwd,"dataFiles","expZarrArrInfo.mat"))
     end
 
     methods(Test)
@@ -35,9 +31,12 @@ classdef tZarrInfo < matlab.unittest.TestCase
         end
 
         function getArrayInfoRelativePath(testcase)
-            % Verify array info if the input is using relative path to the
-            % array.
-            inpPath = fullfile('..','test',testcase.ArrPathV2);
+            % Verify array info if the input is using a relative path to the
+            % array. Read from a subfolder using a "../" prefixed path.
+            import matlab.unittest.fixtures.CurrentFolderFixture
+            testcase.applyFixture(CurrentFolderFixture("grp_v2"));
+
+            inpPath = fullfile('..', testcase.ArrPathV2);
             actInfo = zarrinfo(inpPath);
             expInfo = testcase.ExpInfo.zarrV2ArrInfo;
             testcase.verifyEqual(actInfo, expInfo, ['Failed to verify array info ' ...

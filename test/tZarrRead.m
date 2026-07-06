@@ -1,26 +1,21 @@
-classdef tZarrRead < matlab.unittest.TestCase
+classdef tZarrRead < SharedZarrTestSetup
     % Tests for zarrread function to read data from Zarr files in MATLAB.
 
     % Copyright 2025 The MathWorks, Inc.
 
     properties(Constant)
-        % Path for read functions
-        GrpPathRead = "dataFiles/grp_v2"
-        ArrPathRead = "dataFiles/grp_v2/arr_v2"
-        ArrPathReadSmall = "dataFiles/grp_v2/smallArr"
-        ArrPathReadVector = "dataFiles/grp_v2/vectorData"
-        ArrPathReadScalar = "dataFiles/grp_v2/scalarData"
-        ArrPathReadV3 = "dataFiles/grp_v3/arr_v3"
+        % Paths for read functions. SharedZarrTestSetup copies the contents
+        % of dataFiles/ into the working folder, so fixtures are at the
+        % working folder root (grp_v2/..., grp_v3/...).
+        GrpPathRead = "grp_v2"
+        ArrPathRead = "grp_v2/arr_v2"
+        ArrPathReadSmall = "grp_v2/smallArr"
+        ArrPathReadVector = "grp_v2/vectorData"
+        ArrPathReadScalar = "grp_v2/scalarData"
+        ArrPathReadV3 = "grp_v3/arr_v3"
 
+        % Loaded at class-load time, while pwd is still the test folder.
         ExpData = load(fullfile(pwd,"dataFiles","expZarrArrData.mat"))
-    end
-
-    methods(TestClassSetup)
-        function addSrcCodePath(testcase)
-            % Add source code path before running the tests
-            import matlab.unittest.fixtures.PathFixture
-            testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
-        end
     end
 
     methods(Test)
@@ -88,9 +83,12 @@ classdef tZarrRead < matlab.unittest.TestCase
         end
 
         function verifyArrayDataRelativePath(testcase)
-            % Verify array data if the input is using relative path to the
-            % array.
-            inpPath = fullfile('..','test',testcase.ArrPathRead);
+            % Verify array data if the input is using a relative path to the
+            % array. Read from a subfolder using a "../" prefixed path.
+            import matlab.unittest.fixtures.CurrentFolderFixture
+            testcase.applyFixture(CurrentFolderFixture("grp_v2"));
+
+            inpPath = fullfile('..', testcase.ArrPathRead);
             actArrData = zarrread(inpPath);
             expArrData = testcase.ExpData.arr_v2;
             testcase.verifyEqual(actArrData,expArrData,['Failed to verify array ' ...

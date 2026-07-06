@@ -111,13 +111,21 @@ classdef tZarrAttributes < SharedZarrTestSetup
 
         function noWritePermissions(testcase)
             % Verify error if there are no write permissions to the Zarr array.
-            
-            % Make the folder read-only.
-            fileattrib(testcase.ArrPathWrite,'-w','','s');
-            testcase.addTeardown(@()fileattrib(testcase.ArrPathWrite,'+w','','s'));
+            % Create the array inside an isolated temporary folder fixture so
+            % no shared fixture data is modified and cleanup is automatic
+            % (removal succeeds via the writable parent, so no permission
+            % restore is needed).
+            import matlab.unittest.fixtures.TemporaryFolderFixture
+            tempFixture = testcase.applyFixture(TemporaryFolderFixture);
+
+            arrPath = fullfile(tempFixture.Folder, "roArr");
+            zarrcreate(arrPath, testcase.ArrSize);
+
+            % Make the array folder read-only.
+            fileattrib(arrPath,'-w','','s');
 
             errID = 'MATLAB:zarrwriteatt:fileOpenFailure';
-            testcase.verifyError(@()zarrwriteatt(testcase.ArrPathWrite,'myAttr','attrVal'), ...
+            testcase.verifyError(@()zarrwriteatt(arrPath,'myAttr','attrVal'), ...
                 errID);
         end
 

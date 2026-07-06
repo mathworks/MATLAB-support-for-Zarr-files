@@ -48,13 +48,11 @@ classdef tZarrCreate < SharedZarrTestSetup
 
         function createArrayRelativePath(testcase)
             % Verify that the array is successfully created if a relative
-            % path is used.
-            newDir = 'myFolder';
-            currDir = pwd;
-            mkdir(newDir);
-            testcase.addTeardown(@()cd(currDir));
+            % path is used. Work from a fresh temporary folder (which the
+            % fixture enters and cleans up) so the "../" path resolves.
+            import matlab.unittest.fixtures.WorkingFolderFixture
+            testcase.applyFixture(WorkingFolderFixture);
 
-            cd(newDir);
             inpPath = fullfile('..','myGrp','myArr');
             zarrcreate(inpPath,[10 10]);
             arrInfo = zarrinfo(inpPath);
