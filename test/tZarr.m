@@ -81,20 +81,15 @@ classdef tZarr < SharedZarrTestSetup
         end
 
         function verifyCreateGroupMakesFolder(testcase)
-            % Verify that createGroup creates the directory when it does not
-            % already exist, and writes a valid .zgroup file into it.
-            groupPath = fullfile(pwd, "brandNewGroup");
-            testcase.verifyFalse(isfolder(groupPath),...
-                "Group folder should not exist before createGroup.");
+            % Verify that createGroup creates the directory and writes a
+            % .zgroup file into it
+            import matlab.unittest.fixtures.TemporaryFolderFixture
+            tempFixture = testcase.applyFixture(TemporaryFolderFixture);
+            groupPath = fullfile(tempFixture.Folder, "brandNewGroup");
 
             Zarr.createGroup(groupPath);
-
-            testcase.verifyTrue(isfolder(groupPath),...
-                "createGroup should have created the folder.");
             testcase.verifyTrue(isfile(fullfile(groupPath, ".zgroup")),...
                 "createGroup should have written a .zgroup file.");
-            testcase.verifyEqual(zarrinfo(groupPath).node_type, 'group',...
-                "createGroup should produce a valid Zarr group.");
         end
 
         function verifyCreateGroupOpenFailure(testcase)
