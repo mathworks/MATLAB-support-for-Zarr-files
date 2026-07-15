@@ -28,13 +28,6 @@ classdef tZarrWrite < SharedZarrTestSetup
             testcase.verifyEqual(actData,expData,'Failed to verify array data');
         end
 
-        function createArrayRemoteDefaultSyntax(testcase)
-            % Verify data when creating and writing to arrays of different 
-            % dimensions using zarrcreate and zarrwrite to a remote location.
-            
-            % Move to a separate file
-        end
-
         function createArrayLocalUserDefinedSyntax(testcase,DataType,CompId)
             % Verify the data when creating and writing to arrays with 
             % user-defined properties using zarrcreate and zarrwrite locally.
@@ -49,14 +42,6 @@ classdef tZarrWrite < SharedZarrTestSetup
             actData = zarrread(testcase.ArrPathWrite);
             testcase.verifyEqual(actData,expData,['Failed to verify data for ' DataType ' datatype' ...
                 ' with ' CompId ' compression.']);
-        end
-
-        function createArrayRemoteUserDefinedSyntax(testcase)
-            % Verify data when creating and writing data to arrays with 
-            % user-defined properties using zarrcreate and zarrwrite to a 
-            % remote location.
-        
-            % Move to a separate file
         end
 
         function createArrayWithDefaultBloscConfig(testcase)
