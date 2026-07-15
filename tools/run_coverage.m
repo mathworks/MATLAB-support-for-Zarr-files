@@ -6,7 +6,7 @@ function results = run_coverage()
 %
 %   Run from anywhere; paths are resolved relative to this file.
 
-% Copyright 2026, The MathWorks, inc.
+% Copyright 2026 The MathWorks, Inc.
 
 import matlab.unittest.TestRunner
 import matlab.unittest.Verbosity
