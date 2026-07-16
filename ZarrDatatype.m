@@ -28,7 +28,7 @@ classdef ZarrDatatype
         MATLABType
     end
 
-    methods (Hidden)
+    methods (Access = private)
         % "Private" constructor - should not be used directly. 
         % Use from*Type() static methods instead.
         function obj = ZarrDatatype(ind)
