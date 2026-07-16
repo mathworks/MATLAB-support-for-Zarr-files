@@ -119,7 +119,17 @@ classdef tZarrRead < SharedZarrTestSetup
         function tooBigArray(testcase)
             % Verify zarrread error when a user tries to read data that is
             % too large
-            
+
+            % Lower the array size limit so the ~37 GiB array below always
+            % exceeds it, regardless of how much RAM this machine has.
+            s = settings;
+            limitEnabled = s.matlab.desktop.workspace.ArraySizeLimitEnabled;
+            limitPercent = s.matlab.desktop.workspace.ArraySizeLimit;
+            testcase.addTeardown(@() clearTemporaryValue(limitEnabled));
+            testcase.addTeardown(@() clearTemporaryValue(limitPercent));
+            limitEnabled.TemporaryValue = true;
+            limitPercent.TemporaryValue = 1;
+
             bigDataPath = "bigData/myzarr";
             zarrcreate(bigDataPath, [100000,100000], Datatype='single');
             errID = 'MATLAB:Zarr:OutOfMemory';
