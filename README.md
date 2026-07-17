@@ -1,39 +1,58 @@
-[![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
-
-# MATLAB Support for Zarr files 
+# MATLAB Support for Zarr files
 
 [Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
-For complete documentation, refer to the `documentation.md` file, or refer to the help section of each function.
+For complete documentation, refer to [documentation.md](doc/documentation.md) or the help section of each function.
+
+## Feedback/Requests
+
+The direction and capabilities of this package depend on feedback from users. We encourage you to ask for what you need, and we look forward to hearing from you. See [CONTRIBUTING.md](CONTRIBUTING.md) for adding new features and bug fixing.
+
+Create/view [issues for MATLAB Support for Zarr files](https://github.com/mathworks/MATLAB-support-for-Zarr-files/issues) here. See [Creating good issues](https://github.com/orgs/community/discussions/147722) for tips and best practices.
+
+## Community Support
+
+For general questions and support for MATLAB, visit [MATLAB Central](https://www.mathworks.com/matlabcentral)
 
 ## Status
+
 - Supports only Zarr v2.
 - Supports reading and writing of Zarr arrays from local storage and Amazon S3.
 - Supports reading and writing of Zarr metadata from local storage and Amazon S3.
 
+[![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
+
 ## Setup
+
 To use this repository, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html).
-For example, 
+For example:
+
 ``` MATLAB
 >> addpath("C:\<username>\support-Zarr-in-MATLAB\")
 ```
 
-### MathWorks Products (https://www.mathworks.com)
+### MathWorks Products (<https://www.mathworks.com>)
 
 Requires MATLAB release R2024a or newer
 
-### 3rd Party Products:
+## Installation
+
+Before proceeding, please ensure that you have a supported version of Python&reg; installed on your machine.
+See [MATLAB Compatibile Python Versions](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
+
+### 3rd Party Products
+
+The following versions are required by this package:
+
 - Python - v3.10 or newer
 - [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
 - [numpy](https://github.com/numpy/numpy) - v1.26.4 or newer
 
-See the link [here](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
+### Configuring Python
 
-
-## Installation
-Before proceeding, please ensure that you have a supported version of Python installed on your machine.
 Please refer to the following links to configure your system to use Python with MATLAB:
+
 - [Configure Your System to Use Python](https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html)
 - [Access Python Modules from MATLAB - Getting Started](https://www.mathworks.com/help/matlab/matlab_external/create-object-from-python-class.html)
 
@@ -53,14 +72,17 @@ ans =
            Status: NotLoaded
     ExecutionMode: OutOfProcess
 ```
+
 If the value of the `Version` property is empty, then you do not have a supported version available.
 
 Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy).
 
-## Getting Started 
+## Getting Started
+
 1. Clone the github repo to your local drive.
 2. Start MATLAB.
 3. Add the parent cloned directory to your MATLAB path:
+
 ``` MATLAB
 >> addpath ("C:\<username>\support-Zarr-in-MATLAB\")
 ```
@@ -68,12 +90,14 @@ Once Python is installed, install the Python packages [tensorstore](https://gith
 ## Examples
 
 ### Read a Zarr array
+
 ``` MATLAB
 filepath = "group1\dset1";
 data     = zarrread(filepath);
 ```
 
 ### Create and write to a Zarr array
+
 ``` MATLAB
 filepath   = "myZarrfiles\singleDset";
 data_size = [10,10];               % shape of the Zarr array to be written
@@ -84,6 +108,7 @@ zarrwrite(filepath, data)          % Write data to the Zarr array
 ```
 
 ### Create a Zarr array and write data to it using zlib compression with non-default chunking
+
 ``` MATLAB
 filepath = "myZarrfiles\singleZlibDset";
 
@@ -99,34 +124,33 @@ compress.id = "zlib";
 compress.level = 8;
 
 % Create the Zarr array
+
 zarrcreate(filepath, data_size, ChunkSize=chunk_size, DataType="single", ...
-	Compression=compress)
-	
+    Compression=compress)
+
 % Write to the Zarr array
 zarrwrite(filepath, data)
 ```
 
-
 ### Read the metadata from a Zarr array
+
 ``` MATLAB
 filepath = "group1\dset1";
 info = zarrinfo(filepath);
 ```
 
 ## Help
+
 To view documentation of a function, type `help <function_name>`. For example,
+
 ``` MATLAB
 >> help zarrcreate
 ```
-or refer to the [documentation.md](https://github.com/mathworks/MATLAB-support-for-Zarr-files/blob/main/doc/documentation.md) and [examples.md](https://github.com/mathworks/MATLAB-support-for-Zarr-files/blob/main/doc/examples.md) files.
 
+or refer to the [documentation.md](doc/documentation.md) and [examples.md](doc/examples.md) files.
 
 ## License
-<!--- Make sure you have a License.txt within your Repo --->
 
-The license is available in the `License.txt` file in this GitHub repository.
+The license is available in the [License.txt](License.txt) file in this GitHub repository.
 
-## Community Support
-[MATLAB Central](https://www.mathworks.com/matlabcentral)
-
-Copyright 2025 The MathWorks, Inc.
+Copyright 2025-2026 The MathWorks, Inc.
