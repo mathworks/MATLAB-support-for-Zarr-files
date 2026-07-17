@@ -39,7 +39,7 @@ Requires MATLAB release R2024a or newer
 ## Installation
 
 Before proceeding, please ensure that you have a supported version of Python&reg; installed on your machine.
-See [MATLAB Compatibile Python Versions](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
+See [MATLAB Compatible Python Versions](https://www.mathworks.com/support/requirements/python-compatibility.html) for the Python versions compatible with different MATLAB releases.
 
 ### 3rd Party Products
 
