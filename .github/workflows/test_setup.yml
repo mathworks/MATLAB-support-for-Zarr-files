@@ -1,9 +1,19 @@
 name: Run Tests
 
-on: 
+on:
   push:
+    paths:
+      - '**.m'
+      - 'PythonModule/**'
+      - 'test/**'
+      - '.github/workflows/test_setup.yml'
   pull_request:
     branches: [main]
+    paths:
+      - '**.m'
+      - 'PythonModule/**'
+      - 'test/**'
+      - '.github/workflows/test_setup.yml'
     
 jobs:
   test:
