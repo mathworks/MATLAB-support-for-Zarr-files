@@ -31,12 +31,14 @@ The codebase is a three-language stack. Data and type information flow across al
 There is no build step — it's interpreted MATLAB plus a Python module on the path.
 
 **Run the full test suite** (from the `test/` directory, since tests resolve data paths relative to `pwd`):
+
 ```matlab
 cd test
 results = runtests('IncludeSubfolders', true)
 ```
 
 **Run a single test class or method:**
+
 ```matlab
 cd test
 runtests('tZarrRead')                       % one class
