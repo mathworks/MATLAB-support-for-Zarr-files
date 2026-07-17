@@ -2,7 +2,7 @@ classdef ZarrDatatype
     %ZARRDATATYPE Datatype of Zarr data
     %   Represents the datatype mapping between MATLAB, Tensorstore, and Zarr
 
-    % Copyright 2025 The MathWorks, Inc.
+    % Copyright 2025-2026 The MathWorks, Inc.
     
     properties(Constant, Hidden)
         % Same-length arrays that represent mapping between 
@@ -29,7 +29,6 @@ classdef ZarrDatatype
     end
 
     methods (Access = private)
-        % "Private" constructor - should not be used directly. 
         % Use from*Type() static methods instead.
         function obj = ZarrDatatype(ind)
             obj.Index = ind;
