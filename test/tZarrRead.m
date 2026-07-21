@@ -1,7 +1,7 @@
 classdef tZarrRead < SharedZarrTestSetup
     % Tests for zarrread function to read data from Zarr files in MATLAB.
 
-    % Copyright 2025 The MathWorks, Inc.
+    % Copyright 2025-2026 The MathWorks, Inc.
 
     properties(Constant)
         % Paths for read functions. SharedZarrTestSetup copies the contents
