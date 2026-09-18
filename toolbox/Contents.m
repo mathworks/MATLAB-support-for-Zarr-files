@@ -11,4 +11,4 @@
 % Environment setup
 %   configureZarrPythonEnvironment - Verify/install the required Python packages.
 
-% Copyright 2025 The MathWorks, Inc.
+% Copyright 2026 The MathWorks, Inc.

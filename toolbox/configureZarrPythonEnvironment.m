@@ -12,7 +12,7 @@ function configureZarrPythonEnvironment(options)
 %   which an installed toolbox cannot provision automatically. Run this once
 %   after installing the toolbox.
 
-%   Copyright 2025 The MathWorks, Inc.
+%   Copyright 2026 The MathWorks, Inc.
 
     arguments
         options.Install (1,1) logical = true
