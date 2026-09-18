@@ -3,7 +3,7 @@ classdef Zarr < handle
 % An object of the 'Zarr' class is used to read and write a Zarr array.
 % An instance of this class represents a Zarr array.
 
-%   Copyright 2025 The MathWorks, Inc.
+%   Copyright 2025-2026 The MathWorks, Inc.
 
     properties(GetAccess = public, SetAccess = protected)
         Path (1,1) string

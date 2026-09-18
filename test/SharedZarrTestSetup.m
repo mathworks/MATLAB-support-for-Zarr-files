@@ -1,7 +1,7 @@
 classdef SharedZarrTestSetup < matlab.unittest.TestCase
     % Shared test set up for Zarr tests.
 
-    % Copyright 2025 The MathWorks, Inc.
+    % Copyright 2025-2026 The MathWorks, Inc.
 
     properties
         PyException = "MATLAB:Python:PyException"
