@@ -3,7 +3,7 @@ classdef Zarr < handle
 % An object of the 'Zarr' class is used to read and write a Zarr array.
 % An instance of this class represents a Zarr array.
 
-%   Copyright 2025 The MathWorks, Inc.
+%   Copyright 2025-2026 The MathWorks, Inc.
 
     properties(GetAccess = public, SetAccess = protected)
         Path (1,1) string
@@ -38,7 +38,19 @@ classdef Zarr < handle
             % Python will compile and cache the module after the first call
             % to import_module, so there is no harm in making this call
             % multiple times.
-            zarrPy = py.importlib.import_module('ZarrPy');
+            try
+                zarrPy = py.importlib.import_module('ZarrPy');
+            catch ME
+                % A missing Python environment or missing tensorstore/numpy
+                % surfaces here as a raw py. error. Rethrow with an
+                % actionable message pointing at the setup helper.
+                error("MATLAB:Zarr:pythonNotConfigured", ...
+                    "Could not load the Zarr Python backend. Ensure a " + ...
+                    "supported Python is configured (see pyenv) and the " + ...
+                    "required packages are installed by running " + ...
+                    "configureZarrPythonEnvironment.\n\nUnderlying error:\n%s", ...
+                    ME.message);
+            end
         end
 
         function pyReloadInProcess()

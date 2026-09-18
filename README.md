@@ -3,6 +3,9 @@
 [Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks/MATLAB-support-for-Zarr-files)
+[![View on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange)
+
 For complete documentation, refer to [documentation.md](doc/documentation.md) or the help section of each function.
 
 ## Feedback/Requests
@@ -25,11 +28,22 @@ For general questions and support for MATLAB, visit [MATLAB Central](https://www
 
 ## Setup
 
-To use this repository, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html).
-For example:
+### Install as a toolbox
+
+Download the latest `.mltbx` file from [Releases](https://github.com/mathworks/MATLAB-support-for-Zarr-files/releases). Open the file, or install programmatically:
 
 ``` MATLAB
->> addpath("C:\<username>\support-Zarr-in-MATLAB\")
+matlab.addons.toolbox.installToolbox("MATLAB_Support_for_Zarr_Files.mltbx")
+```
+
+The toolbox cannot install the required Python packages for you. After installing, run `configureZarrPythonEnvironment` once to verify your Python setup and install `tensorstore` and `numpy` (see [Installation](#installation)).
+
+### Use from source
+
+Alternatively, clone the repo to your local folder and add it to your MATLAB path using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html):
+
+``` MATLAB
+>> addpath("C:\<username>\MATLAB-support-for-Zarr-files\toolbox")
 ```
 
 ### MathWorks Products (<https://www.mathworks.com>)
@@ -75,7 +89,11 @@ ans =
 
 If the value of the `Version` property is empty, then you do not have a supported version available.
 
-Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy).
+Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy). The quickest way is to run the bundled helper, which verifies your environment and installs the packages into it:
+
+``` MATLAB
+>> configureZarrPythonEnvironment
+```
 
 ## Getting Started
 
