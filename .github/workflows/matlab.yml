@@ -2,13 +2,7 @@ name: MATLAB
 
 on:
   push:
-    paths:
-      - '**.m'
-      - 'toolbox/**'
-      - 'test/**'
-      - 'buildUtilities/**'
-      - 'buildfile.m'
-      - '.github/workflows/matlab.yml'
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch: {}
