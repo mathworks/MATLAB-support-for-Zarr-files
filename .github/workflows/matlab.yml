@@ -1,0 +1,121 @@
+name: MATLAB
+
+on:
+  push:
+    paths:
+      - '**.m'
+      - 'toolbox/**'
+      - 'test/**'
+      - 'buildUtilities/**'
+      - 'buildfile.m'
+      - '.github/workflows/matlab.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+        matlab-version: ['R2024a', 'latest']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: ${{matrix.matlab-version}}
+
+      - name: Set up Python 3.10 (oldest supported for Zarr)
+        if: matrix.matlab-version == 'R2024a'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Set up latest available Python (for latest MATLAB)
+        if: matrix.matlab-version == 'latest'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install deps (oldest supported for Zarr)
+        if: matrix.matlab-version == 'R2024a'
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy==1.26.4" "tensorstore==0.1.71"
+
+      - name: Install deps (latest for latest Python)
+        if: matrix.matlab-version == 'latest'
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy tensorstore
+
+      - name: Run MATLAB build
+        uses: matlab-actions/run-build@v2
+        with:
+          tasks: test
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{matrix.os}}-${{matrix.matlab-version}}
+          path: coverage/
+          if-no-files-found: error
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage-reports/
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: latest
+
+      - name: Merge coverage reports
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            addpath("buildUtilities");
+            mergeCoverageReports("coverage-reports", "coverage-combined/summary.md");
+
+      - name: Write summary to job page
+        run: cat coverage-combined/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+  package:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: latest
+
+      - name: Build toolbox
+        uses: matlab-actions/run-build@v2
+        with:
+          tasks: mltbx
+
+      - name: Upload toolbox artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MATLAB_Support_for_Zarr_Files.mltbx
+          path: release/MATLAB_Support_for_Zarr_Files.mltbx

@@ -16,9 +16,14 @@ test/bigData/
 *.m~
 
 # Bytecode-compiled version of python code
-PythonModule/__pycache__
+toolbox/PythonModule/__pycache__
 *.pyc
 .venv-zarr/
+
+# Packaged toolbox and build artifacts
+release/*.mltbx
+coverage/
+.buildtool/
 
 # Local Claude Code profile (per-developer, not shared)
 .claude/
