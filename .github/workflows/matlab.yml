@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v3
@@ -33,13 +33,13 @@ jobs:
 
       - name: Set up Python 3.10 (oldest supported for Zarr)
         if: matrix.matlab-version == 'R2024a'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
       - name: Set up latest available Python (for latest MATLAB)
         if: matrix.matlab-version == 'latest'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.x'
 
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload coverage reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-${{matrix.os}}-${{matrix.matlab-version}}
           path: coverage/
@@ -74,10 +74,10 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download all coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: coverage-*
           path: coverage-reports/
@@ -102,7 +102,7 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v3
@@ -115,7 +115,7 @@ jobs:
           tasks: mltbx
 
       - name: Upload toolbox artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: MATLAB_Support_for_Zarr_Files.mltbx
           path: release/MATLAB_Support_for_Zarr_Files.mltbx
