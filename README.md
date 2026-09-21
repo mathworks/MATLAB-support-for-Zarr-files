@@ -1,6 +1,6 @@
 # MATLAB Support for Zarr files
 
-[Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
+[Zarr](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
 [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks/MATLAB-support-for-Zarr-files)
@@ -60,8 +60,8 @@ See [MATLAB Compatible Python Versions](https://www.mathworks.com/support/requir
 The following versions are required by this package:
 
 - Python - v3.10 or newer
-- [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
-- [numpy](https://github.com/numpy/numpy) - v1.26.4 or newer
+- [TensorStore](https://github.com/google/tensorstore) - v0.1.71 or newer
+- [NumPy](https://github.com/numpy/numpy) - v1.26.4 or newer
 
 ### Configuring Python
 
@@ -89,7 +89,7 @@ ans =
 
 If the value of the `Version` property is empty, then you do not have a supported version available.
 
-Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy). The quickest way is to run the bundled helper, which verifies your environment and installs the packages into it:
+Once Python is installed, install the Python packages [TensorStore](https://github.com/google/tensorstore) and [NumPy](https://github.com/numpy/numpy). The quickest way is to run the bundled helper, which verifies your environment and installs the packages into it:
 
 ``` MATLAB
 >> configureZarrPythonEnvironment
