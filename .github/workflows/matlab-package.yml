@@ -1,0 +1,49 @@
+name: MATLAB Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'toolbox/**'
+      - 'README.md'
+      - 'license.txt'
+      - 'buildfile.m'
+      - 'buildUtilities/**'
+      - '.github/workflows/matlab-package.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'toolbox/**'
+      - 'README.md'
+      - 'license.txt'
+      - 'buildfile.m'
+      - 'buildUtilities/**'
+      - '.github/workflows/matlab-package.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: latest
+
+      - name: Build toolbox
+        uses: matlab-actions/run-build@v3
+        with:
+          tasks: mltbx
+
+      - name: Upload toolbox artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: MATLAB_Support_for_Zarr_Files.mltbx
+          path: release/MATLAB_Support_for_Zarr_Files.mltbx
