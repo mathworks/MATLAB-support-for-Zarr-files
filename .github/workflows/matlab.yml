@@ -31,13 +31,13 @@ jobs:
 
       - name: Set up Python 3.10 (oldest supported for Zarr)
         if: matrix.matlab-version == 'R2024a'
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
       - name: Set up latest available Python (for latest MATLAB)
         if: matrix.matlab-version == 'latest'
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.x'
 
