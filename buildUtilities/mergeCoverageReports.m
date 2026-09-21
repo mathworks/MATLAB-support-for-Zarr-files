@@ -153,3 +153,5 @@ function summary = buildMarkdown(fileMap)
 
     summary = join(md, newline);
 end
+
+% Copyright 2026 The MathWorks, Inc.

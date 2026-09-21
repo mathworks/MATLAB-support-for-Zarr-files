@@ -6,3 +6,5 @@ function changed = smartIndentFile(filePath)
         writelines(indented, filePath);
     end
 end
+
+% Copyright 2026 The MathWorks, Inc.

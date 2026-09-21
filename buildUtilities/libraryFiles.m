@@ -5,3 +5,5 @@ function files = libraryFiles()
     d = dir(fullfile("toolbox", "**", "*.m"));
     files = string(fullfile({d.folder}, {d.name}))';
 end
+
+% Copyright 2026 The MathWorks, Inc.

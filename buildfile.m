@@ -166,3 +166,5 @@ function allTask(~)
     % Auto-format, fix lint issues, and run the test suite.
     %   Orchestrated via dependencies: indent -> fixLint -> test (which includes lint).
 end
+
+% Copyright 2026 The MathWorks, Inc.
