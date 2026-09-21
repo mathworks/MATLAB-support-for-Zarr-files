@@ -30,38 +30,48 @@ function fileMap = loadAndMergeXml(artifactsDir)
     fprintf("Merging %d Cobertura XML report(s)\n", numel(xmlFiles));
 
     fileMap = dictionary(string.empty, cell.empty);
-
     for i = 1:numel(xmlFiles)
         xmlPath = fullfile(xmlFiles(i).folder, xmlFiles(i).name);
         fprintf("  %s\n", xmlPath);
-        doc = xmlread(xmlPath);
+        fileMap = mergeReport(fileMap, xmlPath);
+    end
+end
 
-        classes = doc.getElementsByTagName("class");
-        for c = 0:classes.getLength()-1
-            classNode = classes.item(c);
-            filename = string(classNode.getAttribute("filename"));
-            filename = replace(filename, "\", "/");
+function fileMap = mergeReport(fileMap, xmlPath)
+    % Merge every <class> (source file) in one Cobertura XML report.
+    doc = xmlread(xmlPath);
+    classes = doc.getElementsByTagName("class");
+    for c = 0:classes.getLength()-1
+        fileMap = mergeClass(fileMap, classes.item(c));
+    end
+end
 
-            lines = classNode.getElementsByTagName("line");
-            for l = 0:lines.getLength()-1
-                lineNode = lines.item(l);
-                num = int32(str2double(lineNode.getAttribute("number")));
-                hits = int32(str2double(lineNode.getAttribute("hits")));
+function fileMap = mergeClass(fileMap, classNode)
+    % Merge the line hits of one source file into fileMap.
+    filename = string(classNode.getAttribute("filename"));
+    filename = replace(filename, "\", "/");
 
-                if isKey(fileMap, filename)
-                    lineData = fileMap{filename};
-                else
-                    lineData = dictionary(int32.empty, int32.empty);
-                end
+    if isKey(fileMap, filename)
+        lineData = fileMap{filename};
+    else
+        lineData = dictionary(int32.empty, int32.empty);
+    end
 
-                if isKey(lineData, num)
-                    lineData(num) = max(lineData(num), hits);
-                else
-                    lineData(num) = hits;
-                end
-                fileMap(filename) = {lineData};
-            end
-        end
+    lines = classNode.getElementsByTagName("line");
+    for l = 0:lines.getLength()-1
+        lineData = mergeLine(lineData, lines.item(l));
+    end
+    fileMap(filename) = {lineData};
+end
+
+function lineData = mergeLine(lineData, lineNode)
+    % Accumulate the maximum hit count for a single line across reports.
+    num = int32(str2double(lineNode.getAttribute("number")));
+    hits = int32(str2double(lineNode.getAttribute("hits")));
+    if isKey(lineData, num)
+        lineData(num) = max(lineData(num), hits);
+    else
+        lineData(num) = hits;
     end
 end
 
