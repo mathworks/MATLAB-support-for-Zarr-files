@@ -38,30 +38,5 @@ function configureZarrPythonEnvironment(options)
         return
     end
 
-    fprintf("Installing required Python packages into %s ...\n", pe.Executable);
-    cmd = sprintf('"%s" -m pip install -r "%s"', pe.Executable, reqFile);
-    status = system(cmd);
-    if status ~= 0
-        error("MATLAB:Zarr:pythonNotConfigured", ...
-            "pip install failed (exit code %d). Run manually:\n  %s", status, cmd);
-    end
-
-    if ~packagesImport()
-        error("MATLAB:Zarr:pythonNotConfigured", ...
-            "Packages installed but still cannot be imported. A MATLAB " + ...
-            "restart may be required for an in-process Python environment.");
-    end
-    fprintf("Zarr Python environment is ready.\n");
-end
-
-function ok = packagesImport()
-    % True if both numpy and tensorstore import successfully.
-    ok = true;
-    for pkg = ["numpy", "tensorstore"]
-        try
-            py.importlib.import_module(pkg);
-        catch
-            ok = false;
-        end
-    end
+    installZarrPythonPackages(pe.Executable, reqFile);
 end
