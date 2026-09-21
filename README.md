@@ -170,6 +170,6 @@ or refer to the [documentation.md](doc/documentation.md) and [examples.md](doc/e
 
 ## License
 
-The license is available in the [License.txt](License.txt) file in this GitHub repository.
+The license is available in the [license.txt](license.txt) file in this GitHub repository.
 
 Copyright 2025-2026 The MathWorks, Inc.
