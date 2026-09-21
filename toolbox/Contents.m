@@ -1,5 +1,5 @@
 % MATLAB Support for Zarr Files
-% Version 0.1.0 (R2024a) 18-Sep-2026
+% Version 0.1.0 (R2024a) 21-Sep-2026
 %
 % Zarr functions
 %   zarrcreate   - Create Zarr array.

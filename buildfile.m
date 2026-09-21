@@ -12,7 +12,20 @@ function plan = buildfile
 
     plan("test").Dependencies = "lint";
     plan("fixLint").Dependencies = "indent";
+    plan("mltbx").Dependencies = "contents";
     plan("all").Dependencies = ["indent", "fixLint", "test"];
+end
+
+function [version, release] = toolboxVersion()
+    % Single source of truth for the toolbox version and minimum MATLAB release.
+    version = "0.1.0";
+    release = "R2024a";
+end
+
+function contentsTask(~)
+    % Stamp toolbox/Contents.m with the current version, release, and date.
+    [version, release] = toolboxVersion();
+    updateContentsVersion(fullfile("toolbox", "Contents.m"), version, release);
 end
 
 function testTask(~)
@@ -72,11 +85,12 @@ function mltbxTask(~)
         rmdir(pycache, "s");
     end
 
+    [version, release] = toolboxVersion();
     opts = matlab.addons.toolbox.ToolboxOptions("toolbox", ...
         "54873694-120e-4bde-bec8-ffe93cc848cd", ...
         ToolboxName="MATLAB Support for Zarr Files");
-    opts.ToolboxVersion = "0.1.0";
-    opts.MinimumMatlabRelease = "R2024a";
+    opts.ToolboxVersion = version;
+    opts.MinimumMatlabRelease = release;
     opts.OutputFile = fullfile("release", "MATLAB_Support_for_Zarr_Files.mltbx");
     opts.Summary = "Read and write Zarr v2 arrays and metadata from local storage and Amazon S3.";
     opts.Description = fileread("README.md");
