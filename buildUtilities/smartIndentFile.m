@@ -3,8 +3,6 @@ function changed = smartIndentFile(filePath)
     indented = indentcode(original);
     changed = ~strcmp(original, indented);
     if changed
-        fid = fopen(filePath, "w");
-        fwrite(fid, indented);
-        fclose(fid);
+        writelines(indented, filePath);
     end
 end
