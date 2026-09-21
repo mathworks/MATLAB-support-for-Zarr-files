@@ -94,10 +94,6 @@ function mltbxTask(~)
     opts.OutputFile = fullfile("release", "MATLAB_Support_for_Zarr_Files.mltbx");
     opts.Summary = "Read and write Zarr v2 arrays and metadata from local storage and Amazon S3.";
     opts.Description = fileread("README.md");
-    imageFile = fullfile("images", "matlab-support-for-zarr-files.png");
-    if isfile(imageFile)
-        opts.ToolboxImageFile = imageFile;
-    end
     opts.AuthorCompany = "MathWorks";
     opts.AuthorName = "MathWorks";
 
