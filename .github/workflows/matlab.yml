@@ -66,6 +66,36 @@ jobs:
           files: coverage/cobertura.xml
           flags: ${{matrix.os}}-${{matrix.matlab-version}}
 
+  test-missing-python:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: latest
+
+      - name: Set up Python (Zarr packages intentionally not installed)
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Run Python-dependency tests
+        uses: matlab-actions/run-build@v3
+        with:
+          tasks: testMissingPython
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage/cobertura.xml
+          flags: missing-python
+
   package:
     runs-on: ubuntu-latest
     needs: test

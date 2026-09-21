@@ -29,13 +29,30 @@ function contentsTask(~)
 end
 
 function testTask(~)
-    % Run the test suite in test/ against the toolbox on the path.
+    % Run the full test suite in test/ against the toolbox on the path.
     %   Measures coverage of the toolbox library code and writes two reports
     %   into coverage/: cobertura.xml for CI consumption and html/index.html to
     %   browse locally.
-    %   The suite runs with the working directory set to test/ because the
-    %   tests resolve their dataFiles fixtures relative to pwd.
     import matlab.unittest.TestSuite
+    runTestsWithCoverage(@(testDir) ...
+        TestSuite.fromFolder(testDir, IncludingSubfolders=true));
+end
+
+function testMissingPythonTask(~)
+    % Run only the Python-dependency tests, for the no-dependency CI job.
+    %   In an environment without numpy/tensorstore, this exercises the
+    %   "packages missing" and pythonNotConfigured branches that the normal
+    %   matrix (packages installed) filters out by assumption.
+    import matlab.unittest.TestSuite
+    runTestsWithCoverage(@(testDir) ...
+        TestSuite.fromFile(fullfile(testDir, "tConfigureZarrPythonEnvironment.m")));
+end
+
+function runTestsWithCoverage(suiteFcn)
+    % Run SUITEFCN(testDir) with coverage over the toolbox library code.
+    %   The suite runs with the working directory set to test/ because the
+    %   tests resolve their dataFiles fixtures relative to pwd. Writes
+    %   cobertura.xml, an HTML report, and result.mat into coverage/.
     import matlab.unittest.TestRunner
     import matlab.unittest.plugins.CodeCoveragePlugin
     import matlab.unittest.plugins.codecoverage.CoberturaFormat
@@ -57,16 +74,16 @@ function testTask(~)
         CoverageReport(fullfile(coverageFolder, "html")), ...
         coverageResult];
 
-    cleanup = onCleanup(@() cd(projectRoot)); %#ok<NASGU>
+    cleanup = onCleanup(@() cd(projectRoot));
     cd(fullfile(projectRoot, "test"));
 
-    suite = TestSuite.fromFolder(pwd, IncludingSubfolders=true);
+    suite = suiteFcn(pwd);
     runner = TestRunner.withTextOutput;
     runner.addPlugin(CodeCoveragePlugin.forFile(files, Producing=formats));
     results = runner.run(suite);
     assertSuccess(results);
 
-    result = coverageResult.Result; %#ok<NASGU>
+    result = coverageResult.Result;
     save(fullfile(coverageFolder, "result.mat"), "result");
 end
 
@@ -77,7 +94,7 @@ function mltbxTask(~)
     sourcePath = ["license.txt" "README.md"];
     destPathFcn = @(filename) fullfile("toolbox", filename);
     arrayfun(@(filename) copyfile(filename, destPathFcn(filename)), sourcePath);
-    cleanup = onCleanup(@() delete(destPathFcn(sourcePath))); %#ok<NASGU>
+    cleanup = onCleanup(@() delete(destPathFcn(sourcePath)));
 
     % Don't ship Python bytecode cache.
     pycache = fullfile("toolbox", "PythonModule", "__pycache__");

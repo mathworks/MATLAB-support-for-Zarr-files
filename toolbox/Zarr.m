@@ -66,6 +66,42 @@ classdef Zarr < handle
             py.importlib.reload(Zarr.ZarrPy);
         end
 
+        function checkSupportedPythonVersion(version, minVersion)
+            % Error if the configured Python version is missing or too old.
+            %   VERSION is the pyenv version string ("" when none is
+            %   configured); MINVERSION is the oldest supported version.
+            if version == ""
+                error("MATLAB:Zarr:pythonNotConfigured", ...
+                    "No Python environment is configured for MATLAB. " + ...
+                    "Install Python %s or newer and point MATLAB at it " + ...
+                    "with pyenv. See " + ...
+                    "https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html", ...
+                    minVersion);
+            end
+
+            if Zarr.versionIsLessThan(version, minVersion)
+                error("MATLAB:Zarr:pythonNotConfigured", ...
+                    "Python %s is configured, but %s or newer is required.", ...
+                    version, minVersion);
+            end
+        end
+
+        function tf = versionIsLessThan(version, minVersion)
+            % Compare dotted version strings numerically (e.g. "3.9" < "3.10").
+            a = str2double(split(string(version), "."));
+            b = str2double(split(string(minVersion), "."));
+            n = max(numel(a), numel(b));
+            a(end+1:n) = 0;
+            b(end+1:n) = 0;
+            tf = false;
+            for k = 1:n
+                if a(k) ~= b(k)
+                    tf = a(k) < b(k);
+                    return
+                end
+            end
+        end
+
         function isZarray = isZarrArray(path)
             % Given a path, determine if it is a Zarr array
 
