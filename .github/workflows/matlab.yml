@@ -58,42 +58,13 @@ jobs:
         with:
           tasks: test
 
-      - name: Upload coverage reports
+      - name: Upload coverage to Codecov
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: codecov/codecov-action@v5
         with:
-          name: coverage-${{matrix.os}}-${{matrix.matlab-version}}
-          path: coverage/
-          if-no-files-found: error
-
-  coverage:
-    runs-on: ubuntu-latest
-    needs: test
-    if: always()
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Download all coverage artifacts
-        uses: actions/download-artifact@v5
-        with:
-          pattern: coverage-*
-          path: coverage-reports/
-
-      - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v3
-        with:
-          release: latest
-
-      - name: Merge coverage reports
-        uses: matlab-actions/run-command@v3
-        with:
-          command: |
-            addpath("buildUtilities");
-            mergeCoverageReports("coverage-reports", "coverage-combined/summary.md");
-
-      - name: Write summary to job page
-        run: cat coverage-combined/summary.md >> "$GITHUB_STEP_SUMMARY"
+          token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage/cobertura.xml
+          flags: ${{matrix.os}}-${{matrix.matlab-version}}
 
   package:
     runs-on: ubuntu-latest

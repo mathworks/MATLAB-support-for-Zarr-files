@@ -21,9 +21,6 @@
 *.slx binary merge=mlAutoMerge
 *.slxp binary
 
-## MATLAB Project metadata files use LF line endings
-/resources/project/**/*.xml text eol=lf
-
 ## Other common binary file types
 *.docx binary
 *.exe binary

@@ -24,6 +24,7 @@ For general questions and support for MATLAB, visit [MATLAB Central](https://www
 - Supports reading and writing of Zarr arrays from local storage and Amazon S3.
 - Supports reading and writing of Zarr metadata from local storage and Amazon S3.
 
+[![MATLAB](https://github.com/mathworks/MATLAB-support-for-Zarr-files/actions/workflows/matlab.yml/badge.svg)](https://github.com/mathworks/MATLAB-support-for-Zarr-files/actions/workflows/matlab.yml)
 [![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
 
 ## Setup
