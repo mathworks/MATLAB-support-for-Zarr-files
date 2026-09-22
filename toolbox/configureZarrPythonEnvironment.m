@@ -33,8 +33,8 @@ function configureZarrPythonEnvironment(options)
         "PythonModule", "requirements.txt");
 
     if ~options.Install
-        fprintf("Required Python packages are missing. Install them with:\n\n" + ...
-            "  ""%s"" -m pip install -r ""%s""\n\n", pe.Executable, reqFile);
+        cmd = pipInstallCommand(pe.Executable, reqFile);
+        fprintf("Required Python packages are missing. Install them with:\n\n  %s\n\n", cmd);
         return
     end
 

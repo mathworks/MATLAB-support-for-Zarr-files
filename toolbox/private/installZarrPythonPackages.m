@@ -15,11 +15,14 @@ function installZarrPythonPackages(pythonExe, reqFile)
     end
 
     fprintf("Installing required Python packages into %s ...\n", pythonExe);
-    cmd = sprintf('"%s" -m pip install -r "%s"', pythonExe, reqFile);
-    status = system(cmd);
+    cmd = pipInstallCommand(pythonExe, reqFile);
+    % "-echo" streams pip's output live and still captures it in cmdout, which
+    % system() otherwise suppresses when a second output is requested.
+    [status, cmdout] = system(cmd, "-echo");
     if status ~= 0
         error("MATLAB:Zarr:pythonNotConfigured", ...
-            "pip install failed (exit code %d). Run manually:\n  %s", status, cmd);
+            "pip install failed (exit code %d):\n%s\nRun manually:\n  %s", ...
+            status, cmdout, cmd);
     end
 
     if ~packagesImport()
