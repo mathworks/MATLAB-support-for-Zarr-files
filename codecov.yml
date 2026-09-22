@@ -7,3 +7,6 @@ coverage:
 ignore:
   - "test/*"
   - "tools/*"
+  # Shells out to pip; running it would mutate the CI Python environment,
+  # so it is intentionally not covered by automated tests.
+  - "toolbox/private/installZarrPythonPackages.m"

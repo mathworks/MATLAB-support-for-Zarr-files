@@ -1,0 +1,111 @@
+name: MATLAB Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'toolbox/**'
+      - 'test/**'
+      - 'buildfile.m'
+      - 'buildUtilities/**'
+      - 'codecov.yml'
+      - '.github/workflows/matlab-test.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'toolbox/**'
+      - 'test/**'
+      - 'buildfile.m'
+      - 'buildUtilities/**'
+      - 'codecov.yml'
+      - '.github/workflows/matlab-test.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+        matlab-version: ['R2024a', 'latest']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: ${{matrix.matlab-version}}
+
+      - name: Set up Python 3.10 (oldest supported for Zarr)
+        if: matrix.matlab-version == 'R2024a'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+
+      - name: Set up latest available Python (for latest MATLAB)
+        if: matrix.matlab-version == 'latest'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Install deps (oldest supported for Zarr)
+        if: matrix.matlab-version == 'R2024a'
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy==1.26.4" "tensorstore==0.1.71"
+
+      - name: Install deps (latest for latest Python)
+        if: matrix.matlab-version == 'latest'
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy tensorstore
+
+      - name: Run MATLAB build
+        uses: matlab-actions/run-build@v3
+        with:
+          tasks: test
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage/cobertura.xml
+          flags: ${{matrix.os}}-${{matrix.matlab-version}}
+
+  test-missing-python:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: latest
+
+      - name: Set up Python (Zarr packages intentionally not installed)
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Run Python-dependency tests
+        uses: matlab-actions/run-build@v3
+        with:
+          tasks: testMissingPython
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage/cobertura.xml
+          flags: missing-python

@@ -1,7 +1,7 @@
 classdef SharedZarrTestSetup < matlab.unittest.TestCase
     % Shared test set up for Zarr tests.
 
-    % Copyright 2025 The MathWorks, Inc.
+    % Copyright 2025-2026 The MathWorks, Inc.
 
     properties
         PyException = "MATLAB:Python:PyException"
@@ -17,7 +17,7 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
     	function addSrcCodePath(testcase)
     	    % Add source code path before running the tests
             import matlab.unittest.fixtures.PathFixture
-    	    testcase.applyFixture(PathFixture(fullfile('..'),'IncludeSubfolders',true))
+    	    testcase.applyFixture(PathFixture(fullfile('..','toolbox'),'IncludeSubfolders',true))
     	end
 
         function setupWorkingFolderToCreateArr(testcase)

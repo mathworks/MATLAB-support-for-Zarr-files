@@ -3,6 +3,9 @@
 [Zarr&reg;](https://zarr-specs.readthedocs.io/en/latest/specs.html) is a chunked, compressed, _N_-dimensional array storage format optimized for performance and scalability. It is widely used in scientific computing for handling large arrays efficiently.
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks/MATLAB-support-for-Zarr-files)
+[![View on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange)
+
 For complete documentation, refer to [documentation.md](doc/documentation.md) or the help section of each function.
 
 ## Feedback/Requests
@@ -21,15 +24,27 @@ For general questions and support for MATLAB, visit [MATLAB Central](https://www
 - Supports reading and writing of Zarr arrays from local storage and Amazon S3.
 - Supports reading and writing of Zarr metadata from local storage and Amazon S3.
 
+[![MATLAB](https://github.com/mathworks/MATLAB-support-for-Zarr-files/actions/workflows/matlab-test.yml/badge.svg)](https://github.com/mathworks/MATLAB-support-for-Zarr-files/actions/workflows/matlab-test.yml)
 [![codecov](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files/graph/badge.svg?token=ZBLNDOLQyA)](https://codecov.io/gh/mathworks/MATLAB-support-for-Zarr-files)
 
 ## Setup
 
-To use this repository, clone the repo to your local folder and add it to your MATLAB using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html).
-For example:
+### Install as a toolbox
+
+Download the latest `.mltbx` file from [Releases](https://github.com/mathworks/MATLAB-support-for-Zarr-files/releases). Open the file, or install programmatically:
 
 ``` MATLAB
->> addpath("C:\<username>\support-Zarr-in-MATLAB\")
+matlab.addons.toolbox.installToolbox("MATLAB_Support_for_Zarr_Files.mltbx")
+```
+
+The toolbox cannot install the required Python packages for you. After installing, run `configureZarrPythonEnvironment` once to verify your Python setup and install `tensorstore` and `numpy` (see [Installation](#installation)).
+
+### Use from source
+
+Alternatively, clone the repo to your local folder and add it to your MATLAB path using [addpath](https://www.mathworks.com/help/matlab/ref/addpath.html):
+
+``` MATLAB
+>> addpath("C:\<username>\MATLAB-support-for-Zarr-files\toolbox")
 ```
 
 ### MathWorks Products (<https://www.mathworks.com>)
@@ -46,8 +61,8 @@ See [MATLAB Compatible Python Versions](https://www.mathworks.com/support/requir
 The following versions are required by this package:
 
 - Python - v3.10 or newer
-- [tensorstore](https://github.com/google/tensorstore) - v0.1.71 or newer
-- [numpy](https://github.com/numpy/numpy) - v1.26.4 or newer
+- [TensorStore](https://github.com/google/tensorstore) - v0.1.71 or newer
+- [NumPy](https://github.com/numpy/numpy) - v1.26.4 or newer
 
 ### Configuring Python
 
@@ -75,7 +90,11 @@ ans =
 
 If the value of the `Version` property is empty, then you do not have a supported version available.
 
-Once Python is installed, install the Python packages [tensorstore](https://github.com/google/tensorstore) and [numpy](https://github.com/numpy/numpy).
+Once Python is installed, install the Python packages [TensorStore](https://github.com/google/tensorstore) and [NumPy](https://github.com/numpy/numpy). The quickest way is to run the bundled helper, which verifies your environment and installs the packages into it:
+
+``` MATLAB
+>> configureZarrPythonEnvironment
+```
 
 ## Getting Started
 
@@ -151,6 +170,6 @@ or refer to the [documentation.md](doc/documentation.md) and [examples.md](doc/e
 
 ## License
 
-The license is available in the [License.txt](License.txt) file in this GitHub repository.
+The license is available in the [license.txt](license.txt) file in this GitHub repository.
 
 Copyright 2025-2026 The MathWorks, Inc.
