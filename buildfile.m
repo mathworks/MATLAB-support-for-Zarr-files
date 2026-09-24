@@ -22,6 +22,23 @@ function [version, release] = toolboxVersion()
     release = "R2024a";
 end
 
+function checkVersionTask(~)
+    % Verify the RELEASE_TAG environment variable matches the toolbox version.
+    %   The release workflow runs this so a tag can never ship a mismatched
+    %   .mltbx.
+    tag = string(getenv("RELEASE_TAG"));
+    expected = "v" + toolboxVersion();
+    if tag == ""
+        error("build:missingReleaseTag", ...
+            "RELEASE_TAG is not set. Expected %s.", expected);
+    end
+    if tag ~= expected
+        error("build:versionMismatch", ...
+            "Release tag %s does not match toolbox version %s.", tag, expected);
+    end
+    fprintf("Release tag %s matches the toolbox version.\n", tag);
+end
+
 function contentsTask(~)
     % Stamp toolbox/Contents.m with the current version, release, and date.
     [version, release] = toolboxVersion();
