@@ -4,7 +4,7 @@
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
 [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks/MATLAB-support-for-Zarr-files)
-[![View on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange)
+[![View MATLAB Support for Zarr files on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/184774-matlab-support-for-zarr-files)
 
 For complete documentation, refer to [documentation.md](doc/documentation.md) or the help section of each function.
 
