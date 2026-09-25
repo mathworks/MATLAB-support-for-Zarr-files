@@ -4,7 +4,7 @@
 This repository provides an interface to read and write Zarr arrays and metadata from MATLAB&reg;.
 
 [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks/MATLAB-support-for-Zarr-files)
-[![View on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange)
+[![View MATLAB Support for Zarr files on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/184774-matlab-support-for-zarr-files)
 
 For complete documentation, refer to [documentation.md](doc/documentation.md) or the help section of each function.
 
@@ -29,7 +29,11 @@ For general questions and support for MATLAB, visit [MATLAB Central](https://www
 
 ## Setup
 
-### Install as a toolbox
+### Install from the Add-On Explorer
+
+In MATLAB, go to **Home > Add-Ons > Get Add-Ons**, search for _MATLAB Support for Zarr files_, and click **Add**. You can also install it from the [File Exchange page](https://www.mathworks.com/matlabcentral/fileexchange/184774-matlab-support-for-zarr-files).
+
+### Install a downloaded toolbox file
 
 Download the latest `.mltbx` file from [Releases](https://github.com/mathworks/MATLAB-support-for-Zarr-files/releases). Open the file, or install programmatically:
 
@@ -37,7 +41,7 @@ Download the latest `.mltbx` file from [Releases](https://github.com/mathworks/M
 matlab.addons.toolbox.installToolbox("MATLAB_Support_for_Zarr_Files.mltbx")
 ```
 
-The toolbox cannot install the required Python packages for you. After installing, run `configureZarrPythonEnvironment` once to verify your Python setup and install `tensorstore` and `numpy` (see [Installation](#installation)).
+The toolbox cannot install the required Python packages for you. After installing by either route, run `configureZarrPythonEnvironment` once to verify your Python setup and install `tensorstore` and `numpy` (see [Installation](#installation)).
 
 ### Use from source
 
