@@ -15,7 +15,7 @@ classdef tZarrRemoteArray < SharedZarrTestSetup
             % Other MATLAB mocks need to be on MATLAB search path.
             import matlab.unittest.fixtures.PathFixture
 
-            mockPath = fullfile(fileparts(mfilename('fullpath')), 'mocks');
+            mockPath = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'tools', 'mocks');
             testCase.applyFixture(PathFixture(mockPath));
 
             % Insert mock ZarrPy ahead of real one on py.sys.path
