@@ -14,6 +14,12 @@ classdef SharedZarrTestSetup < matlab.unittest.TestCase
     end
 
     methods(TestClassSetup)
+        function suppressBuiltinFunctionWarning(testCase)
+            % Suppress warning coming from mocks for built-in functions.
+            import matlab.unittest.fixtures.SuppressedWarningsFixture
+            testCase.applyFixture(SuppressedWarningsFixture("MATLAB:dispatcher:nameConflict"));
+        end
+
     	function addSrcCodePath(testcase)
     	    % Add source code path before running the tests
             import matlab.unittest.fixtures.PathFixture
